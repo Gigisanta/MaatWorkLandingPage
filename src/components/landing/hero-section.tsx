@@ -1,4 +1,12 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
+import dynamic from 'next/dynamic'
+
+const ParticlesCanvas = dynamic(
+  () => import('@/components/three/particles-canvas').then((mod) => mod.ParticlesCanvas),
+  { ssr: false, loading: () => <div className="absolute inset-0 bg-transparent" /> }
+)
 
 export function HeroSection() {
   return (
@@ -6,6 +14,9 @@ export function HeroSection() {
       className="relative min-h-screen flex items-center overflow-hidden"
       style={{ backgroundColor: '#04040e' }}
     >
+      {/* 3D Particles Background */}
+      <ParticlesCanvas />
+
       {/* Grid overlay */}
       <div className="grid-overlay" aria-hidden="true" />
 
@@ -15,6 +26,15 @@ export function HeroSection() {
 
       {/* Hero gradient background */}
       <div className="hero-gradient-bg absolute inset-0" aria-hidden="true" />
+
+      {/* Radial gradient overlay for depth */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 80% 60% at 50% 50%, transparent 0%, #04040e 70%)',
+        }}
+        aria-hidden="true"
+      />
 
       {/* Main content */}
       <div className="relative z-10 max-w-7xl mx-auto w-full px-6 lg:px-12 py-20 lg:py-32">
