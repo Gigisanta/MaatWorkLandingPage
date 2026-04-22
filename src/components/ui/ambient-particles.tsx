@@ -61,7 +61,11 @@ export function AmbientParticles({
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 });
   const lastTimeRef = useRef<number>(0);
 
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled, setIsEnabled] = useState(() => {
+    if (!disableOnMobile) return true;
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= 768;
+  });
   const reducedMotion = useReducedMotion();
 
   // Premium theme colors as HSL values

@@ -1255,13 +1255,13 @@ export function TestimonialsSection() {
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
-                              className="w-4 h-4 fill-amber-400 text-amber-400"
+                              className="w-5 h-5 fill-amber-400 text-amber-400"
                             />
                           ))}
                         </div>
 
                         {/* Quote */}
-                        <blockquote className="text-base text-white/90 font-display leading-relaxed mb-6">
+                        <blockquote className="text-base text-white/90 font-display leading-relaxed mb-6 break-words">
                           &ldquo;{testimonial.quote}&rdquo;
                         </blockquote>
 
@@ -1304,7 +1304,7 @@ export function TestimonialsSection() {
             </div>
 
             {/* Progress dots */}
-            <div className="flex items-center justify-center gap-3 mt-6">
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-6 px-4">
               {testimonials.map((_, index) => (
                 <button
                   key={index}

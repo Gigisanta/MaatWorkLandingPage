@@ -48,12 +48,12 @@ export function SectionReveal({
   duration = 700,
 }: SectionRevealOptions) {
   const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(prefersReducedMotion)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     if (prefersReducedMotion) {
-      setIsVisible(true)
+      
       return
     }
 
@@ -63,7 +63,7 @@ export function SectionReveal({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
+          
           observer.unobserve(element)
         }
       },
@@ -149,7 +149,7 @@ export function StaggerContainer({
   duration = 600,
 }: StaggerContainerOptions) {
   const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(prefersReducedMotion)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
@@ -159,7 +159,7 @@ export function StaggerContainer({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
+          
           observer.unobserve(element)
         }
       },
@@ -228,7 +228,7 @@ export function StaggerContainer({
 // ======================
 
 export function usePageEnterTransition(duration = 600) {
-  const [isEntered, setIsEntered] = useState(false)
+  const [isEntered, setIsEntered] = useState(prefersReducedMotion)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
@@ -257,7 +257,7 @@ export function usePageEnterTransition(duration = 600) {
 function useScrollVelocity(throttleMs = 50) {
   const [velocityState, setVelocityState] = useState({ velocity: 0, isFast: false })
   const lastScrollY = useRef(0)
-  const lastTime = useRef(Date.now())
+  const lastTime = useRef<number | null>(null)
   const rafId = useRef<number | null>(null)
 
   useEffect(() => {
@@ -420,7 +420,7 @@ export function TextReveal({
   animation = 'word',
 }: TextRevealProps) {
   const ref = useRef<HTMLSpanElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(prefersReducedMotion)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
@@ -430,7 +430,7 @@ export function TextReveal({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
+          
           observer.unobserve(element)
         }
       },

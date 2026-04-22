@@ -436,9 +436,12 @@ function ScreenOverlay({ activeScreen }: { activeScreen: number }) {
   const [opacity, setOpacity] = useState(1)
 
   useEffect(() => {
-    setOpacity(0)
+    const timeout1 = setTimeout(() => setOpacity(0), 0)
     const timeout = setTimeout(() => setOpacity(1), 150)
-    return () => clearTimeout(timeout)
+    return () => {
+      clearTimeout(timeout1)
+      clearTimeout(timeout)
+    }
   }, [activeScreen])
 
   const currentScreen = APP_SCREENS[activeScreen]
@@ -471,16 +474,14 @@ interface PhoneMockupProps {
 }
 
 export function PhoneMockup({ className }: PhoneMockupProps) {
-  const [mounted, setMounted] = useState(false)
+  const [mounted] = useState(true)
   const reducedMotion = useReducedMotion()
   const [activeScreen, setActiveScreen] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false)
   const mousePosition = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
-    setMounted(true)
-    setIsMobile(window.innerWidth < 768)
 
     const handleMouseMove = (e: MouseEvent) => {
       mousePosition.current = {

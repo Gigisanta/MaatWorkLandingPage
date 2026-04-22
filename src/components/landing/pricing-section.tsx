@@ -400,7 +400,7 @@ export function PricingSection() {
 
       <div
         ref={sectionRef}
-        className={`relative max-w-3xl mx-auto transition-all duration-700 ease-out ${
+        className={`relative max-w-xl lg:max-w-3xl mx-auto transition-all duration-700 ease-out ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}
       >
@@ -417,13 +417,13 @@ export function PricingSection() {
             Cada proyecto es único. Cotizamos según tus necesidades específicas.
           </p>
 
-          {/* Period Toggle */}
+          {/* Period Toggle - WCAG 2.5.8: 44x44px minimum touch target */}
           <div className="mt-8 inline-flex items-center gap-4 bg-zinc-900/80 backdrop-blur-sm rounded-full p-1.5 border border-white/10" role="group" aria-label="Seleccionar periodo de facturacion">
             <button
               onClick={() => setIsAnnual(false)}
               aria-pressed={!isAnnual}
               className={`
-                px-5 py-2.5 min-h-11 rounded-full text-sm font-medium transition-all duration-300 ease-out cursor-pointer
+                px-5 py-3 min-h-11 min-w-11 rounded-full text-sm font-medium transition-all duration-300 ease-out cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900
                 ${!isAnnual
                   ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30'
                   : 'text-zinc-400 hover:text-white'
@@ -436,7 +436,7 @@ export function PricingSection() {
               onClick={() => setIsAnnual(true)}
               aria-pressed={isAnnual}
               className={`
-                px-5 py-2.5 min-h-11 rounded-full text-sm font-medium transition-all duration-300 ease-out flex items-center gap-2 cursor-pointer
+                px-5 py-3 min-h-11 min-w-11 rounded-full text-sm font-medium transition-all duration-300 ease-out flex items-center gap-2 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900
                 ${isAnnual
                   ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30'
                   : 'text-zinc-400 hover:text-white'
@@ -509,11 +509,11 @@ export function PricingSection() {
 
           {/* Glass card with enhanced lift */}
           <div
-            className="relative rounded-xl bg-zinc-900/95 backdrop-blur-xl border border-white/10 overflow-hidden transition-all duration-500"
+            className="relative rounded-xl bg-zinc-900/95 backdrop-blur-xl border border-white/10 overflow-visible transition-all duration-500 focus-within:ring-2 focus-within:ring-violet-400/50 focus-within:ring-offset-2 focus-within:ring-offset-zinc-900"
             style={{
               boxShadow: isHovering
                 ? 'var(--shadow-violet-glow), 0 0 80px rgba(139, 92, 246, 0.15)'
-                : '0 20px 50px -10px rgba(0, 0, 0, 0.4)'
+                : '0 20px 50px -10px rgba(0, 0, 0, 0.4), 0 0 40px rgba(139, 92, 246, 0.08)'
             }}
           >
             {/* Spotlight gradient */}

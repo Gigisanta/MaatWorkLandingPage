@@ -35,28 +35,23 @@ export function CursorTrail({
   const mouseRef = useRef({ x: -500, y: -500 })
   const smoothMouseRef = useRef({ x: -500, y: -500 })
   const animationRef = useRef<number | null>(null)
-  const [isEnabled, setIsEnabled] = useState(false)
 
   const reducedMotion = useReducedMotion()
 
-  // Lerp utility for smooth interpolation
-  const lerp = useCallback((a: number, b: number, t: number) => a + (b - a) * t, [])
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsEnabled(false)
-      return
-    }
-
+  // Compute initial enabled state based on device type and reduced motion
+  const [isEnabled] = useState(() => {
+    if (typeof window === 'undefined') return false
+    if (reducedMotion) return false
     const isTouchDevice =
       'ontouchstart' in window ||
       navigator.maxTouchPoints > 0 ||
       window.matchMedia('(pointer: coarse)').matches
-
     const isMobile = window.innerWidth < 768
+    return !isTouchDevice && !isMobile
+  })
 
-    setIsEnabled(!isTouchDevice && !isMobile)
-  }, [reducedMotion])
+  // Lerp utility for smooth interpolation
+  const lerp = useCallback((a: number, b: number, t: number) => a + (b - a) * t, [])
 
   const initParticles = useCallback(() => {
     particlesRef.current = Array.from({ length: particleCount }, (_, i) => ({

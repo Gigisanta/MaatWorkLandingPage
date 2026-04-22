@@ -17,6 +17,16 @@ export function Navbar() {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isVisible] = useState(true)
+
+  // Scroll lock when mobile menu open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [mobileMenuOpen])
   const prefersReducedMotion = useReducedMotion()
   const headerRef = useRef<HTMLElement>(null)
 
@@ -101,7 +111,7 @@ export function Navbar() {
           {/* Logo with premium hover effect */}
           <a
             href="#"
-            className="font-display text-xl font-black text-white tracking-tight group relative rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent cursor-pointer"
+            className="font-display text-xl font-black text-white tracking-tight group relative rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent cursor-pointer min-h-11 flex items-center"
             onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' }) }}
             aria-label="MaatWork - Volver al inicio"
           >
@@ -172,6 +182,13 @@ export function Navbar() {
         </nav>
 
         {/* Mobile menu with smooth animation */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[54] lg:hidden"
+            onClick={closeMobileMenu}
+            aria-hidden="true"
+          />
+        )}
         <div
           className={`lg:hidden overflow-hidden transition-all ${prefersReducedMotion ? '' : 'duration-300'} ${
             mobileMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'
