@@ -1,6 +1,7 @@
 'use client'
 
-import { useScrollReveal } from '@/hooks/use-scroll-reveal'
+import { useEffect, useState } from 'react'
+import { useScrollReveal, useReducedMotion } from '@/hooks'
 
 interface Step {
   num: string
@@ -42,112 +43,334 @@ const steps: Step[] = [
   },
 ]
 
+// Animated Step Card Component
+function StepCard({ step, index, isVisible, reducedMotion }: { step: Step; index: number; isVisible: boolean; reducedMotion: boolean }) {
+  const [isHovered, setIsHovered] = useState(false)
+  const [glowPhase, setGlowPhase] = useState(0)
+
+  useEffect(() => {
+    if (!isVisible || reducedMotion) return
+    const interval = setInterval(() => {
+      setGlowPhase(p => (p + 1) % 360)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [isVisible, reducedMotion])
+
+  const glowIntensity = Math.sin((glowPhase * Math.PI) / 180)
+  const baseTransition = reducedMotion ? 'none' : 'all 600ms cubic-bezier(0.16, 1, 0.3, 1)'
+  const staggerDelay = reducedMotion ? '0ms' : `${index * 150}ms`
+
+  return (
+    <div
+      className="relative group"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0) scale(1)' : reducedMotion ? 'translateY(0)' : 'translateY(40px) scale(0.95)',
+        transition: `${baseTransition} ${staggerDelay}`,
+      }}
+    >
+      {/* Connector line to next step */}
+      {index < steps.length - 1 && (
+        <div className="hidden md:block absolute top-20 left-[calc(50%+3rem)] right-[calc(-50%+3rem)] z-10">
+          {/* Animated gradient line */}
+          <div className="h-px relative overflow-hidden">
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-400"
+              style={{
+                backgroundSize: '200% 100%',
+                animation: reducedMotion ? 'none' : 'gradient-flow 3s ease infinite',
+              }}
+            />
+          </div>
+          {/* Glowing dot at end */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            <div
+              className="relative"
+              style={{
+                transform: reducedMotion ? 'scale(1)' : `scale(${1 + glowIntensity * 0.2})`,
+                transition: 'transform 0.3s ease',
+              }}
+            >
+              <div className="absolute inset-0 w-3 h-3 bg-indigo-400 rounded-full blur-md" />
+              <div className="relative w-2 h-2 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Card with glass effect */}
+      <div
+        className="relative p-8 lg:p-10 h-full flex flex-col backdrop-blur-md bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06] hover:border-indigo-500/40 rounded-3xl overflow-hidden"
+        style={{
+          boxShadow: isHovered && !reducedMotion
+            ? `0 0 60px rgba(99, 102, 241, ${0.15 + glowIntensity * 0.1}), 0 20px 40px rgba(0,0,0,0.3)`
+            : '0 4px 24px rgba(0,0,0,0.2)',
+          transform: isHovered && !reducedMotion ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+          transition: `${baseTransition} ${staggerDelay}, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)`,
+        }}
+      >
+        {/* Ambient glow on hover */}
+        <div
+          className="absolute -inset-2 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+          style={{
+            background: 'radial-gradient(ellipse at center top, rgba(99, 102, 241, 0.25) 0%, transparent 60%)',
+            filter: 'blur(30px)',
+          }}
+        />
+
+        {/* Top accent line */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
+          style={{
+            background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.8), transparent)',
+            opacity: isVisible ? (isHovered ? 1 : 0.6) : 0,
+            transition: 'opacity 0.5s ease',
+          }}
+        />
+
+        {/* Floating particles on hover */}
+        {!reducedMotion && isHovered && (
+          <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 rounded-full bg-indigo-400/60"
+                style={{
+                  left: `${20 + i * 20}%`,
+                  top: `${30 + i * 15}%`,
+                  animation: `float-up ${2 + i * 0.3}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.2}s`,
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Icon container with layered effects */}
+        <div className="relative w-16 h-16 mb-6">
+          {/* Outer glow layers */}
+          <div
+            className="absolute -inset-3 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(99, 102, 241, 0.3) 0%, transparent 70%)',
+              filter: 'blur(20px)',
+            }}
+          />
+
+          {/* Gradient ring that rotates on hover */}
+          <div
+            className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600"
+            style={{
+              transform: reducedMotion ? 'rotate(0deg)' : (isHovered ? 'rotate(12deg) scale(1.05)' : 'rotate(0deg) scale(1)'),
+              transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          />
+
+          {/* Inner dark layer */}
+          <div className="absolute inset-0.5 rounded-xl bg-[#04040e]/90 backdrop-blur-sm" />
+
+          {/* Icon */}
+          <div
+            className="absolute inset-0 flex items-center justify-center text-white"
+            style={{
+              transform: reducedMotion ? 'scale(1)' : (isHovered ? 'scale(1.1)' : 'scale(1)'),
+              transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            {step.icon}
+          </div>
+
+          {/* Inner border glow on hover */}
+          <div
+            className="absolute inset-[3px] rounded-xl border border-white/10 group-hover:border-indigo-400/40 transition-colors duration-500"
+            style={{
+              boxShadow: isHovered && !reducedMotion ? 'inset 0 0 25px rgba(99, 102, 241, 0.2)' : 'none',
+            }}
+          />
+        </div>
+
+        {/* Step number with glow effect */}
+        <div className="relative mb-4 -mt-2">
+          <span
+            className="block text-7xl lg:text-8xl font-black leading-none tracking-tight bg-clip-text text-transparent"
+            style={{
+              backgroundImage: 'linear-gradient(135deg, #818cf8 0%, #a78bfa 40%, #c4b5fd 70%, #818cf8 100%)',
+              filter: isHovered && !reducedMotion ? 'drop-shadow(0 0 40px rgba(99, 102, 241, 0.6))' : 'drop-shadow(0 0 20px rgba(99, 102, 241, 0.3))',
+              transition: 'filter 0.5s ease',
+            }}
+          >
+            {step.num}
+          </span>
+          {/* Glow behind number */}
+          <div
+            className="absolute inset-0 blur-2xl opacity-50"
+            style={{
+              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+              transform: reducedMotion ? 'scale(1)' : `scale(${1 + glowIntensity * 0.15})`,
+              transition: 'transform 0.3s ease',
+            }}
+          />
+        </div>
+
+        {/* Title */}
+        <h3
+          className="font-display text-2xl lg:text-3xl font-bold text-white mb-4"
+          style={{
+            color: isHovered ? 'rgb(165, 180, 252)' : 'rgb(255, 255, 255)',
+            transition: 'color 0.4s ease',
+          }}
+        >
+          {step.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-base text-white/60 leading-relaxed flex-grow">
+          {step.desc}
+        </p>
+
+        {/* Bottom accent */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-px"
+          style={{
+            background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent)',
+            opacity: isVisible ? 1 : 0,
+            transition: 'opacity 0.5s ease',
+          }}
+        />
+
+        {/* Corner accents */}
+        <div
+          className="absolute top-4 right-4 w-6 h-6 border-t border-r border-indigo-500/0 group-hover:border-indigo-500/50 rounded-tr-lg transition-all duration-500"
+          style={{ transform: isHovered && !reducedMotion ? 'translate(2px, -2px)' : 'translate(0, 0)' }}
+        />
+        <div
+          className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-indigo-500/0 group-hover:border-indigo-500/50 rounded-bl-lg transition-all duration-500"
+          style={{ transform: isHovered && !reducedMotion ? 'translate(-2px, 2px)' : 'translate(0, 0)' }}
+        />
+      </div>
+    </div>
+  )
+}
+
 export function HowItWorks() {
-  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal<HTMLDivElement>()
-  const { ref: stepsRef, isVisible: stepsVisible } = useScrollReveal<HTMLDivElement>({ threshold: 0.1 })
+  const { ref: headerRef, isVisible: headerVisible, style: headerStyle } = useScrollReveal<HTMLDivElement>({
+    threshold: 0.3,
+    delay: 0,
+    duration: 800,
+  })
+  const { ref: stepsRef, isVisible: stepsVisible } = useScrollReveal<HTMLDivElement>({
+    threshold: 0.1,
+    delay: 200,
+    duration: 600,
+  })
+  const { ref: footerRef, isVisible: footerVisible, style: footerStyle } = useScrollReveal<HTMLDivElement>({
+    threshold: 0.3,
+    delay: 400,
+    duration: 700,
+  })
+  const reducedMotion = useReducedMotion()
 
   return (
     <section className="relative py-24 px-6 lg:px-12 overflow-hidden bg-[#04040e]">
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="glow-blob glow-blob-primary opacity-20" />
-        <div className="glow-blob glow-blob-purple opacity-15" />
-        {/* Animated grid lines */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{
-          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-          backgroundSize: '80px 80px',
-        }} />
+        {/* Ambient gradient blobs */}
+        <div
+          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(99, 102, 241, 0.15) 0%, transparent 60%)',
+            filter: 'blur(80px)',
+            transform: reducedMotion ? 'translate(0, 0)' : 'translate(-20%, 10%)',
+            transition: 'transform 1s ease-out',
+          }}
+        />
+        <div
+          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.12) 0%, transparent 60%)',
+            filter: 'blur(80px)',
+            transform: reducedMotion ? 'translate(0, 0)' : 'translate(15%, -10%)',
+            transition: 'transform 1.2s ease-out',
+          }}
+        />
+
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)',
+            backgroundSize: '60px 60px',
+          }}
+        />
       </div>
 
       <div className="relative max-w-6xl mx-auto">
         {/* Header */}
-        <div
-          ref={headerRef}
-          className={`text-center mb-20 transition-all duration-700 ${
-            headerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
-        >
-          <span className="badge badge-primary mb-6">El proceso</span>
-          <h2 className="font-display text-4xl lg:text-5xl font-black text-white mt-4">
+        <div ref={headerRef} className="text-center mb-20" style={headerStyle}>
+          <span
+            className="inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] mb-6 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400"
+            style={{
+              opacity: headerVisible ? 1 : 0,
+              transform: headerVisible ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <span className="w-2 h-2 rounded-full bg-indigo-400" style={{
+              animation: reducedMotion ? 'none' : 'pulse-dot 2s ease-in-out infinite',
+              boxShadow: '0 0 8px rgba(99, 102, 241, 0.8)',
+            }} />
+            El proceso
+          </span>
+
+          <h2
+            className="font-display text-4xl lg:text-5xl font-black text-white mt-4 mb-4"
+            style={{
+              opacity: headerVisible ? 1 : 0,
+              transform: headerVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
+            }}
+          >
             Tu app lista en dias, no en meses
           </h2>
-          <p className="text-white/60 mt-4 max-w-xl mx-auto">
+
+          <p
+            className="text-white/50 mt-4 max-w-xl mx-auto text-lg"
+            style={{
+              opacity: headerVisible ? 1 : 0,
+              transform: headerVisible ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
+            }}
+          >
             Solo 3 pasos para tener tu propia app funcionando
           </p>
         </div>
 
         {/* Steps grid */}
-        <div
-          ref={stepsRef}
-          className={`grid md:grid-cols-3 gap-6 lg:gap-8 transition-all duration-700 delay-200 ${
-            stepsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-          }`}
-        >
+        <div ref={stepsRef} className="grid md:grid-cols-3 gap-6 lg:gap-8">
           {steps.map((step, i) => (
-            <div key={i} className="relative group">
-              {/* Connector line */}
-              {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-20 left-[calc(50%+4rem)] right-[calc(-50%+4rem)] z-10">
-                  <div className="h-px bg-gradient-to-r from-indigo-500/60 via-purple-500/30 to-transparent relative">
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-pulse" />
-                  </div>
-                </div>
-              )}
-
-              {/* Card */}
-              <div className="card-glass p-8 lg:p-10 h-full flex flex-col relative group hover:border-indigo-500/40 transition-all duration-500 hover:-translate-y-2">
-                {/* Glowing top accent */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-indigo-500/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                {/* Icon with animated gradient background */}
-                <div className="relative w-16 h-16 mb-8">
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl rotate-0 group-hover:rotate-6 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white">
-                    {step.icon}
-                  </div>
-                  {/* Glow effect */}
-                  <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-40 blur-lg transition-opacity duration-500" />
-                </div>
-
-                {/* Step number with gradient */}
-                <div className="text-7xl lg:text-8xl font-black leading-none mb-4 select-none -mt-2">
-                  <span
-                    className="bg-clip-text text-transparent"
-                    style={{
-                      backgroundImage: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)',
-                    }}
-                  >
-                    {step.num}
-                  </span>
-                </div>
-
-                {/* Title */}
-                <h3 className="font-display text-2xl lg:text-3xl font-bold text-white mb-4 group-hover:text-indigo-300 transition-colors">
-                  {step.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-base text-white/70 leading-relaxed flex-grow">
-                  {step.desc}
-                </p>
-
-                {/* Bottom accent */}
-                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                {/* Corner accents */}
-                <div className="absolute top-4 right-4 w-8 h-8 border-t border-r border-indigo-500/0 group-hover:border-indigo-500/40 rounded-tr-xl transition-all duration-500" />
-                <div className="absolute bottom-4 left-4 w-8 h-8 border-b border-l border-indigo-500/0 group-hover:border-indigo-500/40 rounded-bl-xl transition-all duration-500" />
-              </div>
-            </div>
+            <StepCard
+              key={i}
+              step={step}
+              index={i}
+              isVisible={stepsVisible}
+              reducedMotion={reducedMotion}
+            />
           ))}
         </div>
 
-        {/* Footer badge with animation */}
-        <div className="text-center mt-16">
-          <div className="inline-flex items-center gap-3 glass px-8 py-4 rounded-full hover:bg-white/[0.06] transition-all duration-300 group">
+        {/* Footer badge */}
+        <div ref={footerRef} className="text-center mt-16" style={footerStyle}>
+          <div
+            className="inline-flex items-center gap-4 px-8 py-5 rounded-2xl backdrop-blur-md bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-500/10 border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 group"
+            style={{
+              boxShadow: '0 4px 30px rgba(99, 102, 241, 0.1)',
+            }}
+          >
             <div className="relative">
               <svg
-                className="w-6 h-6 text-indigo-400"
+                className="w-7 h-7 text-indigo-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -159,15 +382,67 @@ export function HowItWorks() {
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <div className="absolute inset-0 bg-indigo-400/20 rounded-full animate-ping" />
+              <div
+                className="absolute inset-0 bg-indigo-400/30 rounded-full"
+                style={{
+                  animation: reducedMotion ? 'none' : 'ping-pulse 2s ease-in-out infinite',
+                }}
+              />
             </div>
-            <span className="text-white/80 font-medium">
+            <span className="text-white/70 font-medium">
               Tiempo promedio de entrega:{' '}
               <span className="text-white font-bold">7 a 14 dias habiles</span>
             </span>
           </div>
         </div>
       </div>
+
+      {/* Keyframe animations */}
+      <style jsx global>{`
+        @keyframes gradient-flow {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse-dot {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 4px rgba(99, 102, 241, 0.5);
+          }
+          50% {
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(99, 102, 241, 0.8);
+          }
+        }
+
+        @keyframes ping-pulse {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.5;
+          }
+          50% {
+            transform: scale(1.8);
+            opacity: 0;
+          }
+        }
+
+        @keyframes float-up {
+          0%, 100% {
+            transform: translateY(0) scale(1);
+            opacity: 0;
+          }
+          10% { opacity: 0.6; }
+          50% {
+            transform: translateY(-30px) scale(1.2);
+            opacity: 0.8;
+          }
+          90% { opacity: 0.6; }
+          100% {
+            transform: translateY(-60px) scale(1);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </section>
   )
 }

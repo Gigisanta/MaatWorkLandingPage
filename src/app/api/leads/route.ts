@@ -1,76 +1,120 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { leadSchema } from '@/lib/schemas/lead.schema'
-import { createLead } from '@/lib/services/supabase'
+import { createLead } from '@/lib/services/neon'
 import { sendSlackNotification } from '@/lib/services/slack'
 
 export const runtime = 'nodejs'
+
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+} as const
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+} as const
+
+function getClientIp(request: NextRequest): string | null {
+  const forwarded = request.headers.get('x-forwarded-for')
+  if (forwarded) {
+    return forwarded.split(',')[0].trim()
+  }
+  return request.headers.get('x-real-ip') ?? null
+}
+
+async function parseRequestBody(request: NextRequest): Promise<unknown> {
+  const contentType = request.headers.get('content-type')
+
+  if (!contentType?.includes('application/json')) {
+    throw new Error('INVALID_CONTENT_TYPE')
+  }
+
+  try {
+    return await request.json()
+  } catch {
+    throw new Error('INVALID_JSON')
+  }
+}
 
 export async function POST(request: NextRequest) {
   const requestId = crypto.randomUUID()
 
   try {
-    const body = await request.json()
+    const body = await parseRequestBody(request)
 
-    // Validate with Zod
     const validation = leadSchema.safeParse(body)
 
     if (!validation.success) {
-      return NextResponse.json({
-        success: false,
-        error: 'Validation failed',
-        details: validation.error.flatten().fieldErrors
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Validation failed',
+          details: validation.error.flatten().fieldErrors,
+        },
+        {
+          status: 400,
+          headers: SECURITY_HEADERS,
+        }
+      )
     }
 
     const leadData = validation.data
 
-    // Get additional metadata
-    const ip_address = request.headers.get('x-forwarded-for') ?? null
-    const user_agent = request.headers.get('user-agent') ?? null
-
-    // Save to Supabase
-    const { data: lead, error: dbError } = await createLead({
-      ...leadData,
+    const lead = await createLead({
+      nombre: leadData.nombre,
+      whatsapp: leadData.whatsapp,
+      email: leadData.email || undefined,
+      industria: leadData.industria,
+      problema: leadData.problema,
+      procesos: leadData.procesos,
+      presupuesto: leadData.presupuesto || undefined,
+      timeline: leadData.timeline || undefined,
       source: 'landing_page',
-      ip_address,
-      user_agent
+      ip_address: getClientIp(request),
+      user_agent: request.headers.get('user-agent') ?? undefined,
     })
 
-    if (dbError || !lead) {
-      console.error('Database error:', dbError)
-      return NextResponse.json({
-        success: false,
-        error: 'Error al guardar el lead. Por favor intenta de nuevo.'
-      }, { status: 500 })
+    sendSlackNotification(lead).catch((err: unknown) => {
+      console.error(`[${requestId}] Slack notification failed:`, err)
+    })
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Lead created successfully',
+        data: lead,
+      },
+      {
+        status: 201,
+        headers: SECURITY_HEADERS,
+      }
+    )
+
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'INTERNAL_ERROR'
+
+    if (message === 'INVALID_CONTENT_TYPE' || message === 'INVALID_JSON') {
+      return NextResponse.json(
+        { success: false, error: 'Invalid request body' },
+        { status: 400, headers: SECURITY_HEADERS }
+      )
     }
 
-    // Send Slack notification (non-blocking)
-    sendSlackNotification(lead).catch(err => {
-      console.error('Slack notification failed:', err)
-    })
+    console.error(`[${requestId}] Lead creation error:`, error)
 
-    return NextResponse.json({
-      success: true,
-      message: 'Lead creado exitosamente',
-      data: lead
-    }, { status: 201 })
-
-  } catch (error) {
-    console.error('Lead creation error:', error)
-    return NextResponse.json({
-      success: false,
-      error: 'Error interno del servidor'
-    }, { status: 500 })
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500, headers: SECURITY_HEADERS }
+    )
   }
 }
 
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    }
+    headers: { ...SECURITY_HEADERS, ...CORS_HEADERS },
   })
 }

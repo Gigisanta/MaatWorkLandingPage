@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, Sparkles } from 'lucide-react'
+import { Sparkles, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useScrollReveal } from '@/hooks/use-scroll-reveal'
+import { useStaggerReveal } from '@/hooks/use-scroll-reveal'
+import { FAQAccordion, FAQItem } from '@/components/ui/faq-accordion'
 
-const faqs = [
+const faqs: FAQItem[] = [
   {
     q: '¿Necesito conocimientos técnicos?',
     a: 'No. Vos seguís operando tu negocio como siempre. Nosotros nos encargamos de toda la parte técnica y te entregamos una app lista para usar.',
@@ -30,29 +30,48 @@ const faqs = [
     q: '¿Hay garantía?',
     a: 'Sí. Si en 30 días no estás satisfecho, te devolvemos el dinero. Sin preguntas.',
   },
+  {
+    q: '¿Puedo personalizar el diseño?',
+    a: 'Sí. El diseño se adapta a tu marca. Colores, logo y estilo visual los configuramos juntos.',
+  },
+  {
+    q: '¿Qué pasa si necesito cambios después?',
+    a: 'Incluye ajustes menores. Para cambios grandes, cotizamos por separado pero siempre con precios justos.',
+  },
 ]
 
 export function FaqSection() {
-  const [open, setOpen] = useState<number | null>(0)
-  const { ref, isVisible } = useScrollReveal<HTMLDivElement>({ threshold: 0.1 })
+  const { ref, isVisible, getItemStyle } = useStaggerReveal<HTMLDivElement>({
+    threshold: 0.1,
+    staggerDelay: 80,
+    itemCount: faqs.length,
+  })
 
   return (
-    <section id="faq" className="py-24 px-6 lg:px-12 bg-[#04040e] relative overflow-hidden">
+    <section
+      id="faq"
+      className="py-24 px-6 lg:px-12 bg-[#04040e] relative overflow-hidden"
+    >
       {/* Background accent */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(139,92,246,0.08),transparent)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(139,92,246,0.1),transparent)]" />
 
       {/* Decorative elements */}
       <div className="absolute top-40 left-20 w-40 h-40 bg-violet-500/5 rounded-full blur-3xl" />
       <div className="absolute bottom-40 right-20 w-60 h-60 bg-indigo-500/5 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-purple-500/3 rounded-full blur-3xl" />
 
       <div
         ref={ref}
-        className={`relative max-w-3xl mx-auto transition-all duration-700 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
+        className="relative max-w-3xl mx-auto"
       >
         {/* Header */}
-        <div className="text-center mb-16">
+        <div
+          className={cn(
+            'text-center mb-16 transition-all duration-700',
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          )}
+          style={{ transitionDelay: '0ms' }}
+        >
           <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-violet-400 mb-4">
             <Sparkles className="w-4 h-4" />
             FAQ
@@ -65,61 +84,39 @@ export function FaqSection() {
           </p>
         </div>
 
-        {/* FAQ items */}
-        <div className="space-y-4">
-          {faqs.map((faq, i) => (
+        {/* Premium FAQ Accordion */}
+        <div className="space-y-4 px-2">
+          {faqs.map((faq, index) => (
             <div
-              key={i}
-              className="group relative border border-white/[0.06] rounded-xl overflow-hidden bg-white/[0.01] hover:bg-white/[0.02] transition-all duration-300"
-              style={{
-                transitionDelay: `${i * 50}ms`,
-              }}
+              key={index}
+              style={getItemStyle(index)}
             >
-              {/* Left accent line */}
-              <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-violet-500/50 via-indigo-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <button
-                onClick={() => setOpen(open === i ? null : i)}
-                className={cn(
-                  'w-full flex items-center justify-between gap-4 p-6 text-left transition-colors duration-200',
-                  'hover:bg-white/[0.02]',
-                  open === i ? 'bg-white/[0.03]' : ''
-                )}
-              >
-                <span className="font-semibold text-white group-hover:text-violet-200 transition-colors">{faq.q}</span>
-                <ChevronDown
-                  className={cn(
-                    'w-5 h-5 text-white/40 flex-shrink-0 transition-all duration-300',
-                    open === i && 'rotate-180 text-violet-400'
-                  )}
-                />
-              </button>
-              <div
-                className={cn(
-                  'overflow-hidden transition-all duration-300',
-                  open === i ? 'max-h-48' : 'max-h-0'
-                )}
-              >
-                <div className="px-6 pb-6">
-                  <div className="w-full h-px bg-gradient-to-r from-violet-500/20 via-indigo-500/10 to-transparent mb-4" />
-                  <p className="text-white/60 leading-relaxed">
-                    {faq.a}
-                  </p>
-                </div>
-              </div>
+              <FAQAccordion
+                items={[faq]}
+                defaultOpen={null}
+              />
             </div>
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="text-center mt-12">
+        {/* CTA with decorative elements */}
+        <div
+          className={cn(
+            'text-center mt-16 relative trust-badge transition-all duration-700',
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          )}
+          style={{ transitionDelay: `${faqs.length * 80 + 100}ms` }}
+        >
+          {/* Decorative line */}
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-px h-8 bg-gradient-to-b from-transparent to-violet-500/30" />
+
           <p className="text-white/40 mb-4">¿Tenés otra pregunta?</p>
           <a
             href="#contact"
-            className="group inline-flex items-center gap-2 text-violet-400 hover:text-violet-300 transition-all duration-200 font-medium"
+            className="group inline-flex items-center gap-3 text-violet-400 hover:text-violet-300 transition-all duration-200 font-medium link-arrow"
           >
+            <MessageCircle className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
             Escribinos
-            <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
           </a>
         </div>
       </div>
