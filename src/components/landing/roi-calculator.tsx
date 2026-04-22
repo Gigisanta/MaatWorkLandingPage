@@ -535,7 +535,7 @@ function PremiumSlider({
         <div
           className={`
             absolute top-1/2 -translate-y-1/2 -translate-x-1/2
-            w-11 h-11 rounded-full bg-white shadow-xl
+            w-12 h-12 rounded-full bg-white shadow-xl
             transition-transform duration-150
             flex items-center justify-center
             ${isDragging ? 'scale-125' : isHovered ? 'scale-110' : ''}
@@ -545,7 +545,7 @@ function PremiumSlider({
           {/* Inner glow */}
           <div
             className={`
-              absolute inset-[4px] rounded-full
+              absolute inset-[5px] rounded-full
               bg-gradient-to-br from-primary/80 to-accent-purple/80
               transition-opacity duration-150
               ${isDragging ? 'opacity-100' : isHovered ? 'opacity-70' : 'opacity-0'}

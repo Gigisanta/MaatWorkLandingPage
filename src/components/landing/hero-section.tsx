@@ -401,17 +401,20 @@ function TypingEffect({
 // Shimmer Effect Component
 // ======================
 function ShimmerText({ children, className }: { children: React.ReactNode, className?: string }) {
+  const reducedMotion = useReducedMotion()
   return (
     <span className={`relative inline-block ${className}`}>
       {children}
-      <span
-        className="absolute inset-0 pointer-events-none overflow-hidden"
-        aria-hidden="true"
-      >
+      {!reducedMotion && (
         <span
-          className="absolute top-0 left-0 w-1/3 h-full shimmer-sweep"
-        />
-      </span>
+          className="absolute inset-0 pointer-events-none overflow-hidden"
+          aria-hidden="true"
+        >
+          <span
+            className="absolute top-0 left-0 w-1/3 h-full shimmer-sweep"
+          />
+        </span>
+      )}
     </span>
   )
 }
@@ -599,7 +602,7 @@ export function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center overflow-hidden"
+      className="relative h-screen flex items-center overflow-hidden"
       style={{ backgroundColor: 'var(--color-bg-base)' }}
     >
       {/* 3D Particles Background */}

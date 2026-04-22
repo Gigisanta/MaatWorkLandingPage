@@ -343,13 +343,11 @@ function HeroSceneContent({ mousePosition, targetScroll, prefersReducedMotion }:
 export function Hero3DScene() {
   const mousePosition = useRef({ x: 0, y: 0 })
   const targetScroll = useRef(0)
-  const [isClient, setIsClient] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  const [isClient] = useState(() => typeof window !== 'undefined')
+  const [isMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
-    setIsClient(true)
-    setIsMobile(window.innerWidth < 768)
 
     const handleMouseMove = (e: MouseEvent) => {
       mousePosition.current = {

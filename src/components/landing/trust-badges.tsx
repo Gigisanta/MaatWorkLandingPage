@@ -192,7 +192,7 @@ function PremiumBadgeCard({
           )}
           style={{
             padding: '1px',
-            background: `linear-gradient(135deg, ${badge.accentColor}60 0%, transparent 30%, transparent 70%, ${badge.accentColor}40 100%)`,
+            backgroundImage: `linear-gradient(135deg, ${badge.accentColor}60 0%, transparent 30%, transparent 70%, ${badge.accentColor}40 100%)`,
             backgroundSize: '200% 200%',
             WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
             WebkitMaskComposite: 'xor',

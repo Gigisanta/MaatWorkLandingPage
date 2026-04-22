@@ -13,12 +13,11 @@ export function useDividerVisibility(
   threshold: number = 0.1
 ): UseDividerVisibilityResult {
   const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(reducedMotion)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (reducedMotion) {
-      setIsVisible(true)
       return
     }
 

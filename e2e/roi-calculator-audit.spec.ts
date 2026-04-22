@@ -36,12 +36,8 @@ function addResult(test: string, passed: boolean, issues: string[]) {
 test.describe('ROI Calculator Audit', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the page with ROI calculator
-    await page.goto('/', { waitUntil: 'networkidle' })
-
-    // Scroll to the ROI calculator section
-    const calculatorSection = page.locator('section').filter({ hasText: /Calculadora de ROI|ahorraras/ }).first()
-    await calculatorSection.scrollIntoViewIfNeeded()
-    await page.waitForTimeout(1000) // Wait for animations
+    await page.goto('/', { waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(2000) // Wait for page to load and render
   })
 
   test('1. Calculator inputs are properly labeled', async ({ page }) => {

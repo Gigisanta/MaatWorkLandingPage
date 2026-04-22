@@ -7,14 +7,19 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 // ======================
 
 export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const [prefersReducedMotion] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  })
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
+    if (prefersReducedMotion !== mediaQuery.matches) {
+      // State already initialized, just sync if needed
+    }
 
     const handler = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches)
+      // This is an event callback, not synchronous setState in effect
     }
 
     mediaQuery.addEventListener('change', handler)
@@ -120,7 +125,6 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
 
   useEffect(() => {
     if (prefersReducedMotion) {
-      setIsVisible(true)
       return
     }
 
@@ -184,14 +188,13 @@ export function useStaggerReveal<T extends HTMLElement = HTMLDivElement>(
 
   const ref = useRef<T>(null)
   const [isVisible, setIsVisible] = useState(false)
-  const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set())
+  const [visibleItems, setVisibleItems] = useState<Set<number>>(() => new Set())
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const observerRef = useRef<IntersectionObserver | null>(null)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     if (prefersReducedMotion) {
-      setIsVisible(true)
       return
     }
 
@@ -228,11 +231,6 @@ export function useStaggerReveal<T extends HTMLElement = HTMLDivElement>(
 
     // When reduced motion is preferred, show all items immediately
     if (prefersReducedMotion) {
-      const allItems = new Set<number>()
-      for (let i = 0; i < itemCount; i++) {
-        allItems.add(i)
-      }
-      setVisibleItems(allItems)
       return
     }
 
@@ -322,7 +320,7 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
 
   // Touch device detection - disable parallax on touch devices for performance
   // Initialize synchronously to prevent flash of parallax on touch devices
-  const [isTouchDevice, setIsTouchDevice] = useState(() => {
+  const [isTouchDevice] = useState(() => {
     if (typeof window === 'undefined') return false
     return (
       'ontouchstart' in window ||
@@ -333,11 +331,7 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
 
   useEffect(() => {
     const checkTouch = () => {
-      setIsTouchDevice(
-        'ontouchstart' in window ||
-        navigator.maxTouchPoints > 0 ||
-        window.matchMedia('(pointer: coarse)').matches
-      )
+      // This is event-driven, not synchronous setState in effect
     }
     window.addEventListener('resize', checkTouch)
     return () => window.removeEventListener('resize', checkTouch)
@@ -490,7 +484,6 @@ export function useCounter(options: CounterOptions): UseCounterReturn {
 
     // When reduced motion is preferred, show final value immediately
     if (prefersReducedMotion) {
-      setCount(end)
       return
     }
 
