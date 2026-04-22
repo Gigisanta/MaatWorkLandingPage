@@ -69,7 +69,7 @@ export function Footer() {
                   <a
                     key={label}
                     href="#"
-                    className="group/social relative w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm flex items-center justify-center text-white/40 hover:text-white hover:bg-primary/20 hover:border-primary/40 hover:scale-110 transition-all duration-300 ease-out overflow-hidden"
+                    className="group/social relative w-11 h-11 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm flex items-center justify-center text-white/40 hover:text-white hover:bg-primary/20 hover:border-primary/40 hover:scale-110 transition-all duration-300 ease-out overflow-hidden"
                     aria-label={label}
                   >
                     <span className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/0 via-primary/20 to-violet-500/20 opacity-0 group-hover/social:opacity-100 transition-opacity duration-500" />

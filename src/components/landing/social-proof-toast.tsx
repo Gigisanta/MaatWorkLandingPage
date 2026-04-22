@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '@/hooks'
 
@@ -57,14 +58,14 @@ function ToastAvatar({
   avatarFallback?: string
 }) {
   const [hasError, setHasError] = useState(false)
-  const avatarRef = useRef<HTMLImageElement>(null)
 
   if (avatarUrl && !hasError) {
     return (
-      <img
-        ref={avatarRef}
+      <Image
         src={avatarUrl}
         alt=""
+        width={44}
+        height={44}
         className="w-11 h-11 rounded-full object-cover ring-2 ring-white/20"
         onError={() => setHasError(true)}
       />
@@ -193,10 +194,10 @@ function ToastItem({
           <p className="text-xs text-zinc-500 mt-0.5 truncate">{toast.userLocation}</p>
         </div>
 
-        {/* Dismiss button */}
+        {/* Dismiss button - 44x44px touch target */}
         <button
           className={cn(
-            'flex-shrink-0 w-7 h-7 rounded-full',
+            'flex-shrink-0 min-w-[44px] min-h-[44px] w-7 h-7 rounded-full',
             'flex items-center justify-center',
             'text-zinc-500 hover:text-zinc-300',
             'bg-zinc-800/60 hover:bg-zinc-700/80',
@@ -206,7 +207,7 @@ function ToastItem({
           onClick={handleDismiss}
           aria-label="Dismiss notification"
         >
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
             <path
               d="M1 1L11 11M1 11L11 1"
               stroke="currentColor"
@@ -234,7 +235,7 @@ export function SocialProofToastContainer({
 
   return createPortal(
     <div
-      className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"
+      className="fixed bottom-6 right-6 z-[9990] flex flex-col gap-3 pointer-events-none"
       aria-label="Social proof notifications"
     >
       {toasts.map((toast, index) => (

@@ -267,8 +267,7 @@ function FeatureCard({
           ? `0 0 60px ${feature.glowColor}, inset 0 1px 0 ${feature.accentColor}30, 0 20px 40px rgba(0,0,0,0.3)`
           : 'none',
         transform: isActive ? 'translateY(0) rotateX(0)' : 'translateY(16px) rotateX(5deg)',
-        transition: `all 500ms ${easing}`,
-        transitionDelay: `${index * STAGGER_DELAY}ms`,
+        transition: `all 500ms ${easing} ${index * STAGGER_DELAY}ms`,
         transformStyle: 'preserve-3d',
         perspective: '800px',
       }}
@@ -301,8 +300,7 @@ function FeatureCard({
           className="relative flex-shrink-0"
           style={{
             transform: isActive ? 'scale(1) rotateY(0)' : 'scale(0.8) rotateY(-15deg)',
-            transition: `transform 600ms ${easing}`,
-            transitionDelay: `${index * STAGGER_DELAY + 100}ms`,
+            transition: `transform 600ms ${easing} ${index * STAGGER_DELAY + 100}ms`,
             transformStyle: 'preserve-3d',
           }}
         >
@@ -378,8 +376,7 @@ function FeatureCard({
             className="font-bold text-lg text-white mb-1.5 transition-all duration-500"
             style={{
               transform: isActive ? 'translateX(0)' : 'translateX(-16px)',
-              transition: `transform 500ms ${easing}`,
-              transitionDelay: `${index * STAGGER_DELAY + 50}ms`,
+              transition: `transform 500ms ${easing} ${index * STAGGER_DELAY + 50}ms`,
             }}
           >
             {feature.title}
@@ -389,8 +386,7 @@ function FeatureCard({
             style={{
               opacity: isActive ? 1 : 0.4,
               transform: isActive ? 'translateY(0)' : 'translateY(10px)',
-              transition: `all 500ms ${easing}`,
-              transitionDelay: `${index * STAGGER_DELAY + 100}ms`,
+              transition: `opacity 500ms ${easing} ${index * STAGGER_DELAY + 100}ms, transform 500ms ${easing} ${index * STAGGER_DELAY + 100}ms`,
             }}
           >
             {feature.description}
@@ -472,7 +468,7 @@ function MetricBar({
           }}
         >
           <div
-            className="font-display text-4xl font-black tabular-nums"
+            className="font-display text-2xl lg:text-3xl font-black tabular-nums leading-tight"
             style={{
               color: accentColor,
               textShadow: `0 0 40px ${glowColor}`,
@@ -504,8 +500,7 @@ function MetricBar({
               width: `${beforePercent}%`,
               background: 'linear-gradient(90deg, #ef4444 0%, #f97316 100%)',
               boxShadow: '0 0 20px rgba(239, 68, 68, 0.7)',
-              transition: `width 900ms ${easing}`,
-              transitionDelay: '100ms',
+              transition: `width 900ms ${easing} 100ms`,
             }}
           />
         </div>
@@ -515,8 +510,7 @@ function MetricBar({
             width: isAfter ? `${afterPercent}%` : '0%',
             background: 'linear-gradient(90deg, #22c55e 0%, #10b981 100%)',
             boxShadow: '0 0 20px rgba(34, 197, 94, 0.7)',
-            transition: `width 900ms ${easing}`,
-            transitionDelay: '200ms',
+            transition: `width 900ms ${easing} 200ms`,
           }}
         />
 
@@ -727,8 +721,8 @@ export function TransformationShowcase() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-28 px-6 lg:px-12 overflow-hidden"
-      style={{ backgroundColor: '#030308' }}
+      className="relative section-spacing px-6 lg:px-12 overflow-hidden"
+      style={{ backgroundColor: 'var(--color-bg-base)' }}
     >
       {/* State Transition Flash */}
       {showFlash && (
@@ -1296,7 +1290,7 @@ export function TransformationShowcase() {
             }}
           >
             <button
-              className="relative px-12 py-5 rounded-2xl font-bold text-xl transition-all duration-500 overflow-hidden group"
+              className="relative px-12 py-5 rounded-2xl font-bold text-xl transition-all duration-500 overflow-hidden group cursor-pointer"
               style={{
                 background: `linear-gradient(135deg, ${accentColor} 0%, ${isAfter ? '#16a34a' : '#dc2626'} 100%)`,
                 boxShadow: `0 12px 48px ${glowColor}, 0 0 80px ${glowColor}40`,

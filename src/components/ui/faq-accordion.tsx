@@ -15,6 +15,7 @@ interface FAQAccordionProps {
   allowMultiple?: boolean
   defaultOpen?: number | null
   className?: string
+  idPrefix?: string
 }
 
 interface FAQAccordionItemProps {
@@ -25,6 +26,7 @@ interface FAQAccordionItemProps {
   isFirst: boolean
   isLast: boolean
   index: number
+  idPrefix: string
 }
 
 // Premium easing curves from design tokens
@@ -39,6 +41,7 @@ function FAQAccordionItem({
   isFirst,
   isLast,
   index,
+  idPrefix,
 }: FAQAccordionItemProps) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [contentHeight, setContentHeight] = useState<number>(0)
@@ -120,8 +123,8 @@ function FAQAccordionItem({
           onClick={onToggle}
           onKeyDown={handleKeyDown}
           aria-expanded={isOpen}
-          aria-controls={`faq-answer-${index}`}
-          id={`faq-question-${index}`}
+          aria-controls={`${idPrefix}-answer-${index}`}
+          id={`${idPrefix}-question-${index}`}
           className={cn(
             'w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left',
             'transition-colors duration-200',
@@ -159,9 +162,9 @@ function FAQAccordionItem({
 
         {/* Answer content with clip-path animation */}
         <div
-          id={`faq-answer-${index}`}
+          id={`${idPrefix}-answer-${index}`}
           role="region"
-          aria-labelledby={`faq-question-${index}`}
+          aria-labelledby={`${idPrefix}-question-${index}`}
           className="overflow-hidden"
           style={{
             transitionTimingFunction: transition,
@@ -175,10 +178,10 @@ function FAQAccordionItem({
             <div
               className={cn(
                 'h-px mb-5 bg-gradient-to-r from-violet-500/50 via-indigo-500/25 to-transparent',
-                'transition-all duration-300'
+                'transition-all duration-300',
+                isOpen ? 'delay-100' : 'delay-0'
               )}
               style={{
-                transitionDelay: isOpen ? '100ms' : '0ms',
                 transitionTimingFunction: transition,
                 transform: isOpen ? 'scaleX(1)' : 'scaleX(0.3)',
                 transformOrigin: 'left',
@@ -189,10 +192,10 @@ function FAQAccordionItem({
             <p
               className={cn(
                 'text-white/50 leading-relaxed pl-0.5',
-                'transition-all duration-300'
+                'transition-all duration-300',
+                isOpen ? (prefersReducedMotion ? 'delay-0' : 'delay-150') : 'delay-0'
               )}
               style={{
-                transitionDelay: isOpen ? (prefersReducedMotion ? '0ms' : '150ms') : '0ms',
                 opacity: isOpen ? 1 : 0,
                 transform: prefersReducedMotion
                   ? 'none'
@@ -216,6 +219,7 @@ export function FAQAccordion({
   allowMultiple = false,
   defaultOpen = null,
   className,
+  idPrefix = 'faq',
 }: FAQAccordionProps) {
   const [openItems, setOpenItems] = useState<Set<number>>(
     defaultOpen !== null ? new Set([defaultOpen]) : new Set()
@@ -275,6 +279,7 @@ export function FAQAccordion({
           onFocus={() => handleFocus(index)}
           isFirst={index === 0}
           isLast={index === items.length - 1}
+          idPrefix={idPrefix}
         />
       ))}
     </div>

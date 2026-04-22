@@ -1,0 +1,23 @@
+[      62ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/07q~_next_dist_0zsxq-1._.js:2431
+[      88ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/07q~_next_dist_0zsxq-1._.js:2431
+[    1003ms] Error: Module [project]/Desktop/maatwork-web/src/components/ui/design-system.tsx [app-client] (ecmascript, next/dynamic entry, async loader) was instantiated because it was required from module [project]/Desktop/maatwork-web/src/app/page.tsx [app-client] (ecmascript), but the module factory is not available.
+This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
+To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
+    at instantiateModuleShared (http://localhost:3000/_next/static/chunks/turbopack-Desktop_maatwork-web_01ghgn-._.js:1272:15)
+    at instantiateModule (http://localhost:3000/_next/static/chunks/turbopack-Desktop_maatwork-web_01ghgn-._.js:1621:12)
+    at getOrInstantiateModuleFromParent (http://localhost:3000/_next/static/chunks/turbopack-Desktop_maatwork-web_01ghgn-._.js:1604:12)
+    at DevContext.commonJsRequire [as r] (http://localhost:3000/_next/static/chunks/turbopack-Desktop_maatwork-web_01ghgn-._.js:299:12)
+    at DevContext.asyncLoader [as A] (http://localhost:3000/_next/static/chunks/turbopack-Desktop_maatwork-web_01ghgn-._.js:287:25)
+    at push.DesignSystem.loadableGenerated.modules [as loader] (http://localhost:3000/_next/static/chunks/Desktop_maatwork-web_src_02yyn13._.js:8917:257)
+    at http://localhost:3000/_next/static/chunks/07q~_0g3.o4m._.js:153:58
+    at lazyInitializer (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_061pk76._.js:1231:28)
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:15101:20)
+    at resolveLazy (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:3866:20)
+    at beginWork (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:6665:77)
+    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:965:74)
+    at performUnitOfWork (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:9555:97)
+    at workLoopSync (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:9449:40)
+    at renderRootSync (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:9433:13)
+    at performWorkOnRoot (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:9098:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_react-dom_0g98ylj._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3000/_next/static/chunks/07q~_next_dist_compiled_061pk76._.js:2647:64)

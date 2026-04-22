@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Silence workspace root warning
+  reactStrictMode: true,
+
+  // Turbopack root (fixes multiple lockfiles warning)
   turbopack: {
-    root: '/Users/prueba/Desktop/maatwork-web',
+    root: './',
   },
 
-  // Build optimizations
-  typescript: {
-    ignoreBuildErrors: false,
-  },
+  // Security hardening
+  poweredByHeader: false,
 
   // Image optimization
   images: {
@@ -34,9 +34,11 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', '@react-three/fiber', '@react-three/drei'],
   },
 
-  // Compiler optimizations
+  // Compiler optimizations - remove only console.log, keep errors for debugging
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === 'production'
+      ? { exclude: ['error', 'warn'] }
+      : false,
   },
 
   // Security headers

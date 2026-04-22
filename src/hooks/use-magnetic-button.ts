@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { springInterpolate } from './use-scroll-reveal';
+import { springInterpolate, useReducedMotion } from './use-scroll-reveal';
 
 interface MagneticButtonOptions {
   strength?: number;
@@ -12,7 +12,7 @@ interface MagneticButtonOptions {
 }
 
 interface Ripple {
-  id: number;
+  id: string;
   x: number;
   y: number;
   size: number;
@@ -32,7 +32,9 @@ export function useMagneticButton<T extends HTMLElement = HTMLButtonElement>(
   const ref = useRef<T>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [ripples, setRipples] = useState<Ripple[]>([]);
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   // Detect touch device
   useEffect(() => {
@@ -48,8 +50,8 @@ export function useMagneticButton<T extends HTMLElement = HTMLButtonElement>(
     return () => window.removeEventListener('resize', checkTouch);
   }, []);
 
-  // Skip on touch devices or when disabled
-  const shouldAnimate = !disabled && !isTouchDevice;
+  // Skip on touch devices, when disabled, or when reduced motion is preferred
+  const shouldAnimate = !disabled && !isTouchDevice && !prefersReducedMotion;
 
   useEffect(() => {
     if (!shouldAnimate) return;
@@ -162,10 +164,6 @@ export function useMagneticButton<T extends HTMLElement = HTMLButtonElement>(
     element.addEventListener('mouseenter', handleMouseEnter);
     element.addEventListener('mouseleave', handleMouseLeave);
 
-    if (isHovering) {
-      updateGlow();
-    }
-
     return () => {
       element.removeEventListener('mousemove', handleMouseMove);
       element.removeEventListener('mouseenter', handleMouseEnter);
@@ -173,6 +171,8 @@ export function useMagneticButton<T extends HTMLElement = HTMLButtonElement>(
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);
       }
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current = [];
     };
   }, [
     shouldAnimate,
@@ -196,7 +196,7 @@ export function useMagneticButton<T extends HTMLElement = HTMLButtonElement>(
       const y = 'clientY' in e ? e.clientY - rect.top : rect.height / 2;
 
       const ripple: Ripple = {
-        id: Date.now() + Math.random(),
+        id: crypto.randomUUID(),
         x,
         y,
         size: Math.max(rect.width, rect.height) * 2.5,
@@ -204,9 +204,10 @@ export function useMagneticButton<T extends HTMLElement = HTMLButtonElement>(
 
       setRipples((prev) => [...prev, ripple]);
 
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setRipples((prev) => prev.filter((r) => r.id !== ripple.id));
       }, 700);
+      timeoutsRef.current.push(timeoutId);
     },
     [shouldAnimate],
   );

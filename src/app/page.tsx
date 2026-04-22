@@ -2,16 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useReducedMotion } from '@/hooks';
 import { Navbar } from '@/components/landing/navbar';
 import { HeroSection } from '@/components/landing/hero-section';
 import { AnnouncementBanner } from '@/components/landing/announcement-banner';
 import { Footer } from '@/components/landing/footer';
 import { FloatingWhatsApp } from '@/components/landing/floating-whatsapp';
 import { SectionReveal } from '@/components/ui/section-reveal';
-import { AmbientParticles } from '@/components/ui/ambient-particles';
 import { ScrollProgressIndicator, SectionDivider } from '@/components/landing/section-divider';
 import { SocialProofToastContainer, useSocialProofToast } from '@/components/landing/social-proof-toast';
 import { CursorTrail } from '@/components/ui/cursor-trail';
+import { SectionSkeleton, ContactFormSkeleton, PageSkeleton } from '@/components/ui/skeleton-loaders';
+
+// Dynamic imports for below-fold sections (code splitting for better performance)
+const AmbientParticles = dynamic(
+  () => import('@/components/ui/ambient-particles').then((mod) => mod.AmbientParticles),
+  { ssr: false }
+);
 
 // Dynamic imports for below-fold sections (code splitting for better performance)
 const ProblemSolutionSection = dynamic(
@@ -36,16 +43,6 @@ const FeaturesGrid = dynamic(
   },
 );
 
-const DesignSystem = dynamic(
-  () =>
-    import('@/components/ui/design-system').then(
-      (mod) => mod.DesignSystem,
-    ),
-  {
-    loading: () => null,
-    ssr: true,
-  },
-);
 
 const HowItWorks = dynamic(
   () =>
@@ -87,6 +84,17 @@ const PricingSection = dynamic(
   },
 );
 
+const ROICalculator = dynamic(
+  () =>
+    import('@/components/landing/roi-calculator').then(
+      (mod) => mod.ROICalculator,
+    ),
+  {
+    loading: () => <SectionSkeleton variant="features" />,
+    ssr: true,
+  },
+);
+
 const FaqSection = dynamic(
   () =>
     import('@/components/landing/faq-section').then((mod) => mod.FaqSection),
@@ -116,152 +124,23 @@ const ContactForm = dynamic(
   },
 );
 
-// Premium Skeleton for below-fold sections with shimmer sweep animation
-function SectionSkeleton({ variant }: { variant: string }) {
-  const heights: Record<string, string> = {
-    problem: 'h-[800px]',
-    features: 'h-[600px]',
-    howitworks: 'h-[500px]',
-    testimonials: 'h-[400px]',
-    trust: 'h-[200px]',
-    pricing: 'h-[700px]',
-    faq: 'h-[600px]',
-  };
+const TOAST_NAMES = ['Maria', 'Carlos', 'Ana', 'Diego', 'Sofia', 'Pablo'] as const;
+const TOAST_LOCATIONS = ['Santiago, Chile', 'Madrid, Espana', 'Lima, Peru', 'Bogota, Colombia', 'Montevideo, Uruguay'] as const;
+const TOAST_ACTIONS = ['se unio al programa', 'comenzo su prueba gratis', 'contrato el plan Pro', 'solicito una demo'] as const;
 
-  return (
-    <div
-      className={`${heights[variant] || 'h-[400px]'} bg-[#04040e] flex items-center justify-center relative overflow-hidden`}
-    >
-      {/* Premium skeleton container with breathing animation */}
-      <div className="skeleton-premium-group flex flex-col items-center gap-5">
-        {/* Main title skeleton */}
-        <div className="skeleton-shimmer-line w-40 h-9 rounded-xl" />
-        {/* Subtitle lines with staggered delays */}
-        <div className="skeleton-shimmer-line w-56 h-4 rounded-lg delay-100" />
-        <div className="skeleton-shimmer-line w-72 h-4 rounded-lg delay-200" />
-        {/* Decorative elements */}
-        <div className="skeleton-shimmer-line w-24 h-3 rounded-full delay-300 mt-2 opacity-60" />
-      </div>
-
-      {/* Ambient glow effect */}
-      <div className="skeleton-ambient-glow" />
-    </div>
-  );
-}
-
-// Premium Contact Form Skeleton with card-like structure
-function ContactFormSkeleton() {
-  return (
-    <div className="bg-zinc-900/80 backdrop-blur-xl rounded-3xl p-8 border border-white/10 relative overflow-hidden">
-      {/* Card glow effect */}
-      <div className="skeleton-card-glow" />
-
-      <div className="space-y-5 relative z-10">
-        {/* Label skeleton */}
-        <div className="skeleton-shimmer-line w-20 h-3 rounded-full" />
-        {/* Title skeleton */}
-        <div className="skeleton-shimmer-line w-44 h-8 rounded-xl" />
-        {/* Input skeletons with staggered delays */}
-        <div className="skeleton-shimmer-line w-full h-12 rounded-xl delay-100" />
-        <div className="skeleton-shimmer-line w-full h-12 rounded-xl delay-200" />
-        <div className="skeleton-shimmer-line w-full h-24 rounded-xl delay-300" />
-        {/* Button skeleton */}
-        <div className="skeleton-shimmer-line w-full h-12 rounded-xl delay-400 mt-2" />
-      </div>
-    </div>
-  );
-}
-
-function PageSkeleton() {
-  return (
-    <div className="page-skeleton">
-      {/* Premium branded skeleton loader */}
-      <div className="skeleton-loader-container">
-        {/* Logo placeholder with shimmer */}
-        <div className="skeleton-logo-premium">
-          <div className="skeleton-logo-inner" />
-        </div>
-
-        {/* Animated spinner with gradient */}
-        <div className="skeleton-spinner-premium">
-          <div className="skeleton-spinner-inner" />
-        </div>
-
-        {/* Loading text */}
-        <div className="skeleton-loading-text">
-          <span className="skeleton-dot delay-0" />
-          <span className="skeleton-dot delay-150" />
-          <span className="skeleton-dot delay-300" />
-        </div>
-      </div>
-
-      {/* Full page skeleton preview */}
-      <div className="skeleton-page-preview">
-        {/* Nav skeleton */}
-        <div className="skeleton-nav">
-          <div className="skeleton-nav-logo" />
-          <div className="skeleton-nav-links">
-            <div className="skeleton-shimmer-line w-16 h-4 rounded" />
-            <div className="skeleton-shimmer-line w-16 h-4 rounded" />
-            <div className="skeleton-shimmer-line w-16 h-4 rounded" />
-          </div>
-        </div>
-
-        {/* Hero section skeleton */}
-        <div className="skeleton-hero-premium">
-          <div className="skeleton-hero-content">
-            <div className="skeleton-shimmer-line w-3/4 h-12 rounded-2xl delay-100" />
-            <div className="skeleton-shimmer-line w-full h-6 rounded-xl delay-200 mt-4" />
-            <div className="skeleton-shimmer-line w-2/3 h-6 rounded-xl delay-300 mt-2" />
-            <div className="skeleton-hero-cta delay-400">
-              <div className="skeleton-shimmer-line w-32 h-12 rounded-xl" />
-              <div className="skeleton-shimmer-line w-28 h-12 rounded-xl delay-100" />
-            </div>
-          </div>
-          {/* Hero decorative elements */}
-          <div className="skeleton-hero-decoration">
-            <div className="skeleton-hero-orb skeleton-orb-1" />
-            <div className="skeleton-hero-orb skeleton-orb-2" />
-          </div>
-        </div>
-
-        {/* Card skeletons preview */}
-        <div className="skeleton-cards-premium">
-          <div className="skeleton-card-premium delay-100">
-            <div className="skeleton-card-icon" />
-            <div className="skeleton-shimmer-line w-3/4 h-5 rounded-lg" />
-            <div className="skeleton-shimmer-line w-full h-4 rounded mt-3" />
-            <div className="skeleton-shimmer-line w-2/3 h-4 rounded mt-2" />
-          </div>
-          <div className="skeleton-card-premium delay-200">
-            <div className="skeleton-card-icon" />
-            <div className="skeleton-shimmer-line w-3/4 h-5 rounded-lg" />
-            <div className="skeleton-shimmer-line w-full h-4 rounded mt-3" />
-            <div className="skeleton-shimmer-line w-2/3 h-4 rounded mt-2" />
-          </div>
-          <div className="skeleton-card-premium delay-300">
-            <div className="skeleton-card-icon" />
-            <div className="skeleton-shimmer-line w-3/4 h-5 rounded-lg" />
-            <div className="skeleton-shimmer-line w-full h-4 rounded mt-3" />
-            <div className="skeleton-shimmer-line w-2/3 h-4 rounded mt-2" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+function getRandomToastData() {
+  const name = TOAST_NAMES[Math.floor(Math.random() * TOAST_NAMES.length)];
+  const location = TOAST_LOCATIONS[Math.floor(Math.random() * TOAST_LOCATIONS.length)];
+  const action = TOAST_ACTIONS[Math.floor(Math.random() * TOAST_ACTIONS.length)];
+  return { userName: name, userLocation: location, action, avatarFallback: name[0] };
 }
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    }
-    return true;
-  });
-  const [contentVisible, setContentVisible] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const [isLoading, setIsLoading] = useState(!prefersReducedMotion);
+  const [contentVisible, setContentVisible] = useState(prefersReducedMotion);
   const { toasts, addToast, removeToast, isMounted } = useSocialProofToast();
 
-  // Demo: Show a social proof toast after 5 seconds
   useEffect(() => {
     if (!contentVisible) return;
 
@@ -274,22 +153,8 @@ export default function Home() {
       });
     }, 5000);
 
-    // Show more toasts periodically for demo
     const intervalTimer = setInterval(() => {
-      const names = ['Maria', 'Carlos', 'Ana', 'Diego', 'Sofia', 'Pablo'];
-      const locations = ['Santiago, Chile', 'Madrid, Espana', 'Lima, Peru', 'Bogota, Colombia', 'Montevideo, Uruguay'];
-      const actions = ['se unio al programa', 'comenzo su prueba gratis', 'contrato el plan Pro', 'solicito una demo'];
-
-      const randomName = names[Math.floor(Math.random() * names.length)];
-      const randomLocation = locations[Math.floor(Math.random() * locations.length)];
-      const randomAction = actions[Math.floor(Math.random() * actions.length)];
-
-      addToast({
-        userName: randomName,
-        userLocation: randomLocation,
-        action: randomAction,
-        avatarFallback: randomName[0],
-      });
+      addToast(getRandomToastData());
     }, 12000);
 
     return () => {
@@ -299,17 +164,17 @@ export default function Home() {
   }, [contentVisible, addToast]);
 
   useEffect(() => {
-    // Minimum skeleton display time for visual feedback
+    if (prefersReducedMotion) return;
+
     const minDisplayTimer = setTimeout(() => {
       setIsLoading(false);
-      // Small delay before triggering entrance animations
       requestAnimationFrame(() => {
         setContentVisible(true);
       });
     }, 800);
 
     return () => clearTimeout(minDisplayTimer);
-  }, []);
+  }, [prefersReducedMotion]);
 
   if (isLoading) {
     return <PageSkeleton />;
@@ -364,9 +229,6 @@ export default function Home() {
         <TransformationShowcase />
       </SectionReveal>
 
-      {/* Design System showcase - subtle premium polish */}
-      <DesignSystem />
-
       {/* Section divider: gradient fade */}
       <SectionDivider variant="gradient" position="both" gradientFrom="rgba(139, 92, 246, 0.08)" gradientTo="transparent" />
 
@@ -393,6 +255,11 @@ export default function Home() {
 
       <SectionReveal delay={150}>
         <PricingSection />
+      </SectionReveal>
+
+      {/* ROI Calculator */}
+      <SectionReveal delay={100}>
+        <ROICalculator />
       </SectionReveal>
 
       {/* Section divider: curve */}

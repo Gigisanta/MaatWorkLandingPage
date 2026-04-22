@@ -1,9 +1,12 @@
 'use client'
 
 import { useRef, useState, useEffect, useCallback } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float, RoundedBox, Environment } from '@react-three/drei'
-import * as THREE from 'three'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Float, RoundedBox } from '@react-three/drei'
+import type { Group, Mesh, SpotLight, PointLight, MeshBasicMaterial, MeshStandardMaterial } from 'three'
+import { MathUtils, ACESFilmicToneMapping } from 'three'
+import { useReducedMotion } from '@/hooks'
+import { CanvasErrorBoundary } from './canvas-error-boundary'
 
 // App screen data
 const APP_SCREENS = [
@@ -89,7 +92,7 @@ function EntryAnimation({
   delay?: number
   reducedMotion: boolean
 }) {
-  const groupRef = useRef<THREE.Group>(null)
+  const groupRef = useRef<Group>(null)
   const progress = useRef(0)
   const startTime = useRef<number | null>(null)
 
@@ -128,9 +131,9 @@ function EntryAnimation({
 
 // Dramatic lighting setup
 function DramaticLighting({ isHovered }: { isHovered: boolean }) {
-  const spotLight1Ref = useRef<THREE.SpotLight>(null)
-  const spotLight2Ref = useRef<THREE.SpotLight>(null)
-  const rimLightRef = useRef<THREE.PointLight>(null)
+  const spotLight1Ref = useRef<SpotLight>(null)
+  const spotLight2Ref = useRef<SpotLight>(null)
+  const rimLightRef = useRef<PointLight>(null)
 
   useFrame((state) => {
     const t = state.clock.elapsedTime
@@ -205,8 +208,8 @@ function PhoneModel({
   onScreenChange,
   onHoverChange,
 }: PhoneModelProps) {
-  const groupRef = useRef<THREE.Group>(null)
-  const screenRef = useRef<THREE.Mesh>(null)
+  const groupRef = useRef<Group>(null)
+  const screenRef = useRef<Mesh>(null)
   const targetRotation = useRef({ x: 0, y: 0 })
   const currentRotation = useRef({ x: 0, y: 0 })
   const targetScale = useRef(1)
@@ -242,12 +245,12 @@ function PhoneModel({
     targetRotation.current.y = mousePosition.current.x * 0.3
 
     // Smooth interpolation
-    currentRotation.current.x = THREE.MathUtils.lerp(
+    currentRotation.current.x = MathUtils.lerp(
       currentRotation.current.x,
       targetRotation.current.x,
       0.06
     )
-    currentRotation.current.y = THREE.MathUtils.lerp(
+    currentRotation.current.y = MathUtils.lerp(
       currentRotation.current.y,
       targetRotation.current.y,
       0.06
@@ -255,14 +258,14 @@ function PhoneModel({
 
     // Hover scale effect
     targetScale.current = isHovered.current ? 1.08 : 1
-    currentScale.current = THREE.MathUtils.lerp(currentScale.current, targetScale.current, 0.1)
+    currentScale.current = MathUtils.lerp(currentScale.current, targetScale.current, 0.1)
 
     groupRef.current.rotation.x = currentRotation.current.x
     groupRef.current.rotation.y = currentRotation.current.y
     groupRef.current.scale.setScalar(currentScale.current)
 
     // Screen opacity for transition
-    screenOpacity.current = THREE.MathUtils.lerp(screenOpacity.current, targetScreenOpacity.current, 0.15)
+    screenOpacity.current = MathUtils.lerp(screenOpacity.current, targetScreenOpacity.current, 0.15)
   })
 
   const handlePointerDown = useCallback((e: { nativeEvent: PointerEvent }) => {
@@ -469,21 +472,15 @@ interface PhoneMockupProps {
 
 export function PhoneMockup({ className }: PhoneMockupProps) {
   const [mounted, setMounted] = useState(false)
-  const [reducedMotion, setReducedMotion] = useState(false)
+  const reducedMotion = useReducedMotion()
   const [activeScreen, setActiveScreen] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const mousePosition = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     setMounted(true)
-
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReducedMotion(mediaQuery.matches)
-
-    const handleReducedMotionChange = (e: MediaQueryListEvent) => {
-      setReducedMotion(e.matches)
-    }
-    mediaQuery.addEventListener('change', handleReducedMotionChange)
+    setIsMobile(window.innerWidth < 768)
 
     const handleMouseMove = (e: MouseEvent) => {
       mousePosition.current = {
@@ -496,7 +493,6 @@ export function PhoneMockup({ className }: PhoneMockupProps) {
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
-      mediaQuery.removeEventListener('change', handleReducedMotionChange)
     }
   }, [])
 
@@ -511,8 +507,52 @@ export function PhoneMockup({ className }: PhoneMockupProps) {
   if (!mounted) {
     return (
       <div
-        className={`w-[180px] h-[360px] rounded-3xl bg-gradient-to-br from-[#1a1a2e] to-[#0f0a1e] shadow-2xl animate-pulse ${className || ''}`}
-      />
+        className={`relative w-[180px] h-[360px] rounded-3xl overflow-hidden ${className || ''}`}
+        aria-label="Cargando mockup del telefono..."
+        role="status"
+      >
+        {/* Dark glassmorphic skeleton background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d1a] via-[#1a1a2e] to-[#0f0a1e]" />
+
+        {/* Phone body skeleton */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-[140px] h-[280px] rounded-[32px] bg-gradient-to-br from-[#1a1a2e]/80 to-[#0d0d1a]/80 border border-white/5">
+            {/* Notch skeleton */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-2 rounded-full bg-white/5 animate-pulse" />
+
+            {/* Screen skeleton with shimmer */}
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[120px] h-[230px] rounded-3xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#050510] via-[#0a0a15] to-[#050510]" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer-sweep" />
+              </div>
+              {/* Content placeholders */}
+              <div className="absolute top-4 left-3 right-3 space-y-2">
+                <div className="h-2 w-16 rounded bg-white/10 animate-pulse" />
+                <div className="h-4 w-24 rounded bg-white/15 animate-pulse delay-75" />
+                <div className="flex gap-1.5 mt-3">
+                  <div className="w-10 h-8 rounded-lg bg-primary/20 animate-pulse delay-150" />
+                  <div className="w-10 h-8 rounded-lg bg-primary/15 animate-pulse delay-200" />
+                  <div className="w-10 h-8 rounded-lg bg-primary/10 animate-pulse delay-300" />
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom navigation dots skeleton */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse delay-200" />
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20 animate-pulse delay-300" />
+              <div className="w-1.5 h-1.5 rounded-full bg-white/20 animate-pulse delay-400" />
+            </div>
+          </div>
+        </div>
+
+        {/* Ambient glow effect */}
+        <div className="absolute inset-0 rounded-3xl shadow-2xl" style={{
+          boxShadow: '0 0 40px rgba(99, 102, 241, 0.15), inset 0 0 20px rgba(99, 102, 241, 0.05)'
+        }} />
+      </div>
     )
   }
 
@@ -521,32 +561,33 @@ export function PhoneMockup({ className }: PhoneMockupProps) {
       className={`relative w-[180px] h-[360px] ${className || ''}`}
     >
       {/* 3D Phone Canvas */}
-      <div className="absolute inset-0">
-        <Canvas
-          camera={{ position: [0, 0, 4], fov: 42 }}
-          dpr={[1, 2]}
-          gl={{
-            antialias: true,
-            alpha: true,
-            powerPreference: 'high-performance',
-            toneMapping: THREE.ACESFilmicToneMapping,
-            toneMappingExposure: 1.2,
-          }}
-        >
-          {/* Environment for reflections */}
-          <Environment preset="night" />
+      <CanvasErrorBoundary>
+        <div className="absolute inset-0">
+          <Canvas
+            camera={{ position: [0, 0, 4], fov: 42 }}
+            dpr={isMobile ? [1, 1.5] : [1, 2]}
+            frameloop="demand"
+            gl={{
+              antialias: true,
+              alpha: true,
+              powerPreference: 'high-performance',
+              toneMapping: ACESFilmicToneMapping,
+              toneMappingExposure: 1.2,
+            }}
+          >
+            {/* Lighting instead of heavy HDR Environment */}
+            <DramaticLighting isHovered={isHovered} />
 
-          <DramaticLighting isHovered={isHovered} />
-
-          <PhoneModel
-            mousePosition={mousePosition}
-            reducedMotion={reducedMotion}
-            activeScreen={activeScreen}
-            onScreenChange={handleScreenChange}
-            onHoverChange={handleHoverChange}
-          />
-        </Canvas>
-      </div>
+            <PhoneModel
+              mousePosition={mousePosition}
+              reducedMotion={reducedMotion}
+              activeScreen={activeScreen}
+              onScreenChange={handleScreenChange}
+              onHoverChange={handleHoverChange}
+            />
+          </Canvas>
+        </div>
+      </CanvasErrorBoundary>
 
       {/* Screen content overlay */}
       <ScreenOverlay activeScreen={activeScreen} />

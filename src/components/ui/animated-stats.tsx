@@ -378,8 +378,7 @@ export function AnimatedStats({
             style={{
               opacity: isRevealed ? 1 : 0,
               transform: isRevealed ? 'translateY(0) scale(1)' : 'translateY(24px) scale(0.96)',
-              transition: `opacity 600ms ${PREMIUM_EASE}, transform 600ms ${PREMIUM_EASE}`,
-              transitionDelay: reducedMotion ? '0ms' : `${index * staggerDelay}ms`,
+              transition: `opacity 600ms ${PREMIUM_EASE} ${reducedMotion ? '0ms' : `${index * staggerDelay}ms`}, transform 600ms ${PREMIUM_EASE} ${reducedMotion ? '0ms' : `${index * staggerDelay}ms`}`,
             }}
           >
             <AnimatedStat

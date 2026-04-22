@@ -3,6 +3,28 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 
 // ======================
+// Reduced Motion Hook
+// ======================
+
+export function useReducedMotion(): boolean {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
+
+    const handler = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches)
+    }
+
+    mediaQuery.addEventListener('change', handler)
+    return () => mediaQuery.removeEventListener('change', handler)
+  }, [])
+
+  return prefersReducedMotion
+}
+
+// ======================
 // Type Definitions
 // ======================
 
@@ -94,8 +116,14 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
   const ref = useRef<T>(null)
   const [isVisible, setIsVisible] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setIsVisible(true)
+      return
+    }
+
     const element = ref.current
     if (!element) return
 
@@ -116,16 +144,16 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
     observerRef.current.observe(element)
 
     return () => observerRef.current?.disconnect()
-  }, [threshold, rootMargin, triggerOnce])
+  }, [threshold, rootMargin, triggerOnce, prefersReducedMotion])
 
   // Memoize style to prevent unnecessary re-renders
   const style = useMemo<CSSProperties>(
     () => ({
-      opacity: isVisible ? 1 : 0,
-      transform: isVisible ? 'translateY(0)' : 'translateY(24px)',
-      transition: `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
+      opacity: 1,
+      transform: 'translateY(0)',
+      transition: prefersReducedMotion ? 'none' : `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
     }),
-    [isVisible, duration, delay]
+    [duration, delay, prefersReducedMotion]
   )
 
   return { ref, isVisible, style }
@@ -159,8 +187,14 @@ export function useStaggerReveal<T extends HTMLElement = HTMLDivElement>(
   const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set())
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setIsVisible(true)
+      return
+    }
+
     const element = ref.current
     if (!element) return
 
@@ -182,9 +216,9 @@ export function useStaggerReveal<T extends HTMLElement = HTMLDivElement>(
     observerRef.current.observe(element)
 
     return () => observerRef.current?.disconnect()
-  }, [threshold, rootMargin, triggerOnce])
+  }, [threshold, rootMargin, triggerOnce, prefersReducedMotion])
 
-  // Stagger reveal effect with proper cleanup
+  // Stagger reveal effect with proper cleanup and batched updates
   useEffect(() => {
     if (!isVisible) return
 
@@ -192,38 +226,57 @@ export function useStaggerReveal<T extends HTMLElement = HTMLDivElement>(
     timeoutsRef.current.forEach(clearTimeout)
     timeoutsRef.current = []
 
-    // Reset visible items
-    setVisibleItems(new Set())
-
-    // Stagger the reveal of items
-    for (let i = 0; i < itemCount; i++) {
-      const timeout = setTimeout(() => {
-        setVisibleItems(prev => {
-          const next = new Set(prev)
-          next.add(i)
-          return next
-        })
-      }, i * staggerDelay)
-      timeoutsRef.current.push(timeout)
+    // When reduced motion is preferred, show all items immediately
+    if (prefersReducedMotion) {
+      const allItems = new Set<number>()
+      for (let i = 0; i < itemCount; i++) {
+        allItems.add(i)
+      }
+      setVisibleItems(allItems)
+      return
     }
+
+    // Batch updates to avoid triggering re-renders for each item
+    // Use a single setTimeout chain instead of individual setTimeouts
+    let currentIndex = 0
+
+    const revealNext = () => {
+      if (currentIndex >= itemCount) return
+
+      setVisibleItems(prev => {
+        const next = new Set(prev)
+        next.add(currentIndex)
+        return next
+      })
+
+      currentIndex++
+      if (currentIndex < itemCount) {
+        const timeout = setTimeout(revealNext, staggerDelay)
+        timeoutsRef.current.push(timeout)
+      }
+    }
+
+    // Start revealing after a small initial delay
+    const initialTimeout = setTimeout(revealNext, staggerDelay)
+    timeoutsRef.current.push(initialTimeout)
 
     return () => {
       timeoutsRef.current.forEach(clearTimeout)
       timeoutsRef.current = []
     }
-  }, [isVisible, itemCount, staggerDelay])
+  }, [isVisible, itemCount, staggerDelay, prefersReducedMotion])
 
   // Memoize getItemStyle to avoid creating new functions on each render
   const getItemStyle = useCallback(
     (index: number): CSSProperties => {
       const isItemVisible = visibleItems.has(index)
       return {
-        opacity: isItemVisible ? 1 : 0,
-        transform: isItemVisible ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.95)',
-        transition: 'opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
+        opacity: 1,
+        transform: 'translateY(0) scale(1)',
+        transition: prefersReducedMotion ? 'none' : 'opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
       }
     },
-    [visibleItems]
+    [visibleItems, prefersReducedMotion]
   )
 
   return { ref, isVisible, visibleItems, getItemStyle }
@@ -238,6 +291,7 @@ interface UseParallaxReturn<T extends HTMLElement> {
   offset: number
   isInView: boolean
   style: CSSProperties
+  isTouchDevice: boolean
 }
 
 export function useParallax<T extends HTMLElement = HTMLDivElement>(
@@ -248,11 +302,11 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
 
   const [offset, setOffset] = useState(0)
   const [isInView, setIsInView] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const targetOffset = useRef(0)
   const currentOffset = useRef(0)
   const velocity = useRef(0)
-  const animationFrame = useRef<number | null>(null)
   const rafId = useRef<number | null>(null)
 
   // Memoize direction multiplier
@@ -265,6 +319,29 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
       default: return 1
     }
   }, [direction])
+
+  // Touch device detection - disable parallax on touch devices for performance
+  // Initialize synchronously to prevent flash of parallax on touch devices
+  const [isTouchDevice, setIsTouchDevice] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return (
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0 ||
+      window.matchMedia('(pointer: coarse)').matches
+    )
+  })
+
+  useEffect(() => {
+    const checkTouch = () => {
+      setIsTouchDevice(
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0 ||
+        window.matchMedia('(pointer: coarse)').matches
+      )
+    }
+    window.addEventListener('resize', checkTouch)
+    return () => window.removeEventListener('resize', checkTouch)
+  }, [])
 
   // Viewport visibility check
   useEffect(() => {
@@ -282,7 +359,8 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
 
   // Parallax scroll handler - optimized with throttling
   useEffect(() => {
-    if (!isInView) return
+    // Disable parallax on touch devices or when reduced motion is preferred
+    if (!isInView || prefersReducedMotion || isTouchDevice) return
 
     let lastExecution = 0
     const throttleMs = 16 // ~60fps
@@ -300,7 +378,9 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
       const elementCenter = rect.top + rect.height / 2
       const distanceFromCenter = elementCenter - viewportCenter
 
-      targetOffset.current = distanceFromCenter * speed * directionMultiplier
+      // Clamp offset to prevent extreme values on rapid scroll
+      const rawOffset = distanceFromCenter * speed * directionMultiplier
+      targetOffset.current = Math.max(-200, Math.min(200, rawOffset))
     }
 
     const animate = () => {
@@ -334,23 +414,28 @@ export function useParallax<T extends HTMLElement = HTMLDivElement>(
       window.removeEventListener('scroll', handleScroll)
       if (rafId.current !== null) {
         cancelAnimationFrame(rafId.current)
-      }
-      if (animationFrame.current !== null) {
-        cancelAnimationFrame(animationFrame.current)
+        rafId.current = null
       }
     }
-  }, [isInView, speed, directionMultiplier])
+  }, [isInView, speed, directionMultiplier, prefersReducedMotion, isTouchDevice])
 
   // Memoize style
   const style = useMemo<CSSProperties>(() => {
     const axis = direction === 'left' || direction === 'right' ? 'X' : 'Y'
+    // On touch devices, don't apply transform
+    if (isTouchDevice || prefersReducedMotion) {
+      return {
+        transform: 'none',
+        willChange: 'auto',
+      }
+    }
     return {
       transform: `translate${axis}(${offset}px)`,
       willChange: 'transform',
     }
-  }, [offset, direction])
+  }, [offset, direction, prefersReducedMotion, isTouchDevice])
 
-  return { ref, offset, isInView, style }
+  return { ref, offset, isInView, style, isTouchDevice }
 }
 
 // ======================
@@ -380,6 +465,7 @@ export function useCounter(options: CounterOptions): UseCounterReturn {
   const [isVisible, setIsVisible] = useState(false)
   const hasAnimated = useRef(false)
   const rafId = useRef<number | null>(null)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     const element = ref.current
@@ -401,6 +487,12 @@ export function useCounter(options: CounterOptions): UseCounterReturn {
 
   useEffect(() => {
     if (!isVisible) return
+
+    // When reduced motion is preferred, show final value immediately
+    if (prefersReducedMotion) {
+      setCount(end)
+      return
+    }
 
     const timeout = setTimeout(() => {
       const startTime = performance.now()
@@ -427,7 +519,7 @@ export function useCounter(options: CounterOptions): UseCounterReturn {
         cancelAnimationFrame(rafId.current)
       }
     }
-  }, [isVisible, start, end, duration, delay])
+  }, [isVisible, start, end, duration, delay, prefersReducedMotion])
 
   const formatted = useMemo(
     () => `${prefix}${count.toFixed(decimals)}${suffix}`,
@@ -435,28 +527,6 @@ export function useCounter(options: CounterOptions): UseCounterReturn {
   )
 
   return { ref, count, formatted, isVisible }
-}
-
-// ======================
-// Reduced Motion Hook
-// ======================
-
-export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
-
-    const handler = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches)
-    }
-
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
-
-  return prefersReducedMotion
 }
 
 // ======================
@@ -497,8 +567,12 @@ export function useMagnetic<T extends HTMLElement = HTMLButtonElement>(
 ): UseMagneticReturn<T> {
   const ref = useRef<T>(null)
   const [isHovering, setIsHovering] = useState(false)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
+    // Skip magnetic effect when reduced motion is preferred
+    if (prefersReducedMotion) return
+
     const element = ref.current
     if (!element) return
 
@@ -557,7 +631,7 @@ export function useMagnetic<T extends HTMLElement = HTMLButtonElement>(
         cancelAnimationFrame(rafId)
       }
     }
-  }, [strength])
+  }, [strength, prefersReducedMotion])
 
   return { ref, isHovering }
 }

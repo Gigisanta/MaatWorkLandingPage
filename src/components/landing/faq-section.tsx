@@ -2,7 +2,7 @@
 
 import { Sparkles, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useStaggerReveal } from '@/hooks/use-scroll-reveal'
+import { useStaggerReveal } from '@/hooks'
 import { FAQAccordion, FAQItem } from '@/components/ui/faq-accordion'
 
 const faqs: FAQItem[] = [
@@ -50,7 +50,7 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="py-24 px-6 lg:px-12 bg-[#04040e] relative overflow-hidden"
+      className="py-24 px-6 lg:px-12 bg-[var(--color-bg-base)] relative overflow-hidden"
     >
       {/* Background accent */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(139,92,246,0.1),transparent)]" />
@@ -67,10 +67,10 @@ export function FaqSection() {
         {/* Header */}
         <div
           className={cn(
-            'text-center mb-16 transition-all duration-700',
+            'text-center mb-16',
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           )}
-          style={{ transitionDelay: '0ms' }}
+          style={{ transition: 'all 700ms ease 0ms' }}
         >
           <span className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-violet-400 mb-4">
             <Sparkles className="w-4 h-4" />
@@ -94,6 +94,7 @@ export function FaqSection() {
               <FAQAccordion
                 items={[faq]}
                 defaultOpen={null}
+                idPrefix={`faq-${index}`}
               />
             </div>
           ))}
@@ -102,10 +103,10 @@ export function FaqSection() {
         {/* CTA with decorative elements */}
         <div
           className={cn(
-            'text-center mt-16 relative trust-badge transition-all duration-700',
+            'text-center mt-16 relative trust-badge',
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           )}
-          style={{ transitionDelay: `${faqs.length * 80 + 100}ms` }}
+          style={{ transition: `all 700ms ease ${faqs.length * 80 + 100}ms` }}
         >
           {/* Decorative line */}
           <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-px h-8 bg-gradient-to-b from-transparent to-violet-500/30" />
@@ -113,9 +114,9 @@ export function FaqSection() {
           <p className="text-white/40 mb-4">¿Tenés otra pregunta?</p>
           <a
             href="#contact"
-            className="group inline-flex items-center gap-3 text-violet-400 hover:text-violet-300 transition-all duration-200 font-medium link-arrow"
+            className="group inline-flex items-center gap-3 text-violet-400 hover:text-violet-300 transition-all duration-200 font-medium link-arrow cursor-pointer"
           >
-            <MessageCircle className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+            <MessageCircle className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" aria-hidden="true" />
             Escribinos
           </a>
         </div>

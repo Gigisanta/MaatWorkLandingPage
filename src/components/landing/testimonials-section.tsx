@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import Image from 'next/image'
 import { Star, ChevronLeft, ChevronRight, Building2, MapPin, Play, X, Pause, Volume2, VolumeX } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { useScrollReveal, useReducedMotion } from '@/hooks/use-scroll-reveal'
+import { useScrollReveal, useReducedMotion } from '@/hooks'
 
 interface VideoTestimonialData {
   name: string
@@ -278,7 +279,7 @@ function PremiumArrow({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        'group relative w-14 h-14 rounded-full flex items-center justify-center',
+        'group relative w-14 h-14 rounded-full flex items-center justify-center cursor-pointer',
         'transition-all duration-300 ease-out',
         'bg-gradient-to-br from-white/[0.03] to-white/[0.01]',
         'border border-white/[0.08] hover:border-white/[0.15]',
@@ -324,8 +325,9 @@ function PremiumDot({
     <button
       onClick={onClick}
       className={cn(
-        'relative transition-all duration-300 rounded-full',
+        'relative transition-all duration-300 rounded-full cursor-pointer',
         'hover:scale-125 active:scale-110',
+        'min-w-[44px] min-h-[44px] flex items-center justify-center',
         prefersReducedMotion && 'transition-duration-100'
       )}
       aria-label="Ir al testimonio"
@@ -413,7 +415,7 @@ function VideoModal({
       ref={overlayRef}
       onClick={handleOverlayClick}
       className={cn(
-        'fixed inset-0 z-50 flex items-center justify-center',
+        'fixed inset-0 z-[60] flex items-center justify-center',
         'bg-black/90 backdrop-blur-md',
         'transition-all duration-300 ease-out',
         'animate-in fade-in zoom-in-95'
@@ -423,7 +425,7 @@ function VideoModal({
       <button
         onClick={onClose}
         className={cn(
-          'absolute top-4 right-4 z-10 w-12 h-12 rounded-full',
+          'absolute top-4 right-4 z-10 w-12 h-12 rounded-full cursor-pointer',
           'flex items-center justify-center',
           'bg-white/10 hover:bg-white/20',
           'border border-white/20',
@@ -459,7 +461,7 @@ function VideoModal({
         <button
           onClick={handlePlay}
           className={cn(
-            'absolute inset-0 flex items-center justify-center',
+            'absolute inset-0 flex items-center justify-center cursor-pointer',
             'bg-black/20 hover:bg-black/30 transition-all duration-200',
             'group'
           )}
@@ -518,7 +520,7 @@ function VideoModal({
           <div className="flex items-center gap-4">
             <button
               onClick={handlePlay}
-              className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
               aria-label={isPlaying ? 'Pausar' : 'Reproducir'}
             >
               {isPlaying ? (
@@ -530,7 +532,7 @@ function VideoModal({
 
             <button
               onClick={toggleMute}
-              className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
+              className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
               aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
             >
               {isMuted ? (
@@ -631,9 +633,11 @@ function VideoTestimonialCard3D({
             onMouseLeave={handleMouseLeave}
           >
             {/* Thumbnail image */}
-            <img
+            <Image
               src={testimonial.thumbnailUrl}
               alt={`Video testimonio de ${testimonial.name}`}
+              width={800}
+              height={450}
               className={cn(
                 'w-full h-full object-cover transition-opacity duration-500',
                 isHovering && 'opacity-0'
@@ -704,7 +708,7 @@ function VideoTestimonialCard3D({
             {/* Click to play */}
             <button
               onClick={onPlayClick}
-              className="absolute inset-0 w-full h-full"
+              className="absolute inset-0 w-full h-full cursor-pointer"
               aria-label={`Reproducir video de ${testimonial.name}`}
             />
           </div>
@@ -1018,7 +1022,7 @@ export function TestimonialsSection() {
   return (
     <section
       id="testimonials"
-      className="py-24 px-6 lg:px-12 bg-[#04040e] relative overflow-hidden"
+      className="py-24 px-6 lg:px-12 bg-[var(--color-bg-base)] relative overflow-hidden"
     >
       {/* Background effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_100%,rgba(99,102,241,0.12),transparent)]" />
@@ -1062,7 +1066,7 @@ export function TestimonialsSection() {
           <div
             ref={containerRef}
             className={cn(
-              'relative h-[520px] select-none',
+              'relative h-[520px] select-none cursor-pointer',
               !prefersReducedMotion && 'cursor-grab active:cursor-grabbing'
             )}
             onMouseMove={!prefersReducedMotion ? handleMouseMove : undefined}
@@ -1165,9 +1169,11 @@ export function TestimonialsSection() {
 
                       {/* Video thumbnail */}
                       <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
-                        <img
+                        <Image
                           src={testimonial.thumbnailUrl}
                           alt={`Video testimonio de ${testimonial.name}`}
+                          width={800}
+                          height={450}
                           className="w-full h-full object-cover"
                         />
 
@@ -1186,7 +1192,7 @@ export function TestimonialsSection() {
                         {/* Click to play */}
                         <button
                           onClick={() => openVideoModal(testimonial.videoUrl, testimonial.thumbnailUrl)}
-                          className="absolute inset-0 w-full h-full"
+                          className="absolute inset-0 w-full h-full cursor-pointer"
                           aria-label={`Reproducir video de ${testimonial.name}`}
                         />
                       </div>
@@ -1305,6 +1311,7 @@ export function TestimonialsSection() {
                   onClick={() => setActive(index)}
                   className={cn(
                     'w-2.5 h-2.5 rounded-full transition-all duration-300',
+                    'min-w-[44px] min-h-[44px] flex items-center justify-center',
                     index === active
                       ? 'bg-gradient-to-r from-indigo-500 to-purple-500 scale-125'
                       : 'bg-white/20 hover:bg-white/40'
@@ -1332,23 +1339,6 @@ export function TestimonialsSection() {
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
-        }
-
-        .glass-premium {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .glass-premium-strong {
-          background: rgba(255, 255, 255, 0.04);
-          backdrop-filter: blur(30px) saturate(200%);
-          -webkit-backdrop-filter: blur(30px) saturate(200%);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow:
-            0 20px 40px rgba(0, 0, 0, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         .transform-style-preserve-3d {

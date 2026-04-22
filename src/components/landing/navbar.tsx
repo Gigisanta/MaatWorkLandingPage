@@ -16,7 +16,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible] = useState(true)
   const prefersReducedMotion = useReducedMotion()
   const headerRef = useRef<HTMLElement>(null)
 
@@ -24,9 +24,6 @@ export function Navbar() {
     setMobileMenuOpen(false)
   }, [])
 
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,7 +67,7 @@ export function Navbar() {
       <div
         className={`absolute inset-0 transition-all ${prefersReducedMotion ? '' : 'duration-500'} ${
           scrolled
-            ? 'bg-[#03030d]/85 backdrop-blur-2xl border-b border-white/[0.08] shadow-2xl shadow-indigo-950/30'
+            ? 'bg-[var(--color-bg-base)]/90 backdrop-blur-2xl border-b border-white/[0.14] shadow-2xl shadow-indigo-950/40'
             : 'bg-transparent border-b border-transparent'
         }`}
       >
@@ -104,8 +101,7 @@ export function Navbar() {
           {/* Logo with premium hover effect */}
           <a
             href="#"
-            className="font-display text-xl font-black text-white tracking-tight group relative focus-ring-subtle rounded-lg"
-            style={{ transitionDelay: '0ms' }}
+            className="font-display text-xl font-black text-white tracking-tight group relative rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent cursor-pointer"
             onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' }) }}
             aria-label="MaatWork - Volver al inicio"
           >
@@ -126,8 +122,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="relative px-4 py-2 text-sm text-white/50 hover:text-white group focus-ring-subtle rounded-lg"
-                style={{ transitionDelay: `${(i + 1) * 50}ms` }}
+                className="relative px-4 py-2 text-sm text-white/50 hover:text-white group rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 cursor-pointer"
               >
                 <span className="absolute inset-0 rounded-lg bg-white/0 group-hover:bg-white/[0.06] transition-colors duration-300" />
                 <span className="relative block">{link.label}</span>
@@ -156,7 +151,7 @@ export function Navbar() {
 
             {/* Mobile menu button with refined states */}
             <button
-              className={`lg:hidden w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 focus-ring ${
+              className={`lg:hidden w-11 h-11 flex items-center justify-center rounded-xl transition-all duration-300 focus-ring cursor-pointer ${
                 prefersReducedMotion ? '' : 'duration-300'
               } ${
                 mobileMenuOpen
@@ -181,6 +176,7 @@ export function Navbar() {
           className={`lg:hidden overflow-hidden transition-all ${prefersReducedMotion ? '' : 'duration-300'} ${
             mobileMenuOpen ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'
           }`}
+          style={{ zIndex: 55 }}
         >
           <div className="pb-4 space-y-1">
             {navLinks.map((link, i) => (
@@ -188,8 +184,8 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="block px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200 focus-ring-subtle"
-                style={{ transitionDelay: `${i * 50}ms` }}
+                className="block px-4 py-3.5 min-h-11 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg focus-ring-subtle cursor-pointer"
+                style={{ transition: `all 200ms ease ${i * 50}ms` }}
               >
                 <span className="flex items-center gap-3">
                   <span className="w-1 h-1 rounded-full bg-indigo-500/50" />

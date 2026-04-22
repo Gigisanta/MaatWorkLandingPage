@@ -3,8 +3,10 @@
 import { useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Float, Sphere, MeshDistortMaterial, Torus, Icosahedron, TorusKnot } from '@react-three/drei'
-import * as THREE from 'three'
+import type { MeshStandardMaterial, MeshBasicMaterial, InstancedMesh, PointLight, Group, Mesh } from 'three'
+import { Object3D, Color, BackSide } from 'three'
 import { useReducedMotion } from '@/hooks'
+import { CanvasErrorBoundary } from './canvas-error-boundary'
 
 // Lerp utility
 function lerp(start: number, end: number, factor: number): number {
@@ -38,21 +40,27 @@ interface ParticleData {
   trailPhase: number
 }
 
-function Particles({ count = 120, mousePosition, scrollOffset, reducedMotion }: {
+function Particles({ count = 80, mousePosition, scrollOffset, reducedMotion }: {
   count?: number
   mousePosition: React.MutableRefObject<{ x: number; y: number }>
   scrollOffset: React.MutableRefObject<{ x: number; y: number }>
   reducedMotion: boolean
 }) {
-  const mesh = useRef<THREE.InstancedMesh>(null)
-  const glowMesh = useRef<THREE.InstancedMesh>(null)
-  const trailMesh = useRef<THREE.InstancedMesh>(null)
-  const lightRef = useRef<THREE.PointLight>(null)
-  const groupRef = useRef<THREE.Group>(null)
+  const mesh = useRef<InstancedMesh>(null)
+  const glowMesh = useRef<InstancedMesh>(null)
+  const trailMesh = useRef<InstancedMesh>(null)
+  const lightRef = useRef<PointLight>(null)
+  const groupRef = useRef<Group>(null)
   const mouseVelocity = useRef({ x: 0, y: 0 })
   const smoothMouse = useRef({ x: 0, y: 0 })
+  const prevPositions = useRef<Float32Array | null>(null)
 
-  const dummy = useMemo(() => new THREE.Object3D(), [])
+  const dummy = useMemo(() => new Object3D(), [])
+
+  // Initialize position buffer once based on count
+  if (!prevPositions.current || prevPositions.current.length !== count * 3) {
+    prevPositions.current = new Float32Array(count * 3)
+  }
 
   const particles = useMemo<ParticleData[]>(() => {
     const temp: ParticleData[] = []
@@ -71,9 +79,6 @@ function Particles({ count = 120, mousePosition, scrollOffset, reducedMotion }: 
     }
     return temp
   }, [count])
-
-  // Store previous positions for trails
-  const prevPositions = useRef<Float32Array>(new Float32Array(count * 3))
 
   useFrame((state, delta) => {
     if (!mesh.current || !glowMesh.current || !trailMesh.current) return
@@ -143,13 +148,13 @@ function Particles({ count = 120, mousePosition, scrollOffset, reducedMotion }: 
       dummy.updateMatrix()
       glowMesh.current!.setMatrixAt(i, dummy.matrix)
 
-      // Trail effect - elongated in direction of movement
-      if (!reducedMotion && i % 2 === 0) {
+      // Trail effect - only calculate for every 3rd particle to reduce work
+      if (!reducedMotion && i % 3 === 0 && trailMesh.current) {
         const trailLength = scale * 1.5
         const prevIdx = i * 3
-        const prevX = prevPositions.current[prevIdx] ?? posX
-        const prevY = prevPositions.current[prevIdx + 1] ?? posY
-        const prevZ = prevPositions.current[prevIdx + 2] ?? posZ
+        const prevX = prevPositions.current?.[prevIdx] ?? posX
+        const prevY = prevPositions.current?.[prevIdx + 1] ?? posY
+        const prevZ = prevPositions.current?.[prevIdx + 2] ?? posZ
 
         // Direction of movement
         const dx = posX - prevX
@@ -162,12 +167,14 @@ function Particles({ count = 120, mousePosition, scrollOffset, reducedMotion }: 
         // Align trail with movement direction
         dummy.rotation.set(dy * 2, dx * 2, dz * 2)
         dummy.updateMatrix()
-        trailMesh.current!.setMatrixAt(i, dummy.matrix)
+        trailMesh.current.setMatrixAt(i, dummy.matrix)
 
         // Store current position for next frame
-        prevPositions.current[prevIdx] = posX
-        prevPositions.current[prevIdx + 1] = posY
-        prevPositions.current[prevIdx + 2] = posZ
+        if (prevPositions.current) {
+          prevPositions.current[prevIdx] = posX
+          prevPositions.current[prevIdx + 1] = posY
+          prevPositions.current[prevIdx + 2] = posZ
+        }
       }
     })
     mesh.current.instanceMatrix.needsUpdate = true
@@ -180,7 +187,7 @@ function Particles({ count = 120, mousePosition, scrollOffset, reducedMotion }: 
       lightRef.current.position.y = lerp(lightRef.current.position.y, pointer.y * 5, 0.04)
       // Dynamic color shift on light
       const hue = (Math.sin(time * 0.5) + 1) / 2
-      const color = new THREE.Color().setHSL(0.7 + hue * 0.15, 0.8, 0.6)
+      const color = new Color().setHSL(0.7 + hue * 0.15, 0.8, 0.6)
       lightRef.current.color = color
     }
   })
@@ -236,16 +243,16 @@ function FloatingShapes({ scrollOffset, reducedMotion, isMobile }: {
   isMobile: boolean
 }) {
   // Individual shape refs for scroll-driven parallax
-  const sphere1Ref = useRef<THREE.Group>(null)
-  const sphere2Ref = useRef<THREE.Group>(null)
-  const torus1Ref = useRef<THREE.Group>(null)
-  const torus2Ref = useRef<THREE.Group>(null)
-  const ico1Ref = useRef<THREE.Group>(null)
-  const bgSphereRef = useRef<THREE.Group>(null)
-  const octaRef = useRef<THREE.Group>(null)
-  const torus3Ref = useRef<THREE.Group>(null)
-  const ico3Ref = useRef<THREE.Group>(null)
-  const nebulaRef = useRef<THREE.Group>(null)
+  const sphere1Ref = useRef<Group>(null)
+  const sphere2Ref = useRef<Group>(null)
+  const torus1Ref = useRef<Group>(null)
+  const torus2Ref = useRef<Group>(null)
+  const ico1Ref = useRef<Group>(null)
+  const bgSphereRef = useRef<Group>(null)
+  const octaRef = useRef<Group>(null)
+  const torus3Ref = useRef<Group>(null)
+  const ico3Ref = useRef<Group>(null)
+  const nebulaRef = useRef<Group>(null)
 
   // Initial positions
   const initialPositions = {
@@ -263,7 +270,7 @@ function FloatingShapes({ scrollOffset, reducedMotion, isMobile }: {
   // Nebula particles for background depth
   const nebulaParticles = useMemo(() => {
     const temp: { position: [number, number, number]; scale: number; phase: number }[] = []
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < (isMobile ? 20 : 50); i++) {
       const seed = i * 3.14159
       temp.push({
         position: [
@@ -465,7 +472,7 @@ function FloatingShapes({ scrollOffset, reducedMotion, isMobile }: {
       </group>
 
       {/* Background sphere */}
-      <group ref={bgSphereRef} position={initialPositions.bgSphere}>
+      {!isMobile && <group ref={bgSphereRef} position={initialPositions.bgSphere}>
         <Float
           speed={floatParams?.speed ?? 0.8}
           rotationIntensity={floatParams?.rotationIntensity ?? 0.1}
@@ -484,10 +491,10 @@ function FloatingShapes({ scrollOffset, reducedMotion, isMobile }: {
             />
           </Sphere>
         </Float>
-      </group>
+      </group>}
 
       {/* Additional shapes for depth */}
-      <group ref={octaRef} position={initialPositions.octa}>
+      {!isMobile && <group ref={octaRef} position={initialPositions.octa}>
         <Float
           speed={floatParams?.speed ?? 1.2}
           rotationIntensity={floatParams?.rotationIntensity ?? 0.5}
@@ -506,9 +513,9 @@ function FloatingShapes({ scrollOffset, reducedMotion, isMobile }: {
             />
           </mesh>
         </Float>
-      </group>
+      </group>}
 
-      <group ref={torus3Ref} position={initialPositions.torus3} rotation={[0.3, 0.8, 0.2]}>
+      {!isMobile && <group ref={torus3Ref} position={initialPositions.torus3} rotation={[0.3, 0.8, 0.2]}>
         <Float
           speed={floatParams?.speed ?? 1.9}
           rotationIntensity={floatParams?.rotationIntensity ?? 0.7}
@@ -526,9 +533,9 @@ function FloatingShapes({ scrollOffset, reducedMotion, isMobile }: {
             />
           </Torus>
         </Float>
-      </group>
+      </group>}
 
-      <group ref={ico3Ref} position={initialPositions.ico3}>
+      {!isMobile && <group ref={ico3Ref} position={initialPositions.ico3}>
         <Float
           speed={floatParams?.speed ?? 1.4}
           rotationIntensity={floatParams?.rotationIntensity ?? 0.3}
@@ -546,7 +553,7 @@ function FloatingShapes({ scrollOffset, reducedMotion, isMobile }: {
             />
           </Icosahedron>
         </Float>
-      </group>
+      </group>}
     </>
   )
 }
@@ -556,12 +563,12 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
   scrollOffset: React.MutableRefObject<{ x: number; y: number }>
   reducedMotion: boolean
 }) {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const wireframeRef = useRef<THREE.Mesh>(null)
-  const glowRef = useRef<THREE.Mesh>(null)
-  const groupRef = useRef<THREE.Group>(null)
-  const lightRef = useRef<THREE.PointLight>(null)
-  const light2Ref = useRef<THREE.PointLight>(null)
+  const meshRef = useRef<Mesh>(null)
+  const wireframeRef = useRef<Mesh>(null)
+  const glowRef = useRef<Mesh>(null)
+  const groupRef = useRef<Group>(null)
+  const lightRef = useRef<PointLight>(null)
+  const light2Ref = useRef<PointLight>(null)
 
   useFrame((state, delta) => {
     const time = state.clock.getElapsedTime()
@@ -592,7 +599,7 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
       meshRef.current.scale.set(pulse, pulse, pulse)
 
       // Dynamic material color shift
-      const mat = meshRef.current.material as THREE.MeshStandardMaterial
+      const mat = meshRef.current.material as MeshStandardMaterial
       const hue = (Math.sin(time * 0.3) + 1) / 2
       mat.emissive.setHSL(0.7 + hue * 0.08, 0.8, 0.4)
     }
@@ -607,7 +614,7 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
       wireframeRef.current.scale.set(wirePulse, wirePulse, wirePulse)
 
       // Opacity pulse with color variation
-      const mat = wireframeRef.current.material as THREE.MeshBasicMaterial
+      const mat = wireframeRef.current.material as MeshBasicMaterial
       mat.opacity = 0.15 + Math.sin(time * 2) * 0.08
       const hue = (Math.sin(time * 0.5) + 1) / 2
       mat.color.setHSL(0.75 + hue * 0.1, 0.9, 0.7)
@@ -623,7 +630,7 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
       glowRef.current.scale.set(glowPulse, glowPulse, glowPulse)
 
       // Glow color shift
-      const mat = glowRef.current.material as THREE.MeshBasicMaterial
+      const mat = glowRef.current.material as MeshBasicMaterial
       const hue = (Math.sin(time * 0.4 + 1) + 1) / 2
       mat.color.setHSL(0.72 + hue * 0.12, 0.85, 0.6)
     }
@@ -652,7 +659,7 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
       <pointLight ref={light2Ref} color="#22c55e" intensity={0.6} distance={8} decay={2} />
 
       {/* Main TorusKnot - solid */}
-      <TorusKnot ref={meshRef} args={[0.9, 0.25, 100, 24]} position={[0, 0, 0]}>
+      <TorusKnot ref={meshRef} args={[0.9, 0.25, 64, 16]} position={[0, 0, 0]}>
         <meshStandardMaterial
           color="#6366f1"
           emissive="#6366f1"
@@ -665,7 +672,7 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
       </TorusKnot>
 
       {/* Wireframe overlay for complexity */}
-      <TorusKnot ref={wireframeRef} args={[0.92, 0.26, 64, 12]} position={[0, 0, 0]}>
+      <TorusKnot ref={wireframeRef} args={[0.92, 0.26, 48, 8]} position={[0, 0, 0]}>
         <meshBasicMaterial
           color="#8b5cf6"
           wireframe
@@ -680,7 +687,7 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
           color="#8b5cf6"
           transparent
           opacity={0.15}
-          side={THREE.BackSide}
+          side={BackSide}
         />
       </TorusKnot>
 
@@ -691,7 +698,7 @@ function CentralHeroMesh({ mousePosition, scrollOffset, reducedMotion }: {
           color="#6366f1"
           transparent
           opacity={0.04}
-          side={THREE.BackSide}
+          side={BackSide}
         />
       </mesh>
     </group>
@@ -753,8 +760,8 @@ export function ParticlesCanvas() {
 
   // Mobile detection with SSR safety
   const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false
-  const particleCount = isMobile ? 40 : 100
-  const dprValue: [number, number] = isMobile ? [1, 1] : [1, 1.5]
+  const particleCount = isMobile ? 25 : 50
+  const dprValue: [number, number] = isMobile ? [1, 1] : [1, 1]
 
   useEffect(() => {
     setMounted(true)
@@ -846,28 +853,126 @@ export function ParticlesCanvas() {
   }, [])
 
   if (!mounted) {
-    return <div className="absolute inset-0 bg-transparent" />
+    return (
+      <div
+        className="absolute inset-0 overflow-hidden"
+        aria-label="Cargando particulas 3D..."
+        role="status"
+      >
+        {/* Animated gradient background as fallback */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#04040e] via-[#0a0a1a] to-[#04040e]">
+          {/* Animated glow orbs */}
+          <div
+            className="absolute w-64 h-64 rounded-full opacity-20"
+            style={{
+              top: '20%',
+              left: '30%',
+              background: 'radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, transparent 70%)',
+              animation: 'particle-fallback-pulse 3s ease-in-out infinite',
+              filter: 'blur(40px)',
+            }}
+          />
+          <div
+            className="absolute w-48 h-48 rounded-full opacity-15"
+            style={{
+              top: '50%',
+              right: '20%',
+              background: 'radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%)',
+              animation: 'particle-fallback-pulse 3s ease-in-out infinite 1s',
+              filter: 'blur(40px)',
+            }}
+          />
+          <div
+            className="absolute w-32 h-32 rounded-full opacity-10"
+            style={{
+              bottom: '30%',
+              left: '40%',
+              background: 'radial-gradient(circle, rgba(34, 197, 94, 0.5) 0%, transparent 70%)',
+              animation: 'particle-fallback-pulse 3s ease-in-out infinite 2s',
+              filter: 'blur(40px)',
+            }}
+          />
+        </div>
+
+        {/* Floating particle hints */}
+        <div className="absolute inset-0">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse"
+              style={{
+                top: `${20 + (i * 10) % 60}%`,
+                left: `${15 + (i * 13) % 70}%`,
+                animationDelay: `${i * 0.2}s`,
+                animationDuration: `${2 + (i % 3)}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    )
   }
 
-  // Don't render canvas when not visible (performance)
+  // Keep gradient visible when not visible (performance) to prevent flash
   if (!isVisible) {
-    return <div ref={containerRef} className="absolute inset-0 -z-10 bg-transparent" />
+    return (
+      <div
+        ref={containerRef}
+        className="absolute inset-0 -z-10"
+        aria-hidden="true"
+      >
+        {/* Persistent gradient background to prevent transparent flash */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#04040e] via-[#0a0a1a] to-[#04040e]">
+          {/* Static glow orbs - no animation for performance when not visible */}
+          <div
+            className="absolute w-64 h-64 rounded-full opacity-15"
+            style={{
+              top: '20%',
+              left: '30%',
+              background: 'radial-gradient(circle, rgba(99, 102, 241, 0.6) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+            }}
+          />
+          <div
+            className="absolute w-48 h-48 rounded-full opacity-12"
+            style={{
+              top: '50%',
+              right: '20%',
+              background: 'radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+            }}
+          />
+          <div
+            className="absolute w-32 h-32 rounded-full opacity-10"
+            style={{
+              bottom: '30%',
+              left: '40%',
+              background: 'radial-gradient(circle, rgba(34, 197, 94, 0.5) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+            }}
+          />
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div ref={containerRef} className="absolute inset-0 -z-10">
-      <Canvas
-        camera={{ position: [0, 0, 8], fov: 55 }}
-        dpr={dprValue}
-        gl={{
-          antialias: !isMobile,
-          alpha: true,
-          powerPreference: 'high-performance',
-        }}
-        performance={{ min: 0.5 }}
-      >
-        <Scene mousePosition={mousePosition} isMobile={isMobile} particleCount={particleCount} scrollOffset={scrollOffset} reducedMotion={reducedMotion} />
-      </Canvas>
-    </div>
+    <CanvasErrorBoundary>
+      <div ref={containerRef} className="absolute inset-0 -z-10">
+        <Canvas
+          camera={{ position: [0, 0, 8], fov: 55 }}
+          dpr={dprValue}
+          gl={{
+            antialias: false,
+            alpha: true,
+            powerPreference: 'low-power',
+          }}
+          performance={{ min: 0.5 }}
+          frameloop="demand"
+        >
+          <Scene mousePosition={mousePosition} isMobile={isMobile} particleCount={particleCount} scrollOffset={scrollOffset} reducedMotion={reducedMotion} />
+        </Canvas>
+      </div>
+    </CanvasErrorBoundary>
   )
 }

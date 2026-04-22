@@ -112,11 +112,20 @@ function BentoCard({
   const entranceDelay = reducedMotion ? 0 : 100 + index * 80;
   const Icon = feature.icon;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsHovered(!isHovered);
+    }
+  };
+
   return (
     <div
       ref={cardRef}
+      role="button"
+      tabIndex={0}
       className={`
-        relative group
+        relative group cursor-pointer
         ${isFeatured ? 'md:col-span-2 lg:col-span-2 row-span-2' : ''}
       `}
       style={{
@@ -127,6 +136,7 @@ function BentoCard({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onKeyDown={handleKeyDown}
     >
       {/* Ambient glow - follows mouse on featured card */}
       <div
@@ -144,17 +154,12 @@ function BentoCard({
           relative h-full min-h-[280px] rounded-2xl overflow-hidden
           transition-all duration-500 ease-out
           ${isFeatured ? 'p-8 md:p-10' : 'p-6'}
+          ${isHovered ? 'glass-elevated' : 'glass'}
         `}
         style={{
-          background: isHovered
-            ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)'
-            : 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-          border: `1px solid ${isHovered ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)'}`,
           boxShadow: isHovered
-            ? `0 25px 50px -12px rgba(0,0,0,0.5), 0 0 40px ${feature.glowColor}, inset 0 1px 0 rgba(255,255,255,0.1)`
-            : '0 10px 40px -10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)',
+            ? `0 25px 60px -12px rgba(0,0,0,0.6), 0 0 60px ${feature.glowColor}, inset 0 1px 0 rgba(255,255,255,0.15)`
+            : '0 10px 40px -10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)',
           transform: reducedMotion || !isHovered
             ? 'scale(1) rotateX(0) rotateY(0)'
             : `scale(1.02) rotateX(${(mousePos.y - 0.5) * -8}deg) rotateY(${(mousePos.x - 0.5) * 8}deg)`,
@@ -182,7 +187,7 @@ function BentoCard({
 
         {/* Grid pattern overlay */}
         <div
-          className="absolute inset-0 opacity-[0.015] pointer-events-none"
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
             backgroundImage: `linear-gradient(rgba(255,255,255,1px) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1px) 1px, transparent 1px)`,
             backgroundSize: '24px 24px',
@@ -199,11 +204,11 @@ function BentoCard({
               ${isHovered ? 'scale-110 -translate-y-1' : 'scale-100 translate-y-0'}
             `}
             style={{
-              background: `linear-gradient(135deg, ${feature.accentColor}30 0%, ${feature.accentColor}15 100%)`,
+              background: `linear-gradient(135deg, ${feature.accentColor}50 0%, ${feature.accentColor}25 100%)`,
               boxShadow: isHovered
-                ? `0 8px 24px ${feature.glowColor}, inset 0 1px 0 rgba(255,255,255,0.1)`
-                : `0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.05)`,
-              border: `1px solid ${feature.accentColor}30`,
+                ? `0 8px 32px ${feature.glowColor}, inset 0 1px 0 rgba(255,255,255,0.2)`
+                : `0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)`,
+              border: `1px solid ${feature.accentColor}50`,
             }}
           >
             <Icon
@@ -229,7 +234,7 @@ function BentoCard({
               className={`
                 leading-relaxed transition-all duration-300
                 ${isFeatured ? 'text-base md:text-lg' : 'text-sm md:text-base'}
-                ${isHovered ? 'text-white/60' : 'text-white/50'}
+                ${isHovered ? 'text-white/75' : 'text-white/60'}
               `}
             >
               {feature.desc}
@@ -301,14 +306,14 @@ export function FeaturesGrid() {
   }, []);
 
   return (
-    <section className="py-28 px-6 lg:px-12 bg-[#04040e] relative overflow-hidden">
+    <section id="features" aria-labelledby="features-heading" className="section-spacing px-6 lg:px-12 bg-[var(--color-bg-base)] relative overflow-hidden">
       {/* Background layers */}
-      <div className="mesh-gradient opacity-50" />
-      <div className="mesh-gradient-subtle opacity-30" />
+      <div className="mesh-gradient opacity-70" />
+      <div className="mesh-gradient-subtle opacity-50" />
 
       {/* Subtle grid */}
       <div
-        className="absolute inset-0 opacity-[0.015]"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage: `linear-gradient(rgba(255,255,255,1px) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1px) 1px, transparent 1px)`,
           backgroundSize: '48px 48px',
@@ -317,21 +322,28 @@ export function FeaturesGrid() {
 
       {/* Decorative orbs */}
       <div
-        className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full opacity-10 blur-3xl pointer-events-none"
+        className="absolute top-1/3 left-1/4 w-[600px] h-[600px] rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%)',
+          background: `radial-gradient(circle, color-mix(in srgb, var(--color-accent-purple) 60%, transparent) 0%, transparent 70%)`,
           animation: reducedMotion ? 'none' : 'drift 20s ease-in-out infinite',
         }}
       />
       <div
-        className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full opacity-10 blur-3xl pointer-events-none"
+        className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{
-          background: 'radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, transparent 70%)',
+          background: `radial-gradient(circle, color-mix(in srgb, var(--color-accent-pink, #ec4899) 50%, transparent) 0%, transparent 70%)`,
           animation: reducedMotion ? 'none' : 'drift 25s ease-in-out infinite reverse',
         }}
       />
+      <div
+        className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-[0.15] blur-3xl pointer-events-none"
+        style={{
+          background: `radial-gradient(circle, color-mix(in srgb, var(--color-primary) 50%, transparent) 0%, transparent 70%)`,
+          animation: reducedMotion ? 'none' : 'drift 30s ease-in-out infinite',
+        }}
+      />
 
-      <div className="max-w-6xl mx-auto relative" ref={containerRef}>
+      <div className="max-w-7xl mx-auto relative" ref={containerRef}>
         {/* Header */}
         <div
           className="text-center mb-16"
@@ -341,17 +353,17 @@ export function FeaturesGrid() {
             transition: 'opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 0ms, transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 0ms',
           }}
         >
-          <span className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-white/30 mb-5">
-            <span className="w-12 h-px bg-gradient-to-r from-transparent to-white/20" />
+          <span className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-white/50 mb-5">
+            <span className="w-12 h-px bg-gradient-to-r from-transparent to-white/40" />
             Funcionalidades
-            <span className="w-12 h-px bg-gradient-to-l from-transparent to-white/20" />
+            <span className="w-12 h-px bg-gradient-to-l from-transparent to-white/40" />
           </span>
-          <h2 className="font-display text-5xl lg:text-6xl xl:text-7xl font-black text-white mt-4 tracking-tight">
+          <h2 id="features-heading" className="font-display text-5xl lg:text-6xl xl:text-7xl font-black text-white mt-4 tracking-tight">
             Una app que trabaja
             <br />
             <span className="gradient-brand-text">por vos, 24/7</span>
           </h2>
-          <p className="text-white/40 mt-6 max-w-md mx-auto text-lg leading-relaxed">
+          <p className="text-white/55 mt-6 max-w-md mx-auto text-lg leading-relaxed">
             Todo lo que necesitas para automatizar tu negocio y recuperar tiempo libre
           </p>
         </div>
@@ -387,11 +399,11 @@ export function FeaturesGrid() {
           {features.slice(0, 6).map((_, i) => (
             <div
               key={i}
-              className="w-1.5 h-1.5 rounded-full bg-white/20 transition-all duration-500"
+              className="w-1.5 h-1.5 rounded-full bg-white/20"
               style={{
                 backgroundColor: 'rgba(255,255,255,0.3)',
                 transform: isVisible ? 'scale(1)' : 'scale(0.5)',
-                transitionDelay: reducedMotion ? '0ms' : `${900 + i * 80}ms`,
+                transition: `opacity 500ms ease ${reducedMotion ? '0ms' : `${900 + i * 80}ms`}`,
               }}
             />
           ))}

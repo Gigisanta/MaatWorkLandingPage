@@ -243,7 +243,7 @@ function FloatingSelect({ id, name, label, value, onChange, onBlur, fieldState, 
             transition-all duration-300 ease-out
             focus:outline-none
             disabled:opacity-50 disabled:cursor-not-allowed
-            [&>option]:bg-[#04040e] [&>option]:text-white
+            [&>option]:bg-[var(--color-bg-base)] [&>option]:text-white
             ${error ? 'border-red-500/50' : isValid ? 'border-emerald-500/50' : 'border-white/[0.08]'}
             ${isFocused ? 'bg-violet-500/[0.08]' : ''}
           `}
@@ -483,7 +483,7 @@ function ProgressBar({ fields }: { fields: Record<string, { touched: boolean; va
           className="h-full rounded-full transition-all duration-500 ease-out relative"
           style={{
             width: `${percentage}%`,
-            background: 'linear-gradient(90deg, #8b5cf6, #6366f1)',
+            background: 'linear-gradient(90deg, var(--color-accent-purple), var(--color-primary))',
             boxShadow: percentage > 0 ? '0 0 20px rgba(139, 92, 246, 0.5)' : 'none',
           }}
         >
@@ -500,9 +500,10 @@ function ProgressBar({ fields }: { fields: Record<string, { touched: boolean; va
 interface SubmitButtonProps {
   isSubmitting: boolean
   hasError: boolean
+  isMac: boolean
 }
 
-function SubmitButton({ isSubmitting, hasError }: SubmitButtonProps) {
+function SubmitButton({ isSubmitting, hasError, isMac }: SubmitButtonProps) {
   const {
     ref,
     isHovering,
@@ -531,7 +532,8 @@ function SubmitButton({ isSubmitting, hasError }: SubmitButtonProps) {
           group relative w-full overflow-hidden rounded-xl px-8 py-4
           text-base font-semibold text-white
           transition-all duration-300 ease-out
-          disabled:cursor-not-allowed
+          disabled:cursor-not-allowed cursor-pointer
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-base)]
           ${isHovering && !isTouchDevice ? 'z-10' : ''}
         `}
         style={{ willChange: 'transform' }}
@@ -640,7 +642,7 @@ function SubmitButton({ isSubmitting, hasError }: SubmitButtonProps) {
       <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
         <span className="flex items-center gap-1">
           <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[10px]">
-            {typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'}
+            {isMac ? '⌘' : 'Ctrl'}
           </kbd>
           <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 font-mono text-[10px]">↵</kbd>
         </span>
@@ -827,6 +829,8 @@ export function ContactForm() {
     industria: { touched: false, valid: false, error: null },
     problema: { touched: false, valid: false, error: null },
   })
+  const [isMac] = useState(() => /Mac|iPod|iPhone|iPad/.test(navigator.platform))
+
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -912,7 +916,7 @@ export function ContactForm() {
       {/* Subtle background pattern */}
       <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none opacity-[0.03]">
         <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, #6366f1 1px, transparent 1px), radial-gradient(circle at 75% 75%, #8b5cf6 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(circle at 25% 25%, var(--color-primary) 1px, transparent 1px), radial-gradient(circle at 75% 75%, var(--color-accent-purple) 1px, transparent 1px)`,
           backgroundSize: '40px 40px',
         }} />
       </div>
@@ -1001,7 +1005,7 @@ export function ContactForm() {
         </div>
       )}
 
-      <SubmitButton isSubmitting={isSubmitting} hasError={!!error} />
+      <SubmitButton isSubmitting={isSubmitting} hasError={!!error} isMac={isMac} />
     </form>
   )
 }

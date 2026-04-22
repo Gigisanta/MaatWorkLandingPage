@@ -38,11 +38,9 @@ export {
   useStaggerReveal,
   useParallax,
   useCounter,
-  useScrollProgress,
-  useMagnetic,
-  lerp,
-  springInterpolate,
   useReducedMotion,
+  springInterpolate,
+  lerp,
 } from './use-scroll-reveal'
 
 // 3D tilt effects
@@ -56,28 +54,6 @@ export { useMagneticButton } from './use-magnetic-button'
    ====================== */
 
 /**
- * Tracks vertical scroll position.
- * @returns [scrollY] - Current scroll offset in pixels
+ * Visibility hook for dividers with reduced motion support.
  */
-export { useScrollY } from './useScrollY'
-
-/**
- * Tracks mouse position relative to viewport.
- * @returns [x, y] - Mouse coordinates
- */
-export { useMousePosition } from './useMousePosition'
-
-/**
- * Detects when element enters/exits viewport.
- * @returns [ref, isIntersecting] - Ref to attach and intersection state
- */
-export { useIntersectionObserver } from './useIntersectionObserver'
-
-/* ======================
-   UTILITIES
-   ====================== */
-
-/**
- * Interval timer with pause/resume support.
- */
-export { useInterval } from './useInterval'
+export { useDividerVisibility } from './use-divider-visibility'

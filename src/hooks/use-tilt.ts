@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect, RefObject } from 'react'
+import { useReducedMotion } from './use-scroll-reveal'
 
 interface TiltOptions {
   /** Maximum rotation in degrees (default: 15) */
@@ -24,8 +25,8 @@ interface TiltState {
   glareY: number
 }
 
-interface UseTilt3DReturn {
-  ref: RefObject<HTMLElement | null>
+interface UseTilt3DReturn<T extends HTMLElement = HTMLDivElement> {
+  ref: RefObject<T | null>
   style: React.CSSProperties
   isHovering: boolean
   tilt: TiltState
@@ -40,7 +41,7 @@ interface UseTilt3DReturn {
  */
 export function useTilt3D<T extends HTMLElement = HTMLDivElement>(
   options: TiltOptions = {}
-): UseTilt3DReturn {
+): UseTilt3DReturn<T> {
   const {
     maxRotation = 15,
     perspective = 1000,
@@ -51,7 +52,7 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(
   } = options
 
   const ref = useRef<T>(null)
-  const prefersReducedMotion = useRef(false)
+  const prefersReducedMotion = useReducedMotion()
 
   const [tilt, setTilt] = useState<TiltState>({
     rotateX: 0,
@@ -66,6 +67,7 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(
   const target = useRef({ x: 0, y: 0 })
   const current = useRef({ x: 0, y: 0 })
   const velocity = useRef({ x: 0, y: 0 })
+  const animateRef = useRef<() => void>(() => {})
   const rafId = useRef<number | null>(null)
 
   // Keep refs in sync with state
@@ -80,18 +82,6 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(
   useEffect(() => {
     stateRef.current.enableGlare = enableGlare
   }, [enableGlare])
-
-  // Check for reduced motion preference
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    prefersReducedMotion.current = mediaQuery.matches
-
-    const handler = (e: MediaQueryListEvent) => {
-      prefersReducedMotion.current = e.matches
-    }
-    mediaQuery.addEventListener('change', handler)
-    return () => mediaQuery.removeEventListener('change', handler)
-  }, [])
 
   const stopAnimation = useCallback(() => {
     if (rafId.current !== null) {
@@ -152,23 +142,28 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(
       Math.abs(velocity.current.x) > 0.001 ||
       Math.abs(velocity.current.y) > 0.001
     ) {
-      rafId.current = requestAnimationFrame(animate)
+      rafId.current = requestAnimationFrame(animateRef.current)
     }
   }, [stiffness, damping])
 
+  // Update ref after animate is defined
+  useEffect(() => {
+    animateRef.current = animate
+  }, [animate])
+
   const handleMouseEnter = useCallback(() => {
-    if (prefersReducedMotion.current) return
+    if (prefersReducedMotion) return
 
     setIsHovering(true)
     stopAnimation()
-    rafId.current = requestAnimationFrame(animate)
-  }, [stopAnimation, animate])
+    rafId.current = requestAnimationFrame(animateRef.current)
+  }, [stopAnimation, animateRef, prefersReducedMotion])
 
   const handleMouseLeave = useCallback(() => {
     setIsHovering(false)
     stopAnimation()
 
-    if (prefersReducedMotion.current) {
+    if (prefersReducedMotion) {
       resetToCenter()
       return
     }
@@ -201,7 +196,7 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(
     }
 
     rafId.current = requestAnimationFrame(animateBack)
-  }, [stopAnimation, stiffness, damping, resetToCenter])
+  }, [stopAnimation, stiffness, damping, resetToCenter, prefersReducedMotion])
 
   // Attach event listeners with useEffect (not useCallback)
   useEffect(() => {
@@ -222,7 +217,7 @@ export function useTilt3D<T extends HTMLElement = HTMLDivElement>(
 
   const style: React.CSSProperties = {
     transform: `perspective(${perspective}px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg) scale(${isHovering ? scale : 1})`,
-    transition: isHovering ? 'none' : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+    transition: isHovering || prefersReducedMotion ? 'none' : 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
     willChange: 'transform',
     '--tilt-rotate-x': `${tilt.rotateX}deg`,
     '--tilt-rotate-y': `${tilt.rotateY}deg`,

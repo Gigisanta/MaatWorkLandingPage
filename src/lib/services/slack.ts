@@ -1,6 +1,7 @@
 import { leadSchema } from '@/lib/schemas/lead.schema'
 import type { LeadInput } from '@/lib/schemas/lead.schema'
 
+// Industry labels derived from schema enum values
 const INDUSTRY_LABELS: Record<LeadInput['industria'], string> = {
   natatorio: 'Natatorio',
   peluqueria: 'Peluqueria',
@@ -10,9 +11,16 @@ const INDUSTRY_LABELS: Record<LeadInput['industria'], string> = {
   otro: 'Otro'
 }
 
+interface SlackText {
+  type: 'plain_text' | 'mrkdwn'
+  text: string
+}
+
 interface SlackBlock {
-  type: string
-  [key: string]: unknown
+  type: 'header' | 'section' | 'context'
+  text?: SlackText
+  fields?: SlackText[]
+  elements?: SlackText[]
 }
 
 interface SlackPayload {
@@ -75,14 +83,11 @@ function buildSlackMessage(lead: LeadInput): SlackPayload {
   }
 }
 
-export async function sendSlackNotification(
-  lead: unknown
-): Promise<{ success: boolean }> {
+export async function sendSlackNotification(lead: unknown): Promise<void> {
   const webhookUrl = process.env.SLACK_WEBHOOK_URL
 
   if (!webhookUrl) {
-    console.warn('[Slack] Webhook URL not configured')
-    return { success: false }
+    throw new Error('SLACK_WEBHOOK_URL environment variable is not set')
   }
 
   const parsed = leadSchema.safeParse(lead)
@@ -104,6 +109,4 @@ export async function sendSlackNotification(
   if (!response.ok) {
     throw new Error(`Slack webhook error: ${response.status}`)
   }
-
-  return { success: true }
 }

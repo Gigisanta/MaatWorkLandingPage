@@ -22,7 +22,29 @@ const ParticlesCanvas = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="absolute inset-0 bg-gradient-to-br from-[#04040e] via-[#0a0a1a] to-[#04040e]" />
+      <div className="absolute inset-0 overflow-hidden" aria-label="Cargando fondo 3D..." role="status">
+        {/* Animated gradient background as fallback while loading */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#04040e] via-[#0a0a1a] to-[#04040e]">
+          <div className="absolute w-96 h-96 rounded-full opacity-10"
+            style={{
+              top: '10%',
+              left: '20%',
+              background: 'radial-gradient(circle, rgba(99, 102, 241, 0.5) 0%, transparent 70%)',
+              filter: 'blur(60px)',
+              animation: 'particle-fallback-pulse 4s ease-in-out infinite',
+            }}
+          />
+          <div className="absolute w-80 h-80 rounded-full opacity-8"
+            style={{
+              top: '40%',
+              right: '15%',
+              background: 'radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%)',
+              filter: 'blur(60px)',
+              animation: 'particle-fallback-pulse 4s ease-in-out infinite 1.5s',
+            }}
+          />
+        </div>
+      </div>
     )
   }
 )
@@ -32,7 +54,53 @@ const Hero3DScene = dynamic(
   () => import('@/components/three/floating-brand-badge').then((mod) => mod.Hero3DScene),
   {
     ssr: false,
-    loading: () => null
+    loading: () => (
+      <div className="absolute inset-0 pointer-events-none" aria-label="Cargando escena 3D..." role="status">
+        {/* Premium glassmorphic shimmer skeleton */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          {/* Badge skeleton with shimmer effect */}
+          <div className="relative w-[200px] h-[80px]">
+            {/* Background gradient */}
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#1a1a2e]/60 via-[#0f0a1e]/80 to-[#1a1a2e]/60 border border-white/10 backdrop-blur-md"
+              style={{ boxShadow: '0 0 60px rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255,255,255,0.1)' }}
+            />
+
+            {/* Animated shimmer sweep */}
+            <div className="absolute inset-0 rounded-2xl overflow-hidden">
+              <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer-sweep" />
+            </div>
+
+            {/* Glow border animation */}
+            <div className="absolute inset-[-1px] rounded-2xl bg-gradient-to-br from-primary/30 via-primary/10 to-accent-purple/20 opacity-60 animate-pulse" />
+
+            {/* Text placeholders */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+              <div className="w-24 h-4 rounded-lg bg-white/15 animate-pulse" />
+              <div className="w-16 h-2.5 rounded-full bg-primary/30 animate-pulse delay-150" />
+            </div>
+
+            {/* Ambient glow */}
+            <div className="absolute inset-[-30px] rounded-3xl bg-gradient-to-br from-primary/8 via-transparent to-accent-purple/8 blur-2xl opacity-50 animate-pulse delay-300" />
+          </div>
+        </div>
+
+        {/* Floating particle hints around the badge */}
+        <div className="absolute inset-0">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 rounded-full bg-primary/50 animate-pulse"
+              style={{
+                top: `${35 + (i * 8) % 30}%`,
+                left: `${30 + (i * 12) % 40}%`,
+                animationDelay: `${i * 0.15}s`,
+                animationDuration: `${2 + (i % 2)}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    )
   }
 )
 
@@ -42,7 +110,27 @@ const PhoneMockup = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-[180px] h-[360px] rounded-3xl bg-gradient-to-br from-[#1a1a2e] to-[#0f0a1e]" />
+      <div className="relative w-[180px] h-[360px]" aria-label="Cargando mockup..." role="status">
+        {/* Dark glassmorphic skeleton background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0d0d1a] via-[#1a1a2e] to-[#0f0a1e] rounded-3xl" />
+
+        {/* Phone body skeleton */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-[140px] h-[280px] rounded-[32px] bg-gradient-to-br from-[#1a1a2e]/80 to-[#0d0d1a]/80 border border-white/5">
+            {/* Notch skeleton */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-16 h-2 rounded-full bg-white/5 animate-pulse" />
+
+            {/* Screen skeleton with shimmer */}
+            <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[120px] h-[230px] rounded-3xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#050510] via-[#0a0a15] to-[#050510]" />
+              {/* Shimmer effect */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -inset-full bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer-sweep" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     )
   }
 )
@@ -126,40 +214,28 @@ function AnimatedMeshGradient() {
     >
       {/* Layer 1: Deep violet base */}
       <div
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-50"
         style={{
-          background: 'radial-gradient(ellipse 120% 80% at 30% 20%, rgba(99, 102, 241, 0.4) 0%, transparent 50%)',
+          background: 'radial-gradient(ellipse 120% 80% at 30% 20%, rgba(var(--color-primary-rgb), 0.55) 0%, transparent 55%)',
           animation: reducedMotion ? 'none' : 'mesh-drift-1 20s ease-in-out infinite'
         }}
       />
 
       {/* Layer 2: Purple accent */}
       <div
-        className="absolute inset-0 opacity-40"
+        className="absolute inset-0 opacity-45"
         style={{
-          background: 'radial-gradient(ellipse 100% 100% at 70% 60%, rgba(139, 92, 246, 0.35) 0%, transparent 45%)',
+          background: 'radial-gradient(ellipse 100% 100% at 70% 60%, rgba(var(--color-primary-rgb), 0.5) 0%, transparent 50%)',
           animation: reducedMotion ? 'none' : 'mesh-drift-2 25s ease-in-out infinite'
         }}
       />
 
-      {/* Layer 3: Indigo highlight */}
+      {/* Layer 3: Pink tinge for depth */}
       <div
-        className="absolute inset-0 opacity-25"
+        className="absolute inset-0 opacity-20"
         style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% 80%, rgba(99, 102, 241, 0.5) 0%, transparent 50%)',
-          animation: reducedMotion ? 'none' : 'mesh-drift-3 18s ease-in-out infinite'
-        }}
-      />
-
-      {/* Layer 4: Subtle glow following mouse */}
-      <div
-        className="absolute w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%)',
-          left: `${mousePos.x}%`,
-          top: `${mousePos.y}%`,
-          transform: 'translate(-50%, -50%)',
-          transition: reducedMotion ? 'none' : 'left 0.3s ease-out, top 0.3s ease-out'
+          background: 'radial-gradient(ellipse 80% 60% at 80% 80%, rgba(236, 72, 153, 0.35) 0%, transparent 50%)',
+          animation: reducedMotion ? 'none' : 'mesh-drift-1 30s ease-in-out infinite reverse'
         }}
       />
     </div>
@@ -175,14 +251,10 @@ function GeometricShapes() {
   const floatAnimations = ['float-a', 'float-b', 'float-c']
 
   const shapes = [
-    { type: 'triangle', size: 24, x: 10, y: 15, delay: 0, duration: 12, opacity: 0.12 },
-    { type: 'diamond', size: 16, x: 85, y: 20, delay: -3, duration: 15, opacity: 0.1 },
-    { type: 'triangle', size: 18, x: 75, y: 70, delay: -6, duration: 18, opacity: 0.08 },
-    { type: 'diamond', size: 20, x: 15, y: 75, delay: -9, duration: 14, opacity: 0.1 },
-    { type: 'triangle', size: 14, x: 50, y: 10, delay: -4, duration: 16, opacity: 0.06 },
-    { type: 'diamond', size: 12, x: 90, y: 45, delay: -7, duration: 20, opacity: 0.08 },
-    { type: 'triangle', size: 20, x: 5, y: 45, delay: -2, duration: 13, opacity: 0.07 },
-    { type: 'diamond', size: 15, x: 60, y: 85, delay: -5, duration: 17, opacity: 0.09 },
+    { type: 'triangle', size: 28, x: 10, y: 15, delay: 0, duration: 12, opacity: 0.18 },
+    { type: 'diamond', size: 20, x: 85, y: 20, delay: -3, duration: 15, opacity: 0.14 },
+    { type: 'triangle', size: 22, x: 75, y: 70, delay: -6, duration: 18, opacity: 0.12 },
+    { type: 'diamond', size: 24, x: 15, y: 75, delay: -9, duration: 14, opacity: 0.14 },
   ]
 
   return (
@@ -528,7 +600,7 @@ export function HeroSection() {
     <section
       ref={containerRef}
       className="relative min-h-screen flex items-center overflow-hidden"
-      style={{ backgroundColor: '#04040e' }}
+      style={{ backgroundColor: 'var(--color-bg-base)' }}
     >
       {/* 3D Particles Background */}
       <ParticlesCanvas />
@@ -553,11 +625,9 @@ export function HeroSection() {
         <div />
       </ParallaxLayer>
 
-      {/* Enhanced glow rings for depth */}
+      {/* Single enhanced glow ring for depth */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <GlowRing size={500} color="#6366f1" opacity={0.08} pulse={!reducedMotion} />
-        <GlowRing size={400} color="#8b5cf6" opacity={0.06} pulse={!reducedMotion} />
-        <GlowRing size={350} color="#22c55e" opacity={0.03} pulse={false} />
+        <GlowRing size={700} color="#6366f1" opacity={0.18} pulse={!reducedMotion} />
       </div>
 
       {/* Hero gradient background */}
@@ -567,7 +637,7 @@ export function HeroSection() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 80% 60% at 50% 50%, transparent 0%, #04040e 70%)',
+          background: 'radial-gradient(ellipse 80% 60% at 50% 50%, transparent 0%, var(--color-bg-base) 70%)',
         }}
         aria-hidden="true"
       />
@@ -642,15 +712,17 @@ export function HeroSection() {
                 variant="primary-dark"
                 size="lg"
                 glowColor="rgba(99, 102, 241, 0.6)"
+                className="cursor-pointer"
               >
                 Proba gratis 7 dias
-                <svg className="w-4 h-4 icon-hover-rotate" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 icon-hover-rotate" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </MagneticButton>
               <MagneticButton
                 variant="secondary-dark"
                 size="lg"
+                className="cursor-pointer"
               >
                 Sin tarjeta · Sin compromiso
               </MagneticButton>
@@ -692,12 +764,7 @@ export function HeroSection() {
                 animationDelay: '200ms',
                 ...getStyle(7),
                 animation: reducedMotion ? 'none' : undefined,
-                boxShadow: `
-                  0 8px 32px rgba(0, 0, 0, 0.4),
-                  0 2px 8px rgba(0, 0, 0, 0.3),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.08),
-                  0 0 0 1px rgba(99, 102, 241, 0.1)
-                `,
+                boxShadow: 'var(--shadow-card), 0 0 0 1px rgba(var(--color-primary-rgb), 0.2), 0 0 40px rgba(var(--color-primary-rgb), 0.12)',
               }}
             >
               <div className="card-3d-tilt-inner p-4">
@@ -729,13 +796,7 @@ export function HeroSection() {
                 animationDelay: '100ms',
                 ...getStyle(8),
                 animation: reducedMotion ? 'none' : undefined,
-                boxShadow: `
-                  0 12px 48px rgba(0, 0, 0, 0.5),
-                  0 4px 16px rgba(0, 0, 0, 0.4),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                  0 0 0 1px rgba(99, 102, 241, 0.15),
-                  0 0 60px rgba(99, 102, 241, 0.08)
-                `,
+                boxShadow: 'var(--shadow-card), 0 0 0 1px rgba(var(--color-primary-rgb), 0.25), 0 0 80px rgba(var(--color-primary-rgb), 0.18)',
               }}
             >
               <div className="card-3d-tilt-inner p-5">
@@ -771,13 +832,7 @@ export function HeroSection() {
                 animationDelay: '300ms',
                 ...getStyle(9),
                 animation: reducedMotion ? 'none' : undefined,
-                boxShadow: `
-                  0 10px 40px rgba(0, 0, 0, 0.45),
-                  0 3px 12px rgba(0, 0, 0, 0.35),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.09),
-                  0 0 0 1px rgba(99, 102, 241, 0.12),
-                  0 0 50px rgba(99, 102, 241, 0.06)
-                `,
+                boxShadow: 'var(--shadow-card), 0 0 0 1px rgba(var(--color-primary-rgb), 0.22), 0 0 60px rgba(var(--color-primary-rgb), 0.14)',
               }}
             >
               <div className="card-3d-tilt-inner p-4">

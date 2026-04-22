@@ -85,34 +85,34 @@ export function SectionReveal({
 
     const states: Record<AnimationType, { from: CSSProperties; to: CSSProperties }> = {
       'fade-up': {
-        from: { opacity: 0, transform: 'translateY(32px) scale(0.96)', filter: 'blur(4px)' },
-        to: { opacity: 1, transform: 'translateY(0) scale(1)', filter: 'blur(0px)' }
+        from: { opacity: 0, transform: 'translateY(32px) scale(0.96)' },
+        to: { opacity: 1, transform: 'translateY(0) scale(1)' }
       },
       'fade-down': {
-        from: { opacity: 0, transform: 'translateY(-32px) scale(0.96)', filter: 'blur(4px)' },
-        to: { opacity: 1, transform: 'translateY(0) scale(1)', filter: 'blur(0px)' }
+        from: { opacity: 0, transform: 'translateY(-32px) scale(0.96)' },
+        to: { opacity: 1, transform: 'translateY(0) scale(1)' }
       },
       'slide-left': {
-        from: { opacity: 0, transform: 'translateX(48px) scale(0.96)', filter: 'blur(4px)' },
-        to: { opacity: 1, transform: 'translateX(0) scale(1)', filter: 'blur(0px)' }
+        from: { opacity: 0, transform: 'translateX(48px) scale(0.96)' },
+        to: { opacity: 1, transform: 'translateX(0) scale(1)' }
       },
       'slide-right': {
-        from: { opacity: 0, transform: 'translateX(-48px) scale(0.96)', filter: 'blur(4px)' },
-        to: { opacity: 1, transform: 'translateX(0) scale(1)', filter: 'blur(0px)' }
+        from: { opacity: 0, transform: 'translateX(-48px) scale(0.96)' },
+        to: { opacity: 1, transform: 'translateX(0) scale(1)' }
       },
       'scale': {
-        from: { opacity: 0, transform: 'scale(0.92)', filter: 'blur(4px)' },
-        to: { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' }
+        from: { opacity: 0, transform: 'scale(0.92)' },
+        to: { opacity: 1, transform: 'scale(1)' }
       },
       'blur': {
-        from: { opacity: 0, transform: 'translateY(24px)', filter: 'blur(12px)' },
-        to: { opacity: 1, transform: 'translateY(0)', filter: 'blur(0px)' }
+        from: { opacity: 0, transform: 'translateY(24px)' },
+        to: { opacity: 1, transform: 'translateY(0)' }
       },
       'reveal': {
         from: { opacity: 0, clipPath: 'inset(100% 0 0 0)' },
         to: { opacity: 1, clipPath: 'inset(0% 0 0 0)' }
       },
-      'none': { from: { opacity: 1, transform: 'none', filter: 'blur(0px)' }, to: { opacity: 1, transform: 'none', filter: 'blur(0px)' } },
+      'none': { from: { opacity: 1, transform: 'none' }, to: { opacity: 1, transform: 'none' } },
     }
 
     const style = states[animation]
@@ -120,8 +120,8 @@ export function SectionReveal({
 
     return {
       ...target,
-      transition: `opacity ${duration}ms ${PREMIUM_EASING} ${delay}ms, transform ${duration}ms ${PREMIUM_EASING} ${delay}ms, filter ${duration}ms ${PREMIUM_EASING} ${delay}ms`,
-      willChange: 'opacity, transform, filter',
+      transition: `opacity ${duration}ms ${PREMIUM_EASING} ${delay}ms, transform ${duration}ms ${PREMIUM_EASING} ${delay}ms`,
+      willChange: 'opacity, transform',
     }
   }, [animation, delay, isVisible, prefersReducedMotion, duration])
 
@@ -173,33 +173,42 @@ export function StaggerContainer({
   const childrenArray = Array.isArray(children) ? children : [children]
 
   const getItemStyle = (index: number): CSSProperties => {
-    const effectiveDelay = prefersReducedMotion ? 0 : index * staggerDelay
+    // When reduced motion is preferred, show items immediately without animation
+    if (prefersReducedMotion) {
+      return {
+        opacity: 1,
+        transform: 'translateY(0) scale(1)',
+        transition: 'none',
+        willChange: 'auto',
+      }
+    }
+
+    const effectiveDelay = index * staggerDelay
 
     if (animation === 'none' || isVisible) {
       return {
         opacity: 1,
         transform: 'translateY(0) scale(1)',
-        filter: 'blur(0px)',
-        transition: `opacity ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms, transform ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms, filter ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms`,
-        willChange: 'opacity, transform, filter',
+        transition: `opacity ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms, transform ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms`,
+        willChange: 'opacity, transform',
       }
     }
 
     const fromStates: Record<AnimationType, CSSProperties> = {
-      'fade-up': { opacity: 0, transform: 'translateY(28px) scale(0.96)', filter: 'blur(6px)' },
-      'fade-down': { opacity: 0, transform: 'translateY(-28px) scale(0.96)', filter: 'blur(6px)' },
-      'slide-left': { opacity: 0, transform: 'translateX(40px) scale(0.96)', filter: 'blur(6px)' },
-      'slide-right': { opacity: 0, transform: 'translateX(-40px) scale(0.96)', filter: 'blur(6px)' },
-      'scale': { opacity: 0, transform: 'scale(0.88)', filter: 'blur(6px)' },
-      'blur': { opacity: 0, transform: 'translateY(20px)', filter: 'blur(16px)' },
+      'fade-up': { opacity: 0, transform: 'translateY(28px) scale(0.96)' },
+      'fade-down': { opacity: 0, transform: 'translateY(-28px) scale(0.96)' },
+      'slide-left': { opacity: 0, transform: 'translateX(40px) scale(0.96)' },
+      'slide-right': { opacity: 0, transform: 'translateX(-40px) scale(0.96)' },
+      'scale': { opacity: 0, transform: 'scale(0.88)' },
+      'blur': { opacity: 0, transform: 'translateY(20px)' },
       'reveal': { opacity: 0, clipPath: 'inset(100% 0 0 0)' },
-      none: { opacity: 0, transform: 'none', filter: 'blur(0px)' },
+      none: { opacity: 0, transform: 'none' },
     }
 
     return {
       ...fromStates[animation],
-      transition: `opacity ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms, transform ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms, filter ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms`,
-      willChange: 'opacity, transform, filter',
+      transition: `opacity ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms, transform ${duration}ms ${PREMIUM_EASING} ${effectiveDelay}ms`,
+      willChange: 'opacity, transform',
     }
   }
 
@@ -441,14 +450,23 @@ export function TextReveal({
   const parts = splitContent(children)
 
   const getStyle = (index: number): CSSProperties => {
-    const staggerDelay = prefersReducedMotion ? 0 : delay + index * 40
+    // When reduced motion is preferred, show items immediately without animation
+    if (prefersReducedMotion) {
+      return {
+        opacity: 1,
+        transform: 'translateY(0)',
+        transition: 'none',
+        display: 'inline-block',
+      }
+    }
+
+    const staggerDelay = delay + index * 40
 
     if (animation === 'char') {
       return {
         opacity: isVisible ? 1 : 0,
-        filter: isVisible ? 'blur(0px)' : 'blur(3px)',
         transform: isVisible ? 'translateY(0)' : 'translateY(6px)',
-        transition: `opacity 0.45s ease ${staggerDelay}ms, filter 0.45s ease ${staggerDelay}ms, transform 0.45s ease ${staggerDelay}ms`,
+        transition: `opacity 0.45s ease ${staggerDelay}ms, transform 0.45s ease ${staggerDelay}ms`,
         display: 'inline-block',
       }
     }

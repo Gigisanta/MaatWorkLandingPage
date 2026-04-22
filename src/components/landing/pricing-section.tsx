@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Check, Zap, Shield, Headphones, Sparkles, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { MagneticButton } from '@/components/ui/magnetic-button'
-import { useScrollReveal, useCounter, useReducedMotion, lerp } from '@/hooks/use-scroll-reveal'
+import { useScrollReveal, useCounter, useReducedMotion, lerp, springInterpolate } from '@/hooks'
 
 const features = [
   'WhatsApp automático (cuotas, turnos)',
@@ -206,21 +206,6 @@ function useCard3DTilt<T extends HTMLElement>() {
     let velocityX = 0
     let velocityY = 0
 
-    const springInterpolate = (
-      current: number,
-      target: number,
-      velocity: number,
-      stiffness: number = 100,
-      damping: number = 15
-    ): { value: number; velocity: number } => {
-      const spring = stiffness * (target - current)
-      const damper = damping * velocity
-      const acceleration = spring - damper
-      const newVelocity = velocity + acceleration * 0.016
-      const newValue = current + newVelocity * 0.016
-      return { value: newValue, velocity: newVelocity }
-    }
-
     const handleMouseMove = (e: MouseEvent) => {
       if (!ref.current) return
       const rect = ref.current.getBoundingClientRect()
@@ -322,7 +307,9 @@ export function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [glowPhase, setGlowPhase] = useState(0)
-  const [featureVisible, setFeatureVisible] = useState<boolean[]>(features.map(() => false))
+  const [featureVisible, setFeatureVisible] = useState<boolean[]>(() =>
+    prefersReducedMotion ? features.map(() => true) : features.map(() => false)
+  )
 
   const {
     ref: cardRef,
@@ -336,7 +323,7 @@ export function PricingSection() {
   useEffect(() => {
     if (!isVisible || prefersReducedMotion) return
     let animationFrame: number
-    let startTime = performance.now()
+    const startTime = performance.now()
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime
@@ -350,10 +337,7 @@ export function PricingSection() {
 
   // Stagger feature visibility on mount
   useEffect(() => {
-    if (prefersReducedMotion) {
-      setFeatureVisible(features.map(() => true))
-      return
-    }
+    if (prefersReducedMotion) return // Already initialized correctly
     const timers = features.map((_, i) =>
       setTimeout(() => {
         setFeatureVisible(prev => {
@@ -399,18 +383,18 @@ export function PricingSection() {
   const glowOffset = Math.sin(glowPhase * Math.PI * 2) * 20
 
   return (
-    <section className="relative py-24 px-6 lg:px-12 overflow-hidden">
+    <section id="pricing" className="relative section-spacing px-6 lg:px-12 overflow-hidden">
       {/* Dark background */}
-      <div className="absolute inset-0 bg-[#04040e]" />
+      <div className="absolute inset-0 bg-[var(--color-bg-base)]" />
 
       {/* Mesh gradient backgrounds */}
-      <div className="mesh-gradient opacity-50" />
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[128px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[128px] pointer-events-none" />
+      <div className="mesh-gradient opacity-70" />
+      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[128px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[128px] pointer-events-none" />
 
       {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.015]" style={{
-        backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+      <div className="absolute inset-0 opacity-[0.04]" style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)`,
         backgroundSize: '60px 60px',
       }} />
 
@@ -439,7 +423,7 @@ export function PricingSection() {
               onClick={() => setIsAnnual(false)}
               aria-pressed={!isAnnual}
               className={`
-                px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-out
+                px-5 py-2.5 min-h-11 rounded-full text-sm font-medium transition-all duration-300 ease-out cursor-pointer
                 ${!isAnnual
                   ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30'
                   : 'text-zinc-400 hover:text-white'
@@ -452,7 +436,7 @@ export function PricingSection() {
               onClick={() => setIsAnnual(true)}
               aria-pressed={isAnnual}
               className={`
-                px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ease-out flex items-center gap-2
+                px-5 py-2.5 min-h-11 rounded-full text-sm font-medium transition-all duration-300 ease-out flex items-center gap-2 cursor-pointer
                 ${isAnnual
                   ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/30'
                   : 'text-zinc-400 hover:text-white'
@@ -524,11 +508,14 @@ export function PricingSection() {
           />
 
           {/* Glass card with enhanced lift */}
-          <div className={`
-            relative rounded-xl bg-zinc-900/95 backdrop-blur-xl border border-white/10 overflow-hidden
-            transition-all duration-500
-            ${isHovering ? 'shadow-2xl shadow-violet-500/20 scale-[1.02]' : 'shadow-xl shadow-black/20 scale-100'}
-          `}>
+          <div
+            className="relative rounded-xl bg-zinc-900/95 backdrop-blur-xl border border-white/10 overflow-hidden transition-all duration-500"
+            style={{
+              boxShadow: isHovering
+                ? 'var(--shadow-violet-glow), 0 0 80px rgba(139, 92, 246, 0.15)'
+                : '0 20px 50px -10px rgba(0, 0, 0, 0.4)'
+            }}
+          >
             {/* Spotlight gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.08] via-transparent to-transparent pointer-events-none" />
 
@@ -565,13 +552,11 @@ export function PricingSection() {
                     key={i}
                     className="relative flex items-start gap-4 group/feature pl-4 -ml-4
                       border-l-2 border-transparent
-                      hover:border-violet-500/50
-                      transition-all duration-300 ease-out"
+                      hover:border-violet-500/50"
                     style={{
-                      transitionDelay: `${i * 50}ms`,
                       opacity: featureVisible[i] ? 1 : 0,
                       transform: featureVisible[i] ? 'translateX(0)' : 'translateX(-12px)',
-                      transition: `opacity 0.4s ease-out ${i * 60}ms, transform 0.4s ease-out ${i * 60}ms, border-color 0.3s ease-out`,
+                      transition: `opacity 0.4s ease-out ${i * 60}ms, transform 0.4s ease-out ${i * 60}ms, border-color 0.3s ease-out, background-color 0.3s ease-out`,
                     }}
                   >
                     <div className="flex-shrink-0 mt-0.5 group-hover/feature:scale-110 transition-transform duration-300 ease-out">
@@ -587,7 +572,7 @@ export function PricingSection() {
                 <MagneticButton
                   variant="primary-dark"
                   size="lg"
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   glowColor="rgba(139, 92, 246, 0.6)"
                   onClick={handleButtonClick}
                   disabled={isLoading}
@@ -600,7 +585,7 @@ export function PricingSection() {
                   ) : (
                     <>
                       Solicitar cotización
-                      <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </>
@@ -624,10 +609,9 @@ export function PricingSection() {
                 className="group relative flex items-center gap-3 px-5 py-3 rounded-xl
                   bg-white/[0.03] border border-white/[0.06]
                   hover:border-violet-500/30 hover:bg-white/[0.06]
-                  transition-all duration-300 ease-out cursor-default
+                  cursor-default
                   trust-badge"
                 style={{
-                  transitionDelay: `${i * 100}ms`,
                   transform: isVisible ? 'translateY(0)' : 'translateY(16px)',
                   opacity: isVisible ? 1 : 0,
                   transition: `transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${300 + i * 120}ms, opacity 0.6s ease-out ${300 + i * 120}ms, border-color 0.3s ease-out, background-color 0.3s ease-out`,
@@ -743,15 +727,14 @@ export function PricingSection() {
           *,
           *::before,
           *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
+            animation: none !important;
             transition-duration: 0.01ms !important;
           }
 
           .sparkle,
           .animate-ping-slow,
           .animate-sparkle {
-            animation: none;
+            animation: none !important;
           }
         }
       `}</style>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '@/hooks'
 
@@ -127,9 +128,11 @@ export function LogoCarousel({
                     aria-label={logo.alt}
                   />
                 ) : logo.imageUrl ? (
-                  <img
+                  <Image
                     src={logo.imageUrl}
                     alt={logo.alt}
+                    width={64}
+                    height={56}
                     className="max-h-full max-w-full object-contain
                                brightness-0 invert opacity-40
                                group-hover:brightness-100 group-hover:opacity-100

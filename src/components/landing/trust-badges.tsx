@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Shield, Zap, Headphones, Award, Lock, Clock, Users, ThumbsUp, CheckCircle2 } from 'lucide-react'
-import { useScrollReveal, useStaggerReveal, useCounter, useReducedMotion } from '@/hooks/use-scroll-reveal'
+import { useScrollReveal, useStaggerReveal, useCounter, useReducedMotion } from '@/hooks'
+import { useTilt3D } from '@/hooks/use-tilt'
 import { cn } from '@/lib/utils'
 import { LogoCarousel, placeholderLogos } from './logo-carousel'
 
@@ -82,53 +83,6 @@ const stats = [
   { value: 24, suffix: '/7', label: 'Soporte' },
 ]
 
-// Tilt effect hook for premium card interaction
-function useTilt3D<T extends HTMLElement>() {
-  const ref = useRef<T>(null)
-  const prefersReducedMotion = useReducedMotion()
-  const [transform, setTransform] = useState('')
-  const [isHovering, setIsHovering] = useState(false)
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element || prefersReducedMotion) return
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = element.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      const centerX = rect.width / 2
-      const centerY = rect.height / 2
-
-      const rotateX = (y - centerY) / 15
-      const rotateY = (centerX - x) / 15
-
-      setTransform(
-        `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`
-      )
-    }
-
-    const handleMouseLeave = () => {
-      setIsHovering(false)
-      setTransform('perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)')
-    }
-
-    const handleMouseEnter = () => setIsHovering(true)
-
-    element.addEventListener('mousemove', handleMouseMove)
-    element.addEventListener('mouseleave', handleMouseLeave)
-    element.addEventListener('mouseenter', handleMouseEnter)
-
-    return () => {
-      element.removeEventListener('mousemove', handleMouseMove)
-      element.removeEventListener('mouseleave', handleMouseLeave)
-      element.removeEventListener('mouseenter', handleMouseEnter)
-    }
-  }, [prefersReducedMotion])
-
-  return { ref, transform, isHovering }
-}
-
 // Animated stat counter component
 function AnimatedStat({ value, suffix, label, delay, index }: {
   value: number
@@ -149,7 +103,7 @@ function AnimatedStat({ value, suffix, label, delay, index }: {
       ref={ref as React.RefObject<HTMLDivElement>}
       className="text-center"
       style={{
-        transitionDelay: `${index * 100}ms`,
+        transition: `opacity 600ms ease ${index * 100}ms`,
       }}
     >
       <div className="text-3xl lg:text-4xl font-black bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
@@ -172,7 +126,7 @@ function PremiumBadgeCard({
   isVisible: boolean
   reducedMotion: boolean
 }) {
-  const { ref, transform, isHovering } = useTilt3D<HTMLDivElement>()
+  const { ref, isHovering } = useTilt3D<HTMLDivElement>()
   const Icon = badge.icon
 
   const entranceDelay = reducedMotion ? 0 : index * 80
@@ -205,14 +159,13 @@ function PremiumBadgeCard({
       <div
         className="relative h-full rounded-2xl overflow-hidden transition-all duration-500"
         style={{
-          background: isHovering ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.02)',
+          background: isHovering ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(24px) saturate(180%)',
           WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-          border: `1px solid ${isHovering ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.06)'}`,
+          border: `1px solid ${isHovering ? 'rgba(255, 255, 255, 0.20)' : 'rgba(255, 255, 255, 0.10)'}`,
           boxShadow: isHovering
-            ? `0 20px 60px rgba(0, 0, 0, 0.4), 0 0 30px ${badge.glowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.08)`
-            : '0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
-          transform,
+            ? `0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px ${badge.glowColor}, inset 0 1px 0 rgba(255, 255, 255, 0.15)`
+            : '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.07)',
         }}
       >
         {/* Inner top highlight */}
@@ -436,7 +389,7 @@ export function TrustBadges() {
   const { ref: badgesRef, visibleItems } = useStaggerReveal<HTMLDivElement>({
     threshold: 0.1,
     staggerDelay: 60,
-    items: badges.length,
+    itemCount: badges.length,
   })
   const prefersReducedMotion = useReducedMotion()
 
@@ -450,14 +403,14 @@ export function TrustBadges() {
 
       {/* Large decorative orbs */}
       <div
-        className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full opacity-10 blur-3xl pointer-events-none"
+        className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{
           background: 'radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%)',
           animation: orbAnimation,
         }}
       />
       <div
-        className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full opacity-10 blur-3xl pointer-events-none"
+        className="absolute bottom-1/4 right-1/4 w-72 h-72 opacity-[0.18] rounded-full blur-3xl pointer-events-none"
         style={{
           background: 'radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, transparent 70%)',
           animation: prefersReducedMotion ? 'none' : 'drift 25s ease-in-out infinite reverse',
@@ -466,7 +419,7 @@ export function TrustBadges() {
 
       {/* Grid overlay */}
       <div
-        className="absolute inset-0 opacity-[0.015]"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage: `
             linear-gradient(rgba(255, 255, 255, 1px) 1px, transparent 1px),

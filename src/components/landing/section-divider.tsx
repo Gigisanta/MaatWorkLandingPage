@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState, useMemo, useCallback, type CSSProperties } from 'react'
-import { useParallax, useReducedMotion } from '@/hooks'
+import { useParallax, useDividerVisibility, useReducedMotion } from '@/hooks'
 import { cn } from '@/lib/utils'
 
 // Section definition for the progress indicator
@@ -78,24 +78,7 @@ function WaveDivider({
   speed?: number
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   const paths = wavePaths[variant]
 
@@ -218,24 +201,7 @@ function CurveDivider({
   position: 'top' | 'bottom'
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   return (
     <div
@@ -325,24 +291,7 @@ function SlopeDivider({
   position: 'top' | 'bottom'
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   return (
     <div
@@ -446,24 +395,7 @@ function DotPattern({
   particleColor?: string
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   // Use seeded random for deterministic but varied visuals
   const dots = useMemo((): DotItem[] => {
@@ -575,24 +507,7 @@ function ParticleField({
   speed?: number
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   // Use seeded random for deterministic but varied visuals
   const particles = useMemo((): ParticleItem[] => {
@@ -685,24 +600,7 @@ function GradientDivider({
   gradientTo?: string
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   return (
     <div
@@ -719,13 +617,12 @@ function GradientDivider({
       <div
         className={cn(
           'absolute inset-0 transition-all duration-1000 ease-out',
-          isVisible ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
+          isVisible ? 'opacity-100' : 'opacity-0'
         )}
         style={{
           background: position === 'top'
             ? `linear-gradient(to bottom, ${gradientFrom}, ${gradientTo})`
             : `linear-gradient(to top, ${gradientFrom}, ${gradientTo})`,
-          transformOrigin: position === 'top' ? 'top' : 'bottom',
         }}
       />
       {/* Secondary color band for depth */}
@@ -738,7 +635,6 @@ function GradientDivider({
           background: position === 'top'
             ? 'linear-gradient(to bottom, rgba(139, 92, 246, 0.05) 0%, transparent 60%)'
             : 'linear-gradient(to top, rgba(139, 92, 246, 0.05) 0%, transparent 60%)',
-          transformOrigin: position === 'top' ? 'top' : 'bottom',
         }}
       />
       {/* Animated shimmer layers */}
@@ -773,24 +669,7 @@ function MountainDivider({
   position: 'top' | 'bottom'
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   return (
     <div
@@ -903,24 +782,7 @@ function TieredDivider({
   position: 'top' | 'bottom'
   className?: string
 }) {
-  const reducedMotion = useReducedMotion()
-  const [isVisible, setIsVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setIsVisible(true)
-      return
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.1 }
-    )
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [reducedMotion])
+  const { containerRef, isVisible, reducedMotion } = useDividerVisibility()
 
   return (
     <div
@@ -1317,8 +1179,8 @@ export function ScrollProgressIndicator({
       {/* Progress Bar */}
       <div
         className={cn(
-          'fixed top-0 left-0 right-0 z-[9999] transition-opacity duration-500',
-          isVisible ? 'opacity-100' : 'opacity-0',
+          'fixed top-0 left-0 right-0 z-[100] transition-opacity duration-500',
+          isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
           showBackground && 'bg-black/20',
           className
         )}
@@ -1458,11 +1320,10 @@ export function ScrollProgressIndicator({
         <div
           className={cn(
             'fixed top-3 right-4 lg:top-4 lg:right-8 z-[9999] pointer-events-none',
-            'transition-all duration-500 ease-out',
             'opacity-0 translate-y-[-8px]',
             isVisible && 'opacity-100 translate-y-0'
           )}
-          style={{ transitionDelay: '100ms' }}
+          style={{ transition: 'all 500ms ease-out 100ms' }}
           aria-live="polite"
         >
           <div

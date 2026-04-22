@@ -102,7 +102,7 @@ function StepCard({ step, index, isVisible, reducedMotion }: { step: Step; index
 
       {/* Card with glass effect */}
       <div
-        className="relative p-8 lg:p-10 h-full flex flex-col backdrop-blur-md bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/[0.06] hover:border-indigo-500/40 rounded-3xl overflow-hidden"
+        className="relative p-8 lg:p-10 h-full flex flex-col glass hover:border-indigo-500/40 rounded-3xl overflow-hidden"
         style={{
           boxShadow: isHovered && !reducedMotion
             ? `0 0 60px rgba(99, 102, 241, ${0.15 + glowIntensity * 0.1}), 0 20px 40px rgba(0,0,0,0.3)`
@@ -169,7 +169,7 @@ function StepCard({ step, index, isVisible, reducedMotion }: { step: Step; index
           />
 
           {/* Inner dark layer */}
-          <div className="absolute inset-0.5 rounded-xl bg-[#04040e]/90 backdrop-blur-sm" />
+          <div className="absolute inset-0.5 rounded-xl bg-[var(--color-bg-base)]/90 backdrop-blur-sm" />
 
           {/* Icon */}
           <div
@@ -207,7 +207,7 @@ function StepCard({ step, index, isVisible, reducedMotion }: { step: Step; index
           <div
             className="absolute inset-0 blur-2xl opacity-50"
             style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+              background: 'linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent-purple) 100%)',
               transform: reducedMotion ? 'scale(1)' : `scale(${1 + glowIntensity * 0.15})`,
               transition: 'transform 0.3s ease',
             }}
@@ -265,7 +265,7 @@ export function HowItWorks() {
     delay: 200,
     duration: 600,
   })
-  const { ref: footerRef, isVisible: footerVisible, style: footerStyle } = useScrollReveal<HTMLDivElement>({
+  const { ref: footerRef, style: footerStyle } = useScrollReveal<HTMLDivElement>({
     threshold: 0.3,
     delay: 400,
     duration: 700,
@@ -273,7 +273,7 @@ export function HowItWorks() {
   const reducedMotion = useReducedMotion()
 
   return (
-    <section className="relative py-24 px-6 lg:px-12 overflow-hidden bg-[#04040e]">
+    <section id="how-it-works" className="relative py-24 px-6 lg:px-12 overflow-hidden bg-[#04040e]">
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Ambient gradient blobs */}

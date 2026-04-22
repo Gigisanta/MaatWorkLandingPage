@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { useReducedMotion, springInterpolate } from '@/hooks/use-scroll-reveal';
+import { useReducedMotion, springInterpolate } from '@/hooks';
 
 interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:

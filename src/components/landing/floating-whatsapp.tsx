@@ -118,25 +118,9 @@ export function FloatingWhatsApp({
       aria-label="Contactar por WhatsApp"
       role="button"
     >
-      {/* Ambient glow effect - always visible */}
+      {/* Pulse ring */}
       {!reducedMotion && (
-        <span
-          className={cn(
-            'absolute inset-0 rounded-full',
-            'bg-green-400/20 blur-xl',
-            'animate-pulse'
-          )}
-          style={{ animationDuration: '3s' }}
-        />
-      )}
-
-      {/* Pulse rings - staggered */}
-      {!reducedMotion && (
-        <>
-          <span className="absolute inset-0 rounded-full bg-green-400/30 animate-whatsapp-pulse-1" />
-          <span className="absolute inset-0 rounded-full bg-green-400/20 animate-whatsapp-pulse-2" />
-          <span className="absolute inset-0 rounded-full bg-green-400/15 animate-whatsapp-pulse-3" />
-        </>
+        <span className="absolute inset-0 rounded-full bg-green-400/25 animate-whatsapp-pulse-1" />
       )}
 
       {/* Floating animation when visible */}

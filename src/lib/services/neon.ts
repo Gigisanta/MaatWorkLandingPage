@@ -49,7 +49,7 @@ export async function createLead(data: CreateLeadInput): Promise<Lead> {
   const sql = getSql()
 
   try {
-    const [lead] = await sql`
+    const result = await sql`
       INSERT INTO leads (
         nombre,
         whatsapp,
@@ -91,11 +91,14 @@ export async function createLead(data: CreateLeadInput): Promise<Lead> {
         created_at
     `
 
+    const leads = result as Record<string, unknown>[]
+    const lead = leads[0]
+
     if (!lead) {
       throw new ServiceError('Failed to create lead: no return value')
     }
 
-    return mapRowToLead(lead as Record<string, unknown>)
+    return mapRowToLead(lead)
   } catch (error) {
     if (error instanceof ServiceError) {
       throw error
