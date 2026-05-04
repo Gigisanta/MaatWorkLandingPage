@@ -77,8 +77,9 @@ const BADGES = [
 
 export default function TrustBadges() {
   return (
-    <section className="py-10 md:py-12 bg-[#0a0a1a] border-y border-violet-900/20">
+    <section className="py-10 md:py-12 bg-[#0a0a1a] border-y border-violet-900/20" aria-labelledby="trust-badges-heading">
       <div className="container-custom px-4">
+        <h2 id="trust-badges-heading" className="sr-only">Confianza y seguridad</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           {BADGES.map((badge, index) => (
             <div key={index} className="text-center group">

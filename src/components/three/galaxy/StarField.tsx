@@ -7,6 +7,7 @@ import { useMemo, useRef, useState } from 'react';
 interface StarFieldProps {
   starCount?: number;
   radius?: number;
+  paused?: boolean;
 }
 
 const vertexShader = `
@@ -22,21 +23,18 @@ const vertexShader = `
   void main() {
     vColorMix = aColorMix;
 
-    // Slow rotation
     vec3 pos = position;
     float angle = uTime * 0.01;
     float cosA = cos(angle);
     float sinA = sin(angle);
     pos.xz = mat2(cosA, -sinA, sinA, cosA) * pos.xz;
 
-    // Twinkle
     float twinkle = 0.6 + 0.4 * sin(uTime * 1.5 + aPhase * 12.56);
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_PointSize = aSize * twinkle * (200.0 / -mvPosition.z);
     gl_Position = projectionMatrix * mvPosition;
 
-    // Fade with distance
     vAlpha = smoothstep(100.0, 20.0, -mvPosition.z) * twinkle;
   }
 `;
@@ -51,10 +49,7 @@ const fragmentShader = `
 
     if (d > 0.5) discard;
 
-    // Soft circle
     float star = 1.0 - smoothstep(0.0, 0.4, d);
-
-    // Cross spikes
     float spike = max(
       1.0 - smoothstep(0.0, 0.02, abs(uv.x)),
       1.0 - smoothstep(0.0, 0.02, abs(uv.y))
@@ -62,9 +57,8 @@ const fragmentShader = `
 
     float brightness = star + spike;
 
-    // Color: blue-white to warm white
-    vec3 coldColor = vec3(0.78, 0.83, 1.0);  // #c8d4ff
-    vec3 warmColor = vec3(1.0, 0.96, 0.88);   // #fff4e0
+    vec3 coldColor = vec3(0.78, 0.83, 1.0);
+    vec3 warmColor = vec3(1.0, 0.96, 0.88);
     vec3 whiteColor = vec3(1.0, 1.0, 1.0);
 
     vec3 color = mix(coldColor, warmColor, vColorMix);
@@ -74,11 +68,9 @@ const fragmentShader = `
   }
 `;
 
-export function StarField({ starCount = 12000, radius = 90 }: StarFieldProps) {
+export function StarField({ starCount = 12000, radius = 90, paused = false }: StarFieldProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
-  // Use useState with lazy initialization to generate random values once
-  // This avoids calling Math.random() during render
   const [starData] = useState(() => {
     const positions = new Float32Array(starCount * 3);
     const sizes = new Float32Array(starCount);
@@ -86,7 +78,6 @@ export function StarField({ starCount = 12000, radius = 90 }: StarFieldProps) {
     const colorMixes = new Float32Array(starCount);
 
     for (let i = 0; i < starCount; i++) {
-      // Random point on sphere
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
 
@@ -96,7 +87,7 @@ export function StarField({ starCount = 12000, radius = 90 }: StarFieldProps) {
 
       sizes[i] = 1.0 + Math.random() * 2.5;
       phases[i] = Math.random() * Math.PI * 2;
-      colorMixes[i] = Math.random(); // 0 = cold, 1 = warm
+      colorMixes[i] = Math.random();
     }
 
     return { positions, sizes, phases, colorMixes };
@@ -104,7 +95,6 @@ export function StarField({ starCount = 12000, radius = 90 }: StarFieldProps) {
 
   const { positions, sizes, phases, colorMixes } = starData;
 
-  // Create geometry with attributes
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -114,11 +104,19 @@ export function StarField({ starCount = 12000, radius = 90 }: StarFieldProps) {
     return geo;
   }, [positions, sizes, phases, colorMixes]);
 
+  useMemo(() => {
+    return () => {
+      geometry.dispose();
+    };
+  }, [geometry]);
+
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
   }), []);
 
   useFrame((_, delta) => {
+    if (paused) return;
+
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value += delta;
     }

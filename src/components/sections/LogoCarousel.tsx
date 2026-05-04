@@ -1,5 +1,7 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
+
 const LOGOS = [
   { name: 'Next.js', icon: 'N' },
   { name: 'React', icon: 'R' },
@@ -11,22 +13,40 @@ const LOGOS = [
   { name: 'AWS', icon: 'AWS' },
 ];
 
+function getReducedMotionPreference(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+const subscribeToMotionPreference = (callback: () => void) => {
+  if (typeof window === 'undefined') return () => {};
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  mediaQuery.addEventListener('change', callback);
+  return () => mediaQuery.removeEventListener('change', callback);
+};
+
 export default function LogoCarousel() {
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeToMotionPreference,
+    getReducedMotionPreference,
+    () => false
+  );
+
   return (
-    <section className="py-10 bg-[#030014] border-y border-violet-900/20 overflow-hidden">
+    <section className="py-10 bg-[#030014] border-y border-violet-900/20 overflow-hidden" aria-labelledby="tech-heading">
       <div className="container-custom px-4 mb-8">
-        <p className="text-center text-base text-slate-400 uppercase tracking-wider">
+        <h2 id="tech-heading" className="text-center text-base text-slate-400 uppercase tracking-wider">
           Tecnologías que utilizamos
-        </p>
+        </h2>
       </div>
 
       <div className="relative">
         {/* Gradient masks */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#030014] to-transparent z-10" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#030014] to-transparent z-10" />
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#030014] to-transparent z-10" aria-hidden="true" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#030014] to-transparent z-10" aria-hidden="true" />
 
         {/* Infinite scroll */}
-        <div className="flex animate-scroll">
+        <div className={`flex ${prefersReducedMotion ? '' : 'animate-scroll'}`}>
           {[...LOGOS, ...LOGOS].map((logo, index) => (
             <div
               key={index}

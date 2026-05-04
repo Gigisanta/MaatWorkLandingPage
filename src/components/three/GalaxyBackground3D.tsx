@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect, useRef, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -9,33 +9,54 @@ import { StarField } from './galaxy/StarField';
 import { NebulaClouds } from './galaxy/NebulaClouds';
 import { ImpressionistPP } from './galaxy/ImpressionistPP';
 import { ScrollReactiveProvider, useScrollContext } from './effects/ScrollReactive';
-import { useAdaptiveQuality } from './effects/AdaptiveQuality';
+import { useAdaptiveQuality, useVisibilityState } from './effects/AdaptiveQuality';
 import ThreeErrorBoundary from './ErrorBoundary';
 
 function GalaxyScene() {
   const { scrollProgress, scrollVelocity } = useScrollContext();
   const quality = useAdaptiveQuality();
+  const { isVisible } = useVisibilityState();
+
+  const effectiveParticleCount = useMemo(() => {
+    return quality.tier === 'high' ? 60000 : quality.tier === 'medium' ? 30000 : 15000;
+  }, [quality.tier]);
+
+  const effectiveStarCount = useMemo(() => {
+    return quality.tier === 'high' ? 12000 : quality.tier === 'medium' ? 6000 : 3000;
+  }, [quality.tier]);
+
+  const nebulaLayers = useMemo(() => {
+    return quality.tier === 'high' ? 3 : quality.tier === 'medium' ? 2 : 1;
+  }, [quality.tier]);
 
   return (
     <>
-      {/* Star field - distant stars */}
-      <StarField
-        starCount={quality.starCount}
-        radius={90}
-      />
+      {isVisible && (
+        <>
+          <StarField
+            starCount={effectiveStarCount}
+            radius={90}
+            paused={!isVisible}
+          />
 
-      {/* Nebula clouds for color depth */}
-      <NebulaClouds scrollProgress={scrollProgress} />
+          <NebulaClouds
+            scrollProgress={scrollProgress}
+            layers={nebulaLayers}
+          />
 
-      {/* Main galaxy core with spiral arms */}
-      <GalaxyCore
-        particleCount={quality.particleCount}
-        scrollProgress={scrollProgress}
-        scrollVelocity={scrollVelocity}
-      />
+          <GalaxyCore
+            particleCount={effectiveParticleCount}
+            scrollProgress={scrollProgress}
+            scrollVelocity={scrollVelocity}
+            paused={!isVisible}
+          />
 
-      {/* Post-processing effects - Bloom makes stars/glow visible */}
-      <ImpressionistPP enabled />
+          <ImpressionistPP
+            enabled={quality.enablePostProcessing}
+            quality={quality.tier}
+          />
+        </>
+      )}
     </>
   );
 }
@@ -45,6 +66,24 @@ function FixedBackground() {
     return typeof window !== 'undefined';
   });
   const quality = useAdaptiveQuality();
+  const { isVisible } = useVisibilityState();
+  const glRef = useRef<THREE.WebGLRenderer | null>(null);
+
+  const dpr = useMemo(() => {
+    if (quality.tier === 'low') return 1;
+    if (quality.tier === 'medium') return Math.min(window.devicePixelRatio, 1.5);
+    return Math.min(window.devicePixelRatio, 2);
+  }, [quality.tier]);
+
+  useEffect(() => {
+    return () => {
+      if (glRef.current) {
+        glRef.current.dispose();
+        glRef.current.forceContextLoss();
+        glRef.current = null;
+      }
+    };
+  }, []);
 
   if (!mounted) {
     return (
@@ -88,15 +127,18 @@ function FixedBackground() {
               near: 0.1,
               far: 200,
             }}
-            dpr={[1, quality.pixelRatio]}
+            dpr={dpr}
+            frameloop={isVisible ? 'always' : 'never'}
             gl={{
-              antialias: true,
+              antialias: quality.tier !== 'low',
               alpha: true,
               powerPreference: 'high-performance',
               toneMapping: THREE.ACESFilmicToneMapping,
               toneMappingExposure: 1.2,
+              preserveDrawingBuffer: false,
             }}
             onCreated={({ gl }) => {
+              glRef.current = gl;
               gl.setClearColor(0x030014, 1);
               gl.domElement.addEventListener('webglcontextlost', (e) => {
                 e.preventDefault();

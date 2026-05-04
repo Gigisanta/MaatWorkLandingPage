@@ -76,15 +76,17 @@ export default function ContactForm() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" aria-label="Formulario de contacto">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
-                Nombre
+                Nombre <span className="text-red-400" aria-hidden="true">*</span>
               </label>
               <input
                 type="text"
                 id="name"
+                name="name"
                 required
+                aria-required="true"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-3 bg-violet-950/80 border border-violet-800/60 rounded-xl text-white placeholder:text-slate-400 focus:outline-none focus:border-violet-500 transition-colors"
@@ -94,12 +96,14 @@ export default function ContactForm() {
 
             <div>
               <label htmlFor="whatsapp" className="block text-sm font-medium text-slate-300 mb-2">
-                WhatsApp
+                WhatsApp <span className="text-red-400" aria-hidden="true">*</span>
               </label>
               <input
                 type="tel"
                 id="whatsapp"
+                name="whatsapp"
                 required
+                aria-required="true"
                 value={formData.whatsapp}
                 onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                 className="w-full px-4 py-3 bg-violet-950/80 border border-violet-800/60 rounded-xl text-white placeholder:text-slate-400 focus:outline-none focus:border-violet-500 transition-colors"
@@ -109,12 +113,14 @@ export default function ContactForm() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-                Email
+                Email <span className="text-red-400" aria-hidden="true">*</span>
               </label>
               <input
                 type="email"
                 id="email"
+                name="email"
                 required
+                aria-required="true"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-3 bg-violet-950/80 border border-violet-800/60 rounded-xl text-white placeholder:text-slate-400 focus:outline-none focus:border-violet-500 transition-colors"
@@ -124,11 +130,13 @@ export default function ContactForm() {
 
             <div>
               <label htmlFor="industry" className="block text-sm font-medium text-slate-300 mb-2">
-                Tipo de negocio
+                Tipo de negocio <span className="text-red-400" aria-hidden="true">*</span>
               </label>
               <select
                 id="industry"
+                name="industry"
                 required
+                aria-required="true"
                 value={formData.industry}
                 onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                 className="w-full px-4 py-3 bg-violet-950/80 border border-violet-800/60 rounded-xl text-white focus:outline-none focus:border-violet-500 transition-colors"
@@ -148,6 +156,7 @@ export default function ContactForm() {
               </label>
               <textarea
                 id="problem"
+                name="problem"
                 rows={4}
                 value={formData.problem}
                 onChange={(e) => setFormData({ ...formData, problem: e.target.value })}
@@ -160,10 +169,11 @@ export default function ContactForm() {
               type="submit"
               disabled={isSubmitting}
               className="btn-green w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 active:bg-violet-700 transition-transform"
+              aria-describedby="submit-help"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
@@ -173,6 +183,9 @@ export default function ContactForm() {
                 'Enviar mensaje'
               )}
             </button>
+            <p id="submit-help" className="text-xs text-slate-400 text-center -mt-2">
+              Al enviar serás redirigido a WhatsApp para completar el contacto
+            </p>
           </form>
 
           {/* WhatsApp alternative */}

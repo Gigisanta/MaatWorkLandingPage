@@ -14,6 +14,14 @@ export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      const reveals = sectionRef.current?.querySelectorAll('.reveal');
+      reveals?.forEach((el) => el.classList.add('visible'));
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

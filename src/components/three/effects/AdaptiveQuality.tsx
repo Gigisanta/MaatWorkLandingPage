@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 export type QualityTier = 'high' | 'medium' | 'low';
 
@@ -14,88 +14,136 @@ export interface QualitySettings {
   bloomIntensity: number;
   bloomThreshold: number;
   nebulaLayers: number;
+  fps: number;
 }
 
 interface UseAdaptiveQualityOptions {
   forceTier?: QualityTier;
 }
 
-function getQualitySettings(tier: QualityTier, dpr: number): QualitySettings {
-  const safeDpr = typeof window !== 'undefined' ? Math.min(dpr, tier === 'high' ? 2 : tier === 'medium' ? 1.5 : 1) : 1;
+const QUALITY_TIERS: Record<QualityTier, Omit<QualitySettings, 'fps'>> = {
+  high: {
+    tier: 'high',
+    particleCount: 60000,
+    starCount: 12000,
+    pixelRatio: 2,
+    enablePostProcessing: true,
+    enableKuwahara: false,
+    bloomIntensity: 0.6,
+    bloomThreshold: 0.2,
+    nebulaLayers: 3,
+  },
+  medium: {
+    tier: 'medium',
+    particleCount: 30000,
+    starCount: 6000,
+    pixelRatio: 1.5,
+    enablePostProcessing: true,
+    enableKuwahara: false,
+    bloomIntensity: 0.5,
+    bloomThreshold: 0.3,
+    nebulaLayers: 2,
+  },
+  low: {
+    tier: 'low',
+    particleCount: 15000,
+    starCount: 3000,
+    pixelRatio: 1,
+    enablePostProcessing: false,
+    enableKuwahara: false,
+    bloomIntensity: 0.4,
+    bloomThreshold: 0.4,
+    nebulaLayers: 1,
+  },
+};
 
-  switch (tier) {
-    case 'high':
-      return {
-        tier: 'high',
-        particleCount: 30000,
-        starCount: 6000,
-        pixelRatio: safeDpr,
-        enablePostProcessing: true,
-        enableKuwahara: false,
-        bloomIntensity: 1.2,
-        bloomThreshold: 0.75,
-        nebulaLayers: 2,
-      };
+function detectDeviceTier(): QualityTier {
+  if (typeof window === 'undefined') return 'medium';
 
-    case 'medium':
-      return {
-        tier: 'medium',
-        particleCount: 20000,
-        starCount: 4000,
-        pixelRatio: safeDpr,
-        enablePostProcessing: true,
-        enableKuwahara: false,
-        bloomIntensity: 1.0,
-        bloomThreshold: 0.8,
-        nebulaLayers: 1,
-      };
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
+  const isLowPower = (navigator.hardwareConcurrency ?? 8) <= 4;
+  const dpr = window.devicePixelRatio;
 
-    case 'low':
-      return {
-        tier: 'low',
-        particleCount: 20000,
-        starCount: 4000,
-        pixelRatio: 1,
-        enablePostProcessing: false,
-        enableKuwahara: false,
-        bloomIntensity: 0.8,
-        bloomThreshold: 0.85,
-        nebulaLayers: 1,
-      };
+  if (isMobile || isLowPower) {
+    return 'low';
   }
+
+  if (dpr >= 2 && !isMobile) {
+    return 'high';
+  }
+
+  return 'medium';
+}
+
+function getQualitySettings(tier: QualityTier, dpr: number): QualitySettings {
+  const baseSettings = QUALITY_TIERS[tier];
+  const safeDpr = Math.min(dpr, tier === 'high' ? 2 : tier === 'medium' ? 1.5 : 1);
+
+  return {
+    ...baseSettings,
+    pixelRatio: safeDpr,
+    fps: 60,
+  };
 }
 
 export function useAdaptiveQuality(options: UseAdaptiveQualityOptions = {}): QualitySettings {
   const { forceTier } = options;
+  const [fps, setFps] = useState(60);
+  const frameTimesRef = useRef<number[]>([]);
+  const lastFrameTimeRef = useRef<number>(0);
+  const rafIdRef = useRef<number | null>(null);
 
-  // Compute quality based on forceTier or detect device capabilities
-  // This runs on every render when forceTier changes, avoiding setState in effect
-  const quality = (() => {
-    if (forceTier) {
-      return getQualitySettings(forceTier, 1);
-    }
+  const tier = useMemo(() => {
+    if (forceTier) return forceTier;
+    return detectDeviceTier();
+  }, [forceTier]);
 
-    const isMobile = typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent || '');
-    const isLowPower = typeof navigator !== 'undefined' && (navigator.hardwareConcurrency ?? 8) <= 4;
+  const baseSettings = useMemo(() => {
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
-
-    let tier: QualityTier;
-
-    if (isMobile || isLowPower) {
-      tier = 'low';
-    } else if (dpr >= 2 && !isMobile) {
-      tier = 'high';
-    } else {
-      tier = 'medium';
-    }
-
     return getQualitySettings(tier, dpr);
-  })();
+  }, [tier]);
 
-  return quality;
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    lastFrameTimeRef.current = performance.now();
+
+    const measureFps = () => {
+      const now = performance.now();
+      const delta = now - lastFrameTimeRef.current;
+      lastFrameTimeRef.current = now;
+
+      if (delta > 0 && delta < 100) {
+        frameTimesRef.current.push(delta);
+        if (frameTimesRef.current.length > 30) {
+          frameTimesRef.current.shift();
+        }
+
+        if (frameTimesRef.current.length >= 10) {
+          const avgFrameTime = frameTimesRef.current.reduce((a, b) => a + b, 0) / frameTimesRef.current.length;
+          setFps(Math.round(1000 / avgFrameTime));
+        }
+      }
+
+      rafIdRef.current = requestAnimationFrame(measureFps);
+    };
+
+    rafIdRef.current = requestAnimationFrame(measureFps);
+
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+    };
+  }, []);
+
+  return {
+    ...baseSettings,
+    fps,
+  };
 }
 
-// Visibility hook for pausing when not visible
 export function useVisibilityState() {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -113,4 +161,22 @@ export function useVisibilityState() {
   }, []);
 
   return { isVisible };
+}
+
+export function useFrameLimiter(targetFps: number = 30) {
+  const lastUpdateRef = useRef<number>(0);
+  const [canUpdate, setCanUpdate] = useState(true);
+
+  const shouldUpdate = useCallback(() => {
+    const now = performance.now();
+    const minInterval = 1000 / targetFps;
+
+    if (now - lastUpdateRef.current >= minInterval) {
+      lastUpdateRef.current = now;
+      return true;
+    }
+    return false;
+  }, [targetFps]);
+
+  return { shouldUpdate, canUpdate, setCanUpdate };
 }

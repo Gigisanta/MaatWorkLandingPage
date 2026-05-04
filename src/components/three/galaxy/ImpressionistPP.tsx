@@ -5,21 +5,24 @@ import { BlendFunction } from 'postprocessing';
 
 interface ImpressionistPPProps {
   enabled?: boolean;
+  quality?: 'high' | 'medium' | 'low';
 }
 
-export function ImpressionistPP({ enabled = true }: ImpressionistPPProps) {
+export function ImpressionistPP({ enabled = true, quality = 'medium' }: ImpressionistPPProps) {
   if (!enabled) return null;
 
+  const multisampling = quality === 'high' ? 4 : quality === 'medium' ? 2 : 0;
+  const bloomIntensity = quality === 'high' ? 0.6 : quality === 'medium' ? 0.5 : 0.4;
+  const bloomThreshold = quality === 'high' ? 0.2 : quality === 'medium' ? 0.3 : 0.4;
+
   return (
-    <EffectComposer multisampling={4} depthBuffer={false}>
-      {/* Bloom with low intensity - makes stars and bright areas glow */}
+    <EffectComposer multisampling={multisampling} depthBuffer={false}>
       <Bloom
-        intensity={0.6}
-        luminanceThreshold={0.2}
+        intensity={bloomIntensity}
+        luminanceThreshold={bloomThreshold}
         luminanceSmoothing={0.9}
         radius={0.5}
       />
-      {/* Subtle vignette for depth - NORMAL blend works with alpha:true Canvas */}
       <Vignette
         offset={0.3}
         darkness={0.5}

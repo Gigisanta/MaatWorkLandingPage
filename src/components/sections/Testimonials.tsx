@@ -97,11 +97,15 @@ export default function Testimonials() {
 
         {/* Video Testimonials Placeholder */}
         <div className="mt-8 grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          <div className="relative aspect-video bg-gradient-to-br from-violet-950 to-purple-950 rounded-2xl border border-violet-800/60 overflow-hidden flex items-center justify-center group cursor-pointer">
+          <button
+            type="button"
+            className="relative aspect-video bg-gradient-to-br from-violet-950 to-purple-950 rounded-2xl border border-violet-800/60 overflow-hidden flex items-center justify-center group cursor-pointer text-left"
+            aria-label="Ver video testimonio de propietario de gimnasio"
+          >
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <div className="w-16 h-16 rounded-full bg-violet-600/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
@@ -110,12 +114,16 @@ export default function Testimonials() {
               <p className="text-white font-medium">Testimonio en video</p>
               <p className="text-sm text-slate-200">Propietario de gimnasio</p>
             </div>
-          </div>
-          <div className="relative aspect-video bg-gradient-to-br from-violet-950 to-purple-950 rounded-2xl border border-violet-800/60 overflow-hidden flex items-center justify-center group cursor-pointer">
+          </button>
+          <button
+            type="button"
+            className="relative aspect-video bg-gradient-to-br from-violet-950 to-purple-950 rounded-2xl border border-violet-800/60 overflow-hidden flex items-center justify-center group cursor-pointer text-left"
+            aria-label="Ver video testimonio de dueña de salón de belleza"
+          >
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
             <div className="absolute inset-0 flex items-center justify-center z-20">
               <div className="w-16 h-16 rounded-full bg-violet-600/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
@@ -124,7 +132,7 @@ export default function Testimonials() {
               <p className="text-white font-medium">Testimonio en video</p>
               <p className="text-sm text-slate-200">Dueña de salón de belleza</p>
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </section>

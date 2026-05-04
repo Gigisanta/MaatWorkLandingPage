@@ -25,7 +25,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#030014]">
       <AnnouncementBanner />
       <Navbar />
-      <main>
+      <main id="main-content">
         <HeroSection />
         <LogoCarousel />
         <ProblemSolution />
