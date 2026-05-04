@@ -1,0 +1,277 @@
+[     164ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[     193ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[     436ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  540188ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  540394ms] [LOG] [Fast Refresh] done in 227ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  562851ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  563001ms] [LOG] [Fast Refresh] done in 118ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  572319ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  572478ms] [LOG] [Fast Refresh] done in 50ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  587424ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  587474ms] [LOG] [Fast Refresh] done in 13ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  595218ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  595385ms] [LOG] [Fast Refresh] done in 147ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  603565ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  603809ms] [LOG] [Fast Refresh] done in 101ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  604595ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  604597ms] [LOG] [Fast Refresh] done in 30ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  604598ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  604602ms] [LOG] THREE.WebGLRenderer: Context Lost. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  604607ms] [LOG] [Fast Refresh] done in 0ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  605040ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  605072ms] [LOG] [Fast Refresh] done in 14ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  613982ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  614014ms] [LOG] [Fast Refresh] done in 15ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  619416ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  619447ms] [LOG] [Fast Refresh] done in 32ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  641481ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  641680ms] [LOG] [Fast Refresh] done in 210ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  641875ms] TypeError: Cannot read properties of null (reading 'alpha')
+    at EffectComposer.addPass (http://localhost:3000/_next/static/chunks/0_wq_postprocessing_build_index_0yyglu..js:1320:67)
+    at http://localhost:3000/_next/static/chunks/0_wq_0h3o8wd._.js:1101:34
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:13260:44)
+    at B (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:7897:105)
+    at ca (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10965:101)
+    at Pf (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10953:32)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:44)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+[  642166ms] TypeError: Cannot read properties of null (reading 'alpha')
+    at EffectComposer.addPass (http://localhost:3000/_next/static/chunks/0_wq_postprocessing_build_index_0yyglu..js:1320:67)
+    at http://localhost:3000/_next/static/chunks/0_wq_0h3o8wd._.js:1101:34
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:13260:44)
+    at B (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:7897:105)
+    at ca (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10965:101)
+    at Pf (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10953:32)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:44)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+[  655931ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  655932ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  656130ms] TypeError: Cannot read properties of null (reading 'alpha')
+    at EffectComposer.setRenderer (http://localhost:3000/_next/static/chunks/0_wq_postprocessing_build_index_0yyglu..js:1158:71)
+    at new EffectComposer (http://localhost:3000/_next/static/chunks/0_wq_postprocessing_build_index_0yyglu..js:1106:14)
+    at http://localhost:3000/_next/static/chunks/0_wq_0h3o8wd._.js:1046:19
+    at ec (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:9687:25)
+    at Object.useMemo (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:13355:32)
+    at exports.useMemo (http://localhost:3000/_next/static/chunks/0_wq_next_dist_compiled_0lz680x._.js:1742:36)
+    at http://localhost:3000/_next/static/chunks/0_wq_0h3o8wd._.js:1045:561
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:13211:32)
+    at It (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:9080:25)
+    at hf (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10080:35)
+    at tt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10577:32)
+    at B (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:7897:105)
+    at Ph (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:12423:50)
+    at wh (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:12340:36)
+    at Ff (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:12331:21)
+    at Lf (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:12102:75)
+    at Ap (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:8298:35)
+    at Wa (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:8242:165)
+    at Ls (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:12195:51)
+    at Object.hu [as scheduleRefresh] (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:6595:71)
+    at http://localhost:3000/_next/static/chunks/0_wq_next_dist_compiled_0lz680x._.js:391:33
+    at Set.forEach (<anonymous>)
+    at Object.performReactRefresh (http://localhost:3000/_next/static/chunks/0_wq_next_dist_compiled_0lz680x._.js:384:38)
+    at applyUpdate (http://localhost:3000/_next/static/chunks/0_wq_next_dist_compiled_0lz680x._.js:878:31)
+    at http://localhost:3000/_next/static/chunks/0_wq_next_dist_compiled_0lz680x._.js:886:13
+[  656169ms] [LOG] [Fast Refresh] done in 31ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  656354ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  656394ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  656599ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  679358ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  679566ms] [LOG] [Fast Refresh] done in 41ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  679938ms] [LOG] THREE.WebGLRenderer: Context Lost. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  704048ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  704231ms] [LOG] [Fast Refresh] done in 190ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  704339ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  704352ms] [LOG] [Fast Refresh] done in 118ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  704436ms] TypeError: Cannot read properties of null (reading 'alpha')
+    at EffectComposer.addPass (http://localhost:3000/_next/static/chunks/0_wq_postprocessing_build_index_0yyglu..js:1320:67)
+    at http://localhost:3000/_next/static/chunks/0_wq_0h3o8wd._.js:1101:34
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:13260:44)
+    at B (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:7897:105)
+    at ca (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10965:101)
+    at Pf (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10953:32)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:44)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+[  704468ms] TypeError: Cannot read properties of null (reading 'alpha')
+    at EffectComposer.addPass (http://localhost:3000/_next/static/chunks/0_wq_postprocessing_build_index_0yyglu..js:1320:67)
+    at http://localhost:3000/_next/static/chunks/0_wq_0h3o8wd._.js:1101:34
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:13260:44)
+    at B (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:7897:105)
+    at ca (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10965:101)
+    at Pf (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:10953:32)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:44)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11307:168)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11301:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11313:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11245:29)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+    at yn (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11242:25)
+    at rt (http://localhost:3000/_next/static/chunks/0_wq_%40react-three_fiber_dist_05412d1._.js:11621:73)
+[  743835ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  743835ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  744023ms] [LOG] [Fast Refresh] done in 30ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  744118ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  744147ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  744349ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431

@@ -1,0 +1,17 @@
+[     235ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[     260ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[     509ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  561340ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  561398ms] [LOG] [Fast Refresh] done in 17ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  568395ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  568458ms] [LOG] [Fast Refresh] done in 19ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  577669ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  577689ms] [LOG] [Fast Refresh] done in 57ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  583891ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  583922ms] [LOG] [Fast Refresh] done in 55ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  590285ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  590312ms] [LOG] [Fast Refresh] done in 57ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  597584ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  597653ms] [LOG] [Fast Refresh] done in 16ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  613128ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  613215ms] [LOG] [Fast Refresh] done in 71ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431

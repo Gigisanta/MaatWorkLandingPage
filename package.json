@@ -1,5 +1,5 @@
 {
-  "name": "maatwork-web",
+  "name": "maatwork-landing-page",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,27 +9,21 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
-    "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
-    "@types/three": "^0.184.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.8.0",
+    "@react-three/postprocessing": "^3.0.4",
+    "lenis": "^1.3.23",
     "next": "16.2.4",
-    "playwright": "^1.59.1",
+    "postprocessing": "^6.39.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "tailwind-merge": "^3.5.0",
-    "three": "^0.184.0",
-    "zod": "^4.3.6"
+    "three": "^0.184.0"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.2",
-    "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.184.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",

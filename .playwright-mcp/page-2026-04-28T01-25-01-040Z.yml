@@ -1,0 +1,667 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: 🚀
+      - generic [ref=e6]: Lanzamos en Beta
+    - generic [ref=e7]:
+      - generic [ref=e8]: Primeras 5 apps con precio especial
+      - generic [ref=e9]: •
+      - link "+54 9 11 3091 6574" [ref=e10] [cursor=pointer]:
+        - /url: https://wa.me/+5491130916574
+        - img [ref=e11]
+        - text: +54 9 11 3091 6574
+      - generic [ref=e13]: •
+      - generic [ref=e14]: Lun a Vie 9 a 18hs
+    - generic [ref=e17]: Oferta limitada
+  - navigation [ref=e18]:
+    - generic [ref=e19]:
+      - link "MaatWork" [ref=e20] [cursor=pointer]:
+        - /url: "#"
+      - list [ref=e21]:
+        - listitem [ref=e22]:
+          - link "Características" [ref=e23] [cursor=pointer]:
+            - /url: "#caracteristicas"
+        - listitem [ref=e24]:
+          - link "Precios" [ref=e25] [cursor=pointer]:
+            - /url: "#precios"
+        - listitem [ref=e26]:
+          - link "Cómo funciona" [ref=e27] [cursor=pointer]:
+            - /url: "#como-funciona"
+        - listitem [ref=e28]:
+          - link "Testimonios" [ref=e29] [cursor=pointer]:
+            - /url: "#testimonios"
+        - listitem [ref=e30]:
+          - link "Contacto" [ref=e31] [cursor=pointer]:
+            - /url: "#contacto"
+      - button "Prueba gratis" [ref=e33] [cursor=pointer]:
+        - generic [ref=e34]: Prueba gratis
+  - main [ref=e35]:
+    - generic [ref=e38]:
+      - generic [ref=e39]: Beta
+      - heading "Deja de perder tiempo automatizando tu local. Hoy." [level=1] [ref=e41]
+      - paragraph [ref=e42]: MaatWork centraliza agenda, cobros y clientes en una sola plataforma. Sin complicaciones, sin perder datos, sin depender de herramientas externas.
+      - generic [ref=e43]:
+        - button "Comenzar ahora" [ref=e44] [cursor=pointer]:
+          - generic [ref=e45]: Comenzar ahora
+        - button "Ver cómo funciona" [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: Ver cómo funciona
+          - img [ref=e48]
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - generic [ref=e52]: +1 año
+          - generic [ref=e53]: desarrollo
+        - generic [ref=e54]:
+          - generic [ref=e55]: "+500"
+          - generic [ref=e56]: usuarios
+        - generic [ref=e57]:
+          - generic [ref=e58]: 15+
+          - generic [ref=e59]: horas/semana
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - heading "¿Te suena familiar?" [level=2] [ref=e66]
+        - generic [ref=e67]:
+          - generic [ref=e69]:
+            - img [ref=e70]
+            - paragraph [ref=e73]: Un día mi agenda se mezcló con la de mi cliente
+          - generic [ref=e75]:
+            - img [ref=e76]
+            - paragraph [ref=e79]: Tuve que cobrarle a un cliente que se mudó
+          - generic [ref=e81]:
+            - img [ref=e82]
+            - paragraph [ref=e85]: Mi local creció y no di abasto
+          - generic [ref=e87]:
+            - img [ref=e88]
+            - paragraph [ref=e91]: Perdí un cliente porque no le respondí a tiempo
+          - generic [ref=e93]:
+            - img [ref=e94]
+            - paragraph [ref=e97]: El caos de manejar todo en hojas de cálculo
+          - generic [ref=e99]:
+            - img [ref=e100]
+            - paragraph [ref=e103]: Cada vez que cambio una herramienta, pierdo todo
+      - generic [ref=e104]:
+        - img [ref=e105]
+        - generic [ref=e107]: Transformación
+      - generic [ref=e108]:
+        - heading "Así funciona MaatWork" [level=2] [ref=e110]
+        - generic [ref=e111]:
+          - generic [ref=e113]:
+            - img [ref=e114]
+            - generic [ref=e117]:
+              - paragraph [ref=e118]: Agenda automática
+              - paragraph [ref=e119]: Sincroniza todos tus turnos sin conflictos
+          - generic [ref=e121]:
+            - img [ref=e122]
+            - generic [ref=e125]:
+              - paragraph [ref=e126]: Cobros digitalizados
+              - paragraph [ref=e127]: Cobra sin importar dónde esté tu cliente
+          - generic [ref=e129]:
+            - img [ref=e130]
+            - generic [ref=e133]:
+              - paragraph [ref=e134]: Escalabilidad real
+              - paragraph [ref=e135]: Crece sin perder el control
+          - generic [ref=e137]:
+            - img [ref=e138]
+            - generic [ref=e141]:
+              - paragraph [ref=e142]: Respuesta instantánea
+              - paragraph [ref=e143]: Confirma turnos al instante
+          - generic [ref=e145]:
+            - img [ref=e146]
+            - generic [ref=e149]:
+              - paragraph [ref=e150]: Organización total
+              - paragraph [ref=e151]: Todo en un solo lugar, siempre
+          - generic [ref=e153]:
+            - img [ref=e154]
+            - generic [ref=e157]:
+              - paragraph [ref=e158]: Propiedad de datos
+              - paragraph [ref=e159]: Tus datos son tuyos, siempre
+    - generic [ref=e161]:
+      - generic [ref=e162]:
+        - heading "Todo lo que necesitas en un solo lugar" [level=2] [ref=e163]
+        - paragraph [ref=e164]: Automatiza tu negocio y recupera tiempo para lo que realmente importa
+      - generic [ref=e165]:
+        - generic [ref=e166]:
+          - img [ref=e168]
+          - heading "Gestión de Clientes" [level=3] [ref=e173]
+          - paragraph [ref=e174]: Registro completo con historial
+        - generic [ref=e175]:
+          - img [ref=e177]
+          - heading "Cobros y Cuotas" [level=3] [ref=e179]
+          - paragraph [ref=e180]: Control total de pagos y deudas
+        - generic [ref=e181]:
+          - img [ref=e183]
+          - heading "Turnos y Clases" [level=3] [ref=e185]
+          - paragraph [ref=e186]: Agenda que se maneja sola
+        - generic [ref=e187]:
+          - img [ref=e189]
+          - heading "WhatsApp Automático" [level=3] [ref=e191]
+          - paragraph [ref=e192]: Responder en segundos, no en horas
+        - generic [ref=e193]:
+          - img [ref=e195]
+          - heading "Panel para el Dueño" [level=3] [ref=e200]
+          - paragraph [ref=e201]: Métricas clave en tiempo real
+        - generic [ref=e202]:
+          - img [ref=e204]
+          - heading "Hecha a Medida" [level=3] [ref=e207]
+          - paragraph [ref=e208]: Se adapta a tu industria
+    - generic [ref=e210]:
+      - generic [ref=e211]:
+        - heading "Cómo funciona" [level=2] [ref=e212]
+        - paragraph [ref=e213]: De cero a producción en menos de dos semanas
+      - generic [ref=e214]:
+        - generic [ref=e217]:
+          - img [ref=e219]
+          - heading "Diagnóstico" [level=3] [ref=e222]
+          - paragraph [ref=e223]: Analizamos tu negocio en 1-2 días
+          - generic [ref=e224]:
+            - generic [ref=e225]: "Entregable:"
+            - generic [ref=e226]: Documento con análisis
+        - generic [ref=e228]:
+          - img [ref=e230]
+          - heading "Prototipo" [level=3] [ref=e234]
+          - paragraph [ref=e235]: Creamos tu app personalizada en 3-7 días
+          - generic [ref=e236]:
+            - generic [ref=e237]: "Entregable:"
+            - generic [ref=e238]: App funcional para revisión
+        - generic [ref=e240]:
+          - img [ref=e242]
+          - heading "Launch" [level=3] [ref=e247]
+          - paragraph [ref=e248]: Lanzamos al mercado en 1-2 días
+          - generic [ref=e249]:
+            - generic [ref=e250]: "Entregable:"
+            - generic [ref=e251]: App en producción
+    - generic [ref=e253]:
+      - generic [ref=e254]:
+        - heading "Transforma tu negocio" [level=2] [ref=e255]
+        - paragraph [ref=e256]: El cambio que tu negocio necesita
+      - generic [ref=e257]:
+        - generic [ref=e258]:
+          - generic [ref=e259]:
+            - img [ref=e260]
+            - heading "Sin MaatWork" [level=3] [ref=e263]
+          - list [ref=e264]:
+            - listitem [ref=e265]:
+              - img [ref=e266]
+              - generic [ref=e269]: Manejar todo en WhatsApp y Excel
+            - listitem [ref=e270]:
+              - img [ref=e271]
+              - generic [ref=e274]: Perder horas en tareas manuales
+            - listitem [ref=e275]:
+              - img [ref=e276]
+              - generic [ref=e279]: Olvidar turnos
+            - listitem [ref=e280]:
+              - img [ref=e281]
+              - generic [ref=e284]: Cobrar tarde o no cobrar
+            - listitem [ref=e285]:
+              - img [ref=e286]
+              - generic [ref=e289]: Desorganización total
+            - listitem [ref=e290]:
+              - img [ref=e291]
+              - generic [ref=e294]: 12+ horas de trabajo
+          - generic [ref=e295]:
+            - generic [ref=e296]: 12+
+            - generic [ref=e297]: horas/semana
+        - img [ref=e299]
+        - generic [ref=e301]:
+          - generic [ref=e302]:
+            - img [ref=e303]
+            - heading "Con MaatWork" [level=3] [ref=e305]
+          - list [ref=e306]:
+            - listitem [ref=e307]:
+              - img [ref=e308]
+              - generic [ref=e310]: Todo centralizado en una app
+            - listitem [ref=e311]:
+              - img [ref=e312]
+              - generic [ref=e314]: Automatización de tareas
+            - listitem [ref=e315]:
+              - img [ref=e316]
+              - generic [ref=e318]: Agenda que nunca olvida
+            - listitem [ref=e319]:
+              - img [ref=e320]
+              - generic [ref=e322]: Cobros puntuales
+            - listitem [ref=e323]:
+              - img [ref=e324]
+              - generic [ref=e326]: Organización total
+            - listitem [ref=e327]:
+              - img [ref=e328]
+              - generic [ref=e330]: Tiempo libre
+          - generic [ref=e331]:
+            - generic [ref=e332]: "5"
+            - generic [ref=e333]: horas/semana
+      - generic [ref=e334]:
+        - heading "Impacto real" [level=3] [ref=e335]
+        - generic [ref=e336]:
+          - generic [ref=e337]:
+            - generic [ref=e338]: Métrica
+            - generic [ref=e339]: Antes
+            - generic [ref=e340]: Después
+          - generic [ref=e341]:
+            - generic [ref=e342]: Horas/semana
+            - generic [ref=e343]: 20+
+            - generic [ref=e344]: "5"
+          - generic [ref=e345]:
+            - generic [ref=e346]: Turnos perdidos
+            - generic [ref=e347]: 5-10%
+            - generic [ref=e348]: 0%
+          - generic [ref=e349]:
+            - generic [ref=e350]: Deudas incobrables
+            - generic [ref=e351]: Variables
+            - generic [ref=e352]: "0"
+          - generic [ref=e353]:
+            - generic [ref=e354]: Tiempo respuesta
+            - generic [ref=e355]: Horas
+            - generic [ref=e356]: Segundos
+    - generic [ref=e358]:
+      - generic "Next.js" [ref=e359]:
+        - generic [ref=e360]: "N"
+        - generic [ref=e361]: Next.js
+      - generic "Vercel" [ref=e362]:
+        - generic [ref=e363]: V
+        - generic [ref=e364]: Vercel
+      - generic "Supabase" [ref=e365]:
+        - generic [ref=e366]: S
+        - generic [ref=e367]: Supabase
+      - generic "Stripe" [ref=e368]:
+        - generic [ref=e369]: St
+        - generic [ref=e370]: Stripe
+      - generic "OpenAI" [ref=e371]:
+        - generic [ref=e372]: OA
+        - generic [ref=e373]: OpenAI
+      - generic "TypeScript" [ref=e374]:
+        - generic [ref=e375]: TS
+        - generic [ref=e376]: TypeScript
+      - generic "React" [ref=e377]:
+        - generic [ref=e378]: Re
+        - generic [ref=e379]: React
+      - generic "Node.js" [ref=e380]:
+        - generic [ref=e381]: "No"
+        - generic [ref=e382]: Node.js
+      - generic "Next.js" [ref=e383]:
+        - generic [ref=e384]: "N"
+        - generic [ref=e385]: Next.js
+      - generic "Vercel" [ref=e386]:
+        - generic [ref=e387]: V
+        - generic [ref=e388]: Vercel
+      - generic "Supabase" [ref=e389]:
+        - generic [ref=e390]: S
+        - generic [ref=e391]: Supabase
+      - generic "Stripe" [ref=e392]:
+        - generic [ref=e393]: St
+        - generic [ref=e394]: Stripe
+      - generic "OpenAI" [ref=e395]:
+        - generic [ref=e396]: OA
+        - generic [ref=e397]: OpenAI
+      - generic "TypeScript" [ref=e398]:
+        - generic [ref=e399]: TS
+        - generic [ref=e400]: TypeScript
+      - generic "React" [ref=e401]:
+        - generic [ref=e402]: Re
+        - generic [ref=e403]: React
+      - generic "Node.js" [ref=e404]:
+        - generic [ref=e405]: "No"
+        - generic [ref=e406]: Node.js
+    - generic [ref=e408]:
+      - generic [ref=e409]:
+        - heading "Lo que dicen nuestros clientes" [level=2] [ref=e410]
+        - paragraph [ref=e411]: Más de 200 negocios ya confían en MaatWork para automatizar su día a día
+      - generic [ref=e412]:
+        - generic [ref=e413]:
+          - generic [ref=e414]: 98%
+          - generic [ref=e415]: Clientes satisfechos
+        - generic [ref=e416]:
+          - generic [ref=e417]: "+200"
+          - generic [ref=e418]: Negocios automatizados
+        - generic [ref=e419]:
+          - generic [ref=e420]: 4.9/5
+          - generic [ref=e421]: Rating promedio
+      - generic [ref=e422]:
+        - generic [ref=e423]:
+          - generic [ref=e424]:
+            - generic [ref=e425]: MG
+            - img [ref=e426]
+          - blockquote [ref=e429]: “Desde que implementé MaatWork, tengo tiempo para lo que realmente importa. Los cobros funcionan solos.”
+          - generic [ref=e430]:
+            - generic [ref=e431]: María González
+            - generic [ref=e432]: Propietaria de Gimnasio
+        - generic [ref=e433]:
+          - generic [ref=e434]:
+            - generic [ref=e435]: CR
+            - img [ref=e436]
+          - blockquote [ref=e439]: “La agenda automática me salvó la vida. Ya no pierdo horas conciliando horarios.”
+          - generic [ref=e440]:
+            - generic [ref=e441]: Carolina Ruiz
+            - generic [ref=e442]: Dueña de Salón de belleza
+        - generic [ref=e443]:
+          - generic [ref=e444]:
+            - generic [ref=e445]: JP
+            - img [ref=e446]
+          - blockquote [ref=e449]: “Pude organizar 200 alumnos sin estrés. El sistema se encarga de todo.”
+          - generic [ref=e450]:
+            - generic [ref=e451]: Jorge Pérez
+            - generic [ref=e452]: Director de Academia de inglés
+        - generic [ref=e453]:
+          - generic [ref=e454]:
+            - generic [ref=e455]: AM
+            - img [ref=e456]
+          - blockquote [ref=e459]: “Mis clientes reciben recordatorios automáticos. La asistencia mejoró 100%.”
+          - generic [ref=e460]:
+            - generic [ref=e461]: Ana Martínez
+            - generic [ref=e462]: Instructora de Danza
+        - generic [ref=e463]:
+          - generic [ref=e464]:
+            - generic [ref=e465]: RS
+            - img [ref=e466]
+          - blockquote [ref=e469]: “El dashboard me muestra exactamente cómo va mi negocio cada día.”
+          - generic [ref=e470]:
+            - generic [ref=e471]: Roberto Sánchez
+            - generic [ref=e472]: Dueño de Centro de pilates
+        - generic [ref=e473]:
+          - generic [ref=e474]:
+            - generic [ref=e475]: LF
+            - img [ref=e476]
+          - blockquote [ref=e479]: “La personalización por industria es increíble. Siente como si fuera hecha para mí.”
+          - generic [ref=e480]:
+            - generic [ref=e481]: Laura Fernández
+            - generic [ref=e482]: Directora de Escuela de karate
+      - generic [ref=e483]:
+        - heading "Testimonios en video" [level=3] [ref=e484]
+        - generic [ref=e485]:
+          - generic [ref=e486] [cursor=pointer]:
+            - img [ref=e489]
+            - generic [ref=e491]:
+              - 'heading "Testimonio en video: Propietario de gimnasio" [level=4] [ref=e492]'
+              - paragraph [ref=e493]: Conoce cómo un gimnasio automatizó sus cobros y agenda
+          - generic [ref=e494] [cursor=pointer]:
+            - img [ref=e497]
+            - generic [ref=e499]:
+              - 'heading "Testimonio en video: Dueña de salón de belleza" [level=4] [ref=e500]'
+              - paragraph [ref=e501]: Descubre cómo redujo el tiempo de administración a la mitad
+    - generic [ref=e503]:
+      - generic [ref=e504]:
+        - heading "Simple y transparente" [level=2] [ref=e505]
+        - paragraph [ref=e506]: Un solo plan con todo lo que necesitas para automatizar tu negocio
+      - generic [ref=e507]:
+        - generic [ref=e508]: Precio especial beta
+        - generic [ref=e509]: App MaatWork
+        - generic [ref=e510]:
+          - generic [ref=e511]: $
+          - generic [ref=e512]: "59"
+          - generic [ref=e513]: /mes
+        - paragraph [ref=e514]: Precio de lanzamiento para los primeros clientes
+        - list [ref=e515]:
+          - listitem [ref=e516]:
+            - img [ref=e518]
+            - text: Gestión de Clientes
+          - listitem [ref=e520]:
+            - img [ref=e522]
+            - text: Control de Cobros y Cuotas
+          - listitem [ref=e524]:
+            - img [ref=e526]
+            - text: Agenda de Turnos y Clases
+          - listitem [ref=e528]:
+            - img [ref=e530]
+            - text: WhatsApp Automático
+          - listitem [ref=e532]:
+            - img [ref=e534]
+            - text: Panel para el Dueño (Dashboard)
+          - listitem [ref=e536]:
+            - img [ref=e538]
+            - text: Personalización por Industria
+          - listitem [ref=e540]:
+            - img [ref=e542]
+            - text: Soporte por WhatsApp
+          - listitem [ref=e544]:
+            - img [ref=e546]
+            - text: Capacitación Inicial
+          - listitem [ref=e548]:
+            - img [ref=e550]
+            - text: Datos 100% tuyos
+          - listitem [ref=e552]:
+            - img [ref=e554]
+            - text: Sin límites de clientes
+        - generic [ref=e556]:
+          - button "Comenzar ahora" [ref=e557] [cursor=pointer]
+          - button "Prueba gratuita 7 días" [ref=e558] [cursor=pointer]
+        - generic [ref=e559]:
+          - generic [ref=e560]: Sin tarjeta de crédito
+          - generic [ref=e561]: •
+          - generic [ref=e562]: Configuración en menos de 24hs
+      - paragraph [ref=e564]:
+        - strong [ref=e565]: "ROI en semanas:"
+        - text: El precio de un café diario vs. recuperar 15+ horas semanales
+    - generic [ref=e567]:
+      - generic [ref=e568]:
+        - heading "Preguntas frecuentes" [level=2] [ref=e569]
+        - paragraph [ref=e570]: Resolvemos tus dudas para que puedas decidir con confianza
+      - generic [ref=e571]:
+        - generic [ref=e572]:
+          - button "¿Necesito algo especial para usar MaatWork?" [ref=e573] [cursor=pointer]:
+            - generic [ref=e574]: ¿Necesito algo especial para usar MaatWork?
+            - img [ref=e576]
+          - generic [ref=e577]: Solo necesitas un celular e internet. Funciona en cualquier navegador moderno (Chrome, Safari, Firefox, Edge) y es compatible con Android, iPhone, tabletas y computadoras. No requiere hardware específico ni instalación de app nativa.
+        - generic [ref=e578]:
+          - button "¿Cuánto tarda en estar funcionando?" [ref=e579] [cursor=pointer]:
+            - generic [ref=e580]: ¿Cuánto tarda en estar funcionando?
+            - img [ref=e582]
+          - generic [ref=e583]: "El proceso completo de diagnóstico, prototipo y lanzamiento toma entre 5 y 10 días hábiles: Diagnóstico (1-2 días), Prototipo (3-7 días), Launch (1-2 días). El tiempo exacto depende de la complejidad de tu negocio y tu disponibilidad para revisiones."
+        - generic [ref=e584]:
+          - button "¿Para qué tipos de negocios funciona?" [ref=e585] [cursor=pointer]:
+            - generic [ref=e586]: ¿Para qué tipos de negocios funciona?
+            - img [ref=e588]
+          - generic [ref=e589]: "MaatWork está diseñado para negocios de servicios que manejan agenda y cobros: Gimnasios, salones de belleza y barberías, academias (idiomas, danza, karate, etc.), centros de pilates y yoga, swimming pools y clubes, consultorios profesionales, y más. La personalización por industria es una de nuestras características principales."
+        - generic [ref=e590]:
+          - button "¿Qué pasa si no me gusta?" [ref=e591] [cursor=pointer]:
+            - generic [ref=e592]: ¿Qué pasa si no me gusta?
+            - img [ref=e594]
+          - generic [ref=e595]: Ofrecemos garantía de satisfacción. Si dentro de los primeros 30 días no estás conforme, hacemos ajustes gratuitos según tu feedback. En casos excepcionales, evaluamos devoluciones. Tu satisfacción es nuestra prioridad.
+        - generic [ref=e596]:
+          - button "¿Me enseñan a usarla?" [ref=e597] [cursor=pointer]:
+            - generic [ref=e598]: ¿Me enseñan a usarla?
+            - img [ref=e600]
+          - generic [ref=e601]: Sí. El proceso de lanzamiento incluye capacitación personalizada para ti y tu equipo. Además, tienes documentación de uso y soporte por WhatsApp para cualquier duda. El interface está diseñado para ser intuitivo y fácil de usar.
+        - generic [ref=e602]:
+          - button "¿Puedo seguir usando lo que ya uso?" [ref=e603] [cursor=pointer]:
+            - generic [ref=e604]: ¿Puedo seguir usando lo que ya uso?
+            - img [ref=e606]
+          - generic [ref=e607]: Sí. MaatWork puede complementar o reemplazar gradualmente tus herramientas actuales. Tienes exportación de datos en cualquier momento y en formatos abiertos. No te obligamos a abandonar tus sistemas y no hay vendor lock-in.
+        - generic [ref=e608]:
+          - button "¿Mis datos están seguros?" [ref=e609] [cursor=pointer]:
+            - generic [ref=e610]: ¿Mis datos están seguros?
+            - img [ref=e612]
+          - generic [ref=e613]: "Tu información es 100% tuya. Aplicamos medidas de seguridad industriales: encriptación de datos en tránsito y en reposo, backups automáticos diarios, servidores seguros con redundancia. Nunca compartimos tus datos con terceros."
+        - generic [ref=e614]:
+          - button "¿El precio puede cambiar?" [ref=e615] [cursor=pointer]:
+            - generic [ref=e616]: ¿El precio puede cambiar?
+            - img [ref=e618]
+          - generic [ref=e619]: El precio de lanzamiento beta es especial y está disponible para los primeros clientes. Una vez que salgamos de beta, el precio puede ajustarse, pero los clientes actuales mantendrán su precio. Siempre habrá aviso previo de cualquier cambio.
+      - paragraph [ref=e621]:
+        - text: ¿Tienes otra pregunta?
+        - link "Contáctanos" [ref=e622] [cursor=pointer]:
+          - /url: "#contacto"
+        - text: y te respondemos personalmente.
+    - generic [ref=e625]:
+      - generic [ref=e626]:
+        - img [ref=e628]
+        - heading "Datos 100% seguros" [level=3] [ref=e631]
+        - paragraph [ref=e632]: Encriptación SSL
+      - generic [ref=e633]:
+        - img [ref=e635]
+        - heading "Rápido y ligero" [level=3] [ref=e637]
+        - paragraph [ref=e638]: Carga instantanea
+      - generic [ref=e639]:
+        - img [ref=e641]
+        - heading "Soporte humano" [level=3] [ref=e643]
+        - paragraph [ref=e644]: Atención real
+      - generic [ref=e645]:
+        - img [ref=e647]
+        - heading "Garantía 30 días" [level=3] [ref=e650]
+        - paragraph [ref=e651]: Satisfacción garantizada
+      - generic [ref=e652]:
+        - img [ref=e654]
+        - heading "SSL Seguro" [level=3] [ref=e656]
+        - paragraph [ref=e657]: Conexión encriptada
+      - generic [ref=e658]:
+        - img [ref=e660]
+        - heading "99.9% uptime" [level=3] [ref=e663]
+        - paragraph [ref=e664]: Siempre disponible
+      - generic [ref=e665]:
+        - img [ref=e667]
+        - heading "+500 usuarios" [level=3] [ref=e672]
+        - paragraph [ref=e673]: Miles confían
+      - generic [ref=e674]:
+        - img [ref=e676]
+        - heading "4.9/5 estrellas" [level=3] [ref=e678]
+        - paragraph [ref=e679]: Clientes satisfechos
+    - generic [ref=e681]:
+      - generic [ref=e682]:
+        - heading "Calcula tu ahorro" [level=2] [ref=e683]
+        - paragraph [ref=e684]: Descubre cuánto puedes ahorrar automatizando tu gestión
+      - generic [ref=e685]:
+        - generic [ref=e686]:
+          - generic [ref=e687]:
+            - generic [ref=e688]:
+              - generic [ref=e689] [cursor=pointer]: Horas diarias en tareas manuales
+              - generic [ref=e690]: 3 hrs
+            - slider "Horas diarias en tareas manuales" [ref=e691] [cursor=pointer]
+            - generic [ref=e693]:
+              - generic [ref=e694]: 1 hrs
+              - generic [ref=e695]: 12 hrs
+          - generic [ref=e696]:
+            - generic [ref=e697]:
+              - generic [ref=e698] [cursor=pointer]: Valor de tu hora de trabajo (ARS)
+              - generic [ref=e699]: $ 2.000
+            - slider "Valor de tu hora de trabajo (ARS)" [ref=e700] [cursor=pointer]
+            - generic [ref=e702]:
+              - generic [ref=e703]: $ 500
+              - generic [ref=e704]: $ 10.000
+          - generic [ref=e705]:
+            - generic [ref=e706]:
+              - generic [ref=e707] [cursor=pointer]: Días laborables por mes
+              - generic [ref=e708]: "24"
+            - slider "Días laborables por mes" [ref=e709] [cursor=pointer]
+            - generic [ref=e711]:
+              - generic [ref=e712]: "20"
+              - generic [ref=e713]: "30"
+        - generic [ref=e714]:
+          - generic [ref=e715]:
+            - paragraph [ref=e716]: Ahorro mensual
+            - paragraph [ref=e717]: $ 144.000
+            - paragraph [ref=e718]: = 72 horas/mes
+          - generic [ref=e719]:
+            - generic [ref=e720]:
+              - generic [ref=e721]: Ahorro anual
+              - generic [ref=e722]: $ 1.728.000
+            - generic [ref=e723]:
+              - generic [ref=e724]: ROI
+              - generic [ref=e725]: 243968%
+          - paragraph [ref=e726]:
+            - text: En
+            - strong [ref=e727]: 2 minutos
+            - text: recuperas el costo de MaatWork
+          - button "Comenzar ahora" [ref=e728] [cursor=pointer]:
+            - img [ref=e729]
+            - text: Comenzar ahora
+    - generic [ref=e732]:
+      - generic [ref=e733]:
+        - heading "Hablemos de tu negocio" [level=2] [ref=e734]
+        - paragraph [ref=e735]: Completa el formulario y te contactaremos pronto
+      - generic [ref=e736]:
+        - generic [ref=e737]:
+          - generic [ref=e738]: Nombre
+          - textbox "Nombre" [ref=e739]:
+            - /placeholder: Tu nombre
+        - generic [ref=e740]:
+          - generic [ref=e741]: WhatsApp
+          - textbox "WhatsApp" [ref=e742]:
+            - /placeholder: +54 9 11 1234 5678
+        - generic [ref=e743]:
+          - generic [ref=e744]: Email
+          - textbox "Email" [ref=e745]:
+            - /placeholder: tu@email.com
+        - generic [ref=e746]:
+          - generic [ref=e747]: Industria
+          - combobox "Industria" [ref=e748] [cursor=pointer]:
+            - option "Selecciona una opción" [selected]
+            - option "Gimnasio"
+            - option "Salón de belleza"
+            - option "Academia"
+            - option "Centro de pilates/yoga"
+            - option "Swimming pool"
+            - option "Consultorio profesional"
+            - option "Otro"
+        - generic [ref=e749]:
+          - generic [ref=e750]: Problema principal (opcional)
+          - textbox "Problema principal (opcional)" [ref=e751]:
+            - /placeholder: Cuéntanos tu mayor desafío...
+        - button "Enviar mensaje" [disabled] [ref=e752]:
+          - img [ref=e753]
+          - text: Enviar mensaje
+        - button "Prefiero escribir directo por WhatsApp" [ref=e756] [cursor=pointer]:
+          - img [ref=e757]
+          - text: Prefiero escribir directo por WhatsApp
+  - contentinfo [ref=e759]:
+    - generic [ref=e760]:
+      - generic [ref=e761]:
+        - generic [ref=e762]:
+          - generic [ref=e763]: MaatWork
+          - paragraph [ref=e764]: Automatización comercial para negocios que no quieren perder tiempo.
+          - generic [ref=e765]:
+            - link "Instagram" [ref=e766] [cursor=pointer]:
+              - /url: https://instagram.com/maatwork
+              - img [ref=e767]
+            - link "LinkedIn" [ref=e770] [cursor=pointer]:
+              - /url: https://linkedin.com/company/maatwork
+              - img [ref=e771]
+            - link "WhatsApp" [ref=e774] [cursor=pointer]:
+              - /url: https://wa.me/5491130916574
+              - img [ref=e775]
+        - generic [ref=e777]:
+          - heading "Producto" [level=4] [ref=e778]
+          - list [ref=e779]:
+            - listitem [ref=e780]:
+              - link "Características" [ref=e781] [cursor=pointer]:
+                - /url: "#caracteristicas"
+            - listitem [ref=e782]:
+              - link "Precios" [ref=e783] [cursor=pointer]:
+                - /url: "#precios"
+            - listitem [ref=e784]:
+              - link "Cómo funciona" [ref=e785] [cursor=pointer]:
+                - /url: "#como-funciona"
+            - listitem [ref=e786]:
+              - link "Testimonios" [ref=e787] [cursor=pointer]:
+                - /url: "#testimonios"
+        - generic [ref=e788]:
+          - heading "Empresa" [level=4] [ref=e789]
+          - list [ref=e790]:
+            - listitem [ref=e791]:
+              - link "Sobre nosotros" [ref=e792] [cursor=pointer]:
+                - /url: "#sobre-nosotros"
+            - listitem [ref=e793]:
+              - link "Blog" [ref=e794] [cursor=pointer]:
+                - /url: "#blog"
+            - listitem [ref=e795]:
+              - link "Contacto" [ref=e796] [cursor=pointer]:
+                - /url: "#contacto"
+        - generic [ref=e797]:
+          - heading "Legal" [level=4] [ref=e798]
+          - list [ref=e799]:
+            - listitem [ref=e800]:
+              - link "Privacidad" [ref=e801] [cursor=pointer]:
+                - /url: /privacidad
+            - listitem [ref=e802]:
+              - link "Términos" [ref=e803] [cursor=pointer]:
+                - /url: /terminos
+            - listitem [ref=e804]:
+              - link "Cookies" [ref=e805] [cursor=pointer]:
+                - /url: /cookies
+      - generic [ref=e806]:
+        - 'link "WhatsApp: +54 9 11 3091 6574" [ref=e807] [cursor=pointer]':
+          - /url: https://wa.me/5491130916574?text=Hola%2C%20quiero%20más%20información
+        - 'link "Email: info@maatwork.com" [ref=e808] [cursor=pointer]':
+          - /url: mailto:info@maatwork.com
+        - generic [ref=e809]: "Horario: Lun a Vie 9 a 18hs"
+      - paragraph [ref=e811]: © 2026 MaatWork. Todos los derechos reservados.
+  - button "Contactar por WhatsApp" [ref=e812] [cursor=pointer]:
+    - img [ref=e813]
+    - generic: Habla con nosotros
+  - button "Open Next.js Dev Tools" [ref=e820] [cursor=pointer]:
+    - img [ref=e821]

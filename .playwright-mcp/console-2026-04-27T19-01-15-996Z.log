@@ -1,0 +1,16 @@
+[     486ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[     578ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[    1000ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[   66953ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[   67004ms] [LOG] [Fast Refresh] done in 13ms @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[   75499ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[   75519ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[   75773ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  147361ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=Y9EAG-61Xtm8i0QRJZqCf' failed:  @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_client_0s4qb2-._.js:13299
+[  150702ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=Y9EAG-61Xtm8i0QRJZqCf' failed:  @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_client_0s4qb2-._.js:13299
+[  154059ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=Y9EAG-61Xtm8i0QRJZqCf' failed:  @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_client_0s4qb2-._.js:13299
+[  157417ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=Y9EAG-61Xtm8i0QRJZqCf' failed:  @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_client_0s4qb2-._.js:13299
+[  159566ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  160266ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  160291ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431
+[  160478ms] [WARNING] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead. @ http://localhost:3000/_next/static/chunks/0_wq_next_dist_0y2ivxh._.js:2431

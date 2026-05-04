@@ -24,11 +24,17 @@
 .DS_Store
 *.pem
 
+# debug screenshots
+*.png
+
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+
+# playwright
+.playwright-mcp/
 
 # env files (can opt-in for committing if needed)
 .env*
