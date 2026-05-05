@@ -42,9 +42,11 @@ export function ScrollReactiveProvider({ children }: ScrollReactiveProviderProps
       try {
         const Lenis = (await import('lenis')).default;
         const lenis = new Lenis({
-          lerp: 0.08,
-          duration: 1.2,
+          lerp: 0.1,
+          duration: 0.8,
           smoothWheel: true,
+          wheelMultiplier: 1,
+          touchMultiplier: 1,
         });
 
         if (!mounted) {
@@ -77,6 +79,7 @@ export function ScrollReactiveProvider({ children }: ScrollReactiveProviderProps
 
       } catch {
         console.warn('Lenis failed to load, using native scroll');
+        if (!mounted) return;
 
         const handleScroll = () => {
           if (!mounted) return;
@@ -87,7 +90,7 @@ export function ScrollReactiveProvider({ children }: ScrollReactiveProviderProps
           setScrollState(prev => ({
             ...prev,
             scrollProgress: progress,
-            scrollVelocity: prev.scrollVelocity * 0.5,
+            scrollVelocity: 0,
             scrollY,
           }));
         };

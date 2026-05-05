@@ -46,8 +46,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
 * {
@@ -61,8 +61,30 @@ html {
 body {
   background: var(--background-dark);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-body), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings use display font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), system-ui, -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Smooth native scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Section scroll margin for navbar offset */
+section[id] {
+  scroll-margin-top: 80px;
 }
 
 /* Custom scrollbar */
@@ -83,13 +105,196 @@ body {
   background: var(--primary-500);
 }
 
-/* Gradient text utility */
+/* Gradient text utility - vibrant multicolor */
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary-400) 0%, var(--accent-500) 100%);
+  background: linear-gradient(
+    135deg,
+    #f0abfc 0%,
+    #c084fc 20%,
+    #a855f7 35%,
+    #7c3aed 50%,
+    #ec4899 65%,
+    #f472b6 80%,
+    #c084fc 100%
+  );
+  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.5));
 }
+
+/* Elegant text shadow for headings */
+.text-glow {
+  text-shadow: 
+    0 0 15px rgba(168, 85, 247, 0.4),
+    0 0 30px rgba(168, 85, 247, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Subtle shimmer effect for premium text */
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    #f8fafc 0%,
+    #c4b5fd 25%,
+    #f8fafc 50%,
+    #c4b5fd 75%,
+    #f8fafc 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* animation: shimmer 3s ease-in-out infinite; DISABLED for performance */
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Letter spacing improvements */
+.tracking-tight { letter-spacing: -0.03em; }
+.tracking-wide-enhanced { letter-spacing: 0.08em; }
+.tracking-widest-enhanced { letter-spacing: 0.15em; }
+
+/* Elegant divider with gradient */
+.divider-gradient {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(139, 92, 246, 0.5) 50%, transparent 100%);
+}
+
+/* Animated checkmark for lists */
+.check-item {
+  position: relative;
+  padding-left: 1.75rem;
+}
+
+.check-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 0.25rem;
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.3) 100%);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+}
+
+.check-item::after {
+  content: '';
+  position: absolute;
+  left: 0.25em;
+  top: 0.35em;
+  width: 0.5em;
+  height: 0.25em;
+  border-left: 2px solid #4ade80;
+  border-bottom: 2px solid #4ade80;
+  transform: rotate(-45deg);
+  animation: check-pop 0.3s ease-out forwards;
+}
+
+@keyframes check-pop {
+  0% { transform: rotate(-45deg) scale(0); opacity: 0; }
+  50% { transform: rotate(-45deg) scale(1.2); }
+  100% { transform: rotate(-45deg) scale(1); opacity: 1; }
+}
+
+/* Gradient ring for avatars */
+.avatar-ring {
+  position: relative;
+}
+
+.avatar-ring::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 50%, #c4b5fd 100%);
+  z-index: -1;
+  opacity: 0.7;
+}
+
+/* Social icon hover effect */
+.social-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.social-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.2);
+}
+
+/* FAQ accordion left border accent */
+.faq-item {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.faq-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #a78bfa 0%, #ec4899 100%);
+  border-radius: 0 2px 2px 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.faq-item.active::before {
+  opacity: 1;
+}
+
+.faq-item.active {
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+}
+
+/* Chevron rotation with glow */
+.chevron-glow {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.chevron-glow.rotated {
+  transform: rotate(180deg);
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.6));
+}
+
+/* Section heading underline accent */
+.heading-accent {
+  position: relative;
+  display: inline-block;
+}
+
+.heading-accent::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.6), transparent);
+}
+
+/* Uppercase label style */
+.label-uppercase {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Will-change for performance */
+.will-change-transform { will-change: transform; }
+.will-change-opacity { will-change: opacity; }
+.will-change-all { will-change: transform, opacity; }
 
 /* Glow effects */
 .glow-primary {
@@ -179,7 +384,7 @@ body {
 
 .animate-gradient {
   background-size: 200% 200%;
-  animation: gradient-shift 8s ease infinite;
+  /* animation: gradient-shift 8s ease infinite; DISABLED for performance */
 }
 
 .animate-fade-in-up {
@@ -346,6 +551,19 @@ body {
   padding: 80px 24px;
 }
 
+/* Section vertical padding */
+.section-y {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-y {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
 @media (min-width: 768px) {
   .section-padding {
     padding: 120px 48px;
@@ -397,4 +615,154 @@ body {
   overflow: visible;
   clip: auto;
   white-space: normal;
+}
+
+/* ============================================
+   UNIFIED DESIGN SYSTEM
+   Consistent tokens for all components
+   ============================================ */
+
+/* Card Base - Consistent card styling */
+.card-base {
+  background: linear-gradient(135deg, rgba(15, 15, 35, 0.9) 0%, rgba(10, 10, 26, 0.9) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.card-base:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.15);
+}
+
+/* Section Card - Inner card elements */
+.section-card {
+  background: rgba(10, 10, 26, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 0.75rem;
+}
+
+/* Icon Container - Consistent icon styling */
+.icon-container {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(88, 28, 135, 0.3) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c4b5fd;
+}
+
+/* Section Header - Consistent section titles */
+.section-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.section-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #f8fafc;
+}
+
+.section-header p {
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+/* Input Base - Consistent form inputs */
+.input-base {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(88, 28, 135, 0.4);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 0.75rem;
+  color: #f8fafc;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.input-base::placeholder {
+  color: #64748b;
+}
+
+.input-base:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.7);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+/* Testimonial Card */
+.testimonial-card {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.4) 0%, rgba(30, 27, 75, 0.4) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.testimonial-card:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+/* FAQ Item */
+.faq-item-base {
+  background: rgba(10, 10, 26, 0.9);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.faq-item-base.active {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: linear-gradient(90deg, rgba(88, 28, 135, 0.3) 0%, transparent 100%);
+}
+
+/* Step Circle - For process steps */
+.step-circle {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #f8fafc;
+  font-size: 1.125rem;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+}
+
+/* Problem/Solution Cards */
+.problem-card {
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.5) 0%, rgba(30, 27, 75, 0.3) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.solution-card {
+  background: linear-gradient(135deg, rgba(21, 128, 61, 0.4) 0%, rgba(30, 27, 75, 0.3) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+/* Feature Card */
+.feature-card {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.4) 0%, rgba(30, 27, 75, 0.3) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
 }
