@@ -1224,57 +1224,54 @@ interface ShootingStar {
 function ShootingStars() {
   const starsDataRef = useRef<ShootingStar[]>([]);
   const nextId = useRef(0);
-  const [stars, setStars] = useState<ShootingStar[]>([]);
+  const renderKeyRef = useRef(0);
+  const [, forceUpdate] = useState(0);
   const { shouldUpdate } = useFrameLimiter(30);
 
-  useEffect(() => {
-    const spawn = () => {
-      if (starsDataRef.current.length >= 3) return;
-      const newStar: ShootingStar = {
-        id: nextId.current++,
-        startX: (Math.random() - 0.5) * 100,
-        startY: 35 + Math.random() * 25,
-        vx: (Math.random() - 0.4) * 15,
-        vy: -35 - Math.random() * 20,
-        vz: (Math.random() - 0.5) * 4,
-        age: 0,
-        maxAge: 1.5 + Math.random() * 0.8,
-        brightness: 0.9 + Math.random() * 0.1
-      };
-      starsDataRef.current.push(newStar);
-      setStars(prev => [...prev, newStar]);
+  const spawn = useCallback(() => {
+    if (starsDataRef.current.length >= 3) return;
+    const newStar: ShootingStar = {
+      id: nextId.current++,
+      startX: (Math.random() - 0.5) * 100,
+      startY: 35 + Math.random() * 25,
+      vx: (Math.random() - 0.4) * 15,
+      vy: -35 - Math.random() * 20,
+      vz: (Math.random() - 0.5) * 4,
+      age: 0,
+      maxAge: 1.5 + Math.random() * 0.8,
+      brightness: 0.9 + Math.random() * 0.1
     };
-
-    setTimeout(spawn, 1000);
-
-    const interval = setInterval(() => {
-      spawn();
-    }, 4000 + Math.random() * 3000);
-    return () => clearInterval(interval);
+    starsDataRef.current = [...starsDataRef.current, newStar];
+    forceUpdate(k => k + 1);
   }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(spawn, 1000);
+    const interval = setInterval(spawn, 4000 + Math.random() * 3000);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [spawn]);
 
   useFrame((_, delta) => {
     if (!shouldUpdate()) return;
 
-    let hasDeadStars = false;
+    const before = starsDataRef.current.length;
     starsDataRef.current = starsDataRef.current.filter(s => {
       s.age += delta;
-      if (s.age >= s.maxAge) {
-        hasDeadStars = true;
-        return false;
-      }
-      return true;
+      return s.age < s.maxAge;
     });
 
-    if (hasDeadStars) {
-      setStars(starsDataRef.current);
+    if (starsDataRef.current.length !== before) {
+      forceUpdate(k => k + 1);
     }
   });
 
   return (
     <>
-      {stars.map(s => (
-        <ShootingStarTrail key={s.id} {...s} />
+      {starsDataRef.current.map(s => (
+        <ShootingStarTrail key={`star-${s.id}`} {...s} />
       ))}
     </>
   );
