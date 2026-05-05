@@ -3,7 +3,7 @@
 import { useRef, useMemo, useEffect, useState, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { useVisibilityState, useAdaptiveQuality } from './effects/AdaptiveQuality';
+import { useVisibilityState, useAdaptiveQuality, useFrameLimiter } from './effects/AdaptiveQuality';
 
 // ============================================
 // SHADERS - TRUE REALISM
@@ -120,12 +120,12 @@ const NEBULA_FRAGMENT = `
                mix(hash21(i + vec2(0,1)), hash21(i + vec2(1,1)), f.x), f.y);
   }
 
-  // 3D-style FBM for volumetric feel
+  // 3D-style FBM for volumetric feel - optimized from 8 to 4 octavas
   float fbm3(vec2 p, float time) {
     float v = 0.0, a = 0.5;
     vec2 shift = vec2(100.0);
     mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.5));
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 4; i++) {
       v += a * noise(p);
       p = rot * p * 2.0 + shift;
       a *= 0.5;
@@ -189,7 +189,7 @@ const GALAXY_FRAGMENT = `
   }
   float fbm(vec2 p) {
     float v = 0.0, a = 0.5;
-    for (int i = 0; i < 6; i++) { v += a * noise(p); p *= 2.1; a *= 0.5; }
+    for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.1; a *= 0.5; }
     return v;
   }
 
@@ -636,7 +636,7 @@ const CLOUD_FRAGMENT = `
   float fbm2(vec2 p) {
     float v = 0.0, a = 0.5;
     mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 4; i++) {
       v += a * noise2(p);
       p = rot * p * 2.0;
       a *= 0.5;
@@ -808,6 +808,7 @@ function StarField({ count, radius, size, depthZ, spread, orbitSpeed = 0.01 }: O
   const ref = useRef<THREE.Points>(null);
   const groupRef = useRef<THREE.Group>(null);
   const rotationRef = useRef(0);
+  const { shouldUpdate } = useFrameLimiter(30);
 
   // Static positions - no per-frame calculations needed
   const data = useMemo(() => {
@@ -862,6 +863,7 @@ function StarField({ count, radius, size, depthZ, spread, orbitSpeed = 0.01 }: O
 
   // Single rotation update per frame - extremely cheap
   useFrame((_, delta) => {
+    if (!shouldUpdate()) return;
     if (!groupRef.current) return;
 
     rotationRef.current += delta * orbitSpeed;
@@ -914,13 +916,15 @@ interface PlanetProps {
   planetType?: number; // 0=rocky, 1=gas, 2=ice, 3=ocean
   cloudColor?: string;
   cloudIntensity?: number;
+  geometryDetail?: number; // 0.4 to 1.0 multiplier for segment counts
 }
 
 function Planet({
   orbitRadiusX, orbitRadiusY, orbitSpeed, size, color1, color2,
   roughness, atmosphereColor, atmosphereIntensity, rotationSpeed,
   initialAngle, hasRing = false, ringColor = '#ffffff', tilt = 0,
-  planetType = 0, cloudColor = '#ffffff', cloudIntensity = 0.5
+  planetType = 0, cloudColor = '#ffffff', cloudIntensity = 0.5,
+  geometryDetail = 1
 }: PlanetProps) {
   const groupRef = useRef<THREE.Group>(null);
   const planetRef = useRef<THREE.Mesh>(null);
@@ -930,6 +934,12 @@ function Planet({
   const seedRef = useRef(Math.random() * 100);
   const targetPos = useRef({ x: 0, y: 0, z: 0 });
   const currentPos = useRef({ x: 0, y: 0, z: 0 });
+
+  // Geometry segments based on quality
+  const segments = Math.max(16, Math.round(48 * geometryDetail));
+  const atmosphereSegments = Math.max(12, Math.round(48 * geometryDetail));
+  const outerAtmosphereSegments = Math.max(8, Math.round(32 * geometryDetail));
+  const ringSegments = Math.max(32, Math.round(64 * geometryDetail));
 
   const sunDirection = useMemo(() => new THREE.Vector3(0.6, 0.4, 0.5).normalize(), []);
 
@@ -1014,9 +1024,9 @@ function Planet({
 
   return (
     <group ref={groupRef} rotation={[tilt, 0, 0]}>
-      {/* Main planet surface - higher segments for smoothness */}
+      {/* Main planet surface - optimized segments for performance */}
       <mesh ref={planetRef}>
-        <sphereGeometry args={[size, 192, 192]} />
+        <sphereGeometry args={[size, segments, segments]} />
         <shaderMaterial
           uniforms={planetUniforms}
           vertexShader={PLANET_VERTEX}
@@ -1026,7 +1036,7 @@ function Planet({
 
       {/* Cloud layer */}
       <mesh ref={cloudRef} scale={[1.03, 1.03, 1.03]}>
-        <sphereGeometry args={[size, 128, 128]} />
+        <sphereGeometry args={[size, segments, segments]} />
         <shaderMaterial
           uniforms={cloudUniforms}
           vertexShader={CLOUD_VERTEX}
@@ -1039,7 +1049,7 @@ function Planet({
 
       {/* Atmosphere - smooth volumetric scattering */}
       <mesh scale={[1.1, 1.1, 1.1]}>
-        <sphereGeometry args={[size, 96, 96]} />
+        <sphereGeometry args={[size, atmosphereSegments, atmosphereSegments]} />
         <shaderMaterial
           uniforms={atmosphereUniforms}
           vertexShader={ATMOSPHERE_VERTEX}
@@ -1053,7 +1063,7 @@ function Planet({
 
       {/* Outer glow */}
       <mesh scale={[1.2, 1.2, 1.2]}>
-        <sphereGeometry args={[size, 64, 64]} />
+        <sphereGeometry args={[size, outerAtmosphereSegments, outerAtmosphereSegments]} />
         <shaderMaterial
           uniforms={atmosphereUniforms}
           vertexShader={ATMOSPHERE_VERTEX}
@@ -1068,7 +1078,7 @@ function Planet({
       {/* Ring */}
       {hasRing && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[size * 1.5, size * 2.3, 128]} />
+          <ringGeometry args={[size * 1.5, size * 2.3, ringSegments]} />
           <shaderMaterial
             uniforms={ringUniforms}
             vertexShader={RING_VERTEX}
@@ -1104,6 +1114,7 @@ interface NebulaCloudProps {
 function NebulaCloud({ position, scale, colors, opacity, flowSpeed, zPos }: NebulaCloudProps) {
   const ref = useRef<THREE.Mesh>(null);
   const rotationRef = useRef(Math.random() * Math.PI * 2);
+  const { shouldUpdate } = useFrameLimiter(30);
 
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
@@ -1115,6 +1126,7 @@ function NebulaCloud({ position, scale, colors, opacity, flowSpeed, zPos }: Nebu
   }), [colors, opacity]);
 
   useFrame(() => {
+    if (!shouldUpdate()) return;
     if (!ref.current) return;
     const mat = ref.current.material as THREE.ShaderMaterial;
     mat.uniforms.uTime.value = performance.now() * 0.001;
@@ -1140,11 +1152,13 @@ function GalacticCore() {
   const glowRef = useRef<THREE.Mesh>(null);
   const glowPosRef = useRef({ x: 0, y: 0 });
   const timeRef = useRef(0);
+  const { shouldUpdate } = useFrameLimiter(30);
 
   const diskUniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
   const glowUniforms = useMemo(() => ({ uTime: { value: 0 } }), []);
 
   useFrame((_, delta) => {
+    if (!shouldUpdate()) return;
     timeRef.current += delta;
     const t = timeRef.current;
 
@@ -1208,14 +1222,15 @@ interface ShootingStar {
 }
 
 function ShootingStars() {
-  const starsRef = useRef<ShootingStar[]>([]);
+  const starsDataRef = useRef<ShootingStar[]>([]);
   const nextId = useRef(0);
-  const [, forceUpdate] = useState(0);
+  const [stars, setStars] = useState<ShootingStar[]>([]);
+  const { shouldUpdate } = useFrameLimiter(30);
 
   useEffect(() => {
     const spawn = () => {
-      if (starsRef.current.length >= 3) return;
-      starsRef.current.push({
+      if (starsDataRef.current.length >= 3) return;
+      const newStar: ShootingStar = {
         id: nextId.current++,
         startX: (Math.random() - 0.5) * 100,
         startY: 35 + Math.random() * 25,
@@ -1225,30 +1240,40 @@ function ShootingStars() {
         age: 0,
         maxAge: 1.5 + Math.random() * 0.8,
         brightness: 0.9 + Math.random() * 0.1
-      });
-      forceUpdate(n => n + 1);
+      };
+      starsDataRef.current.push(newStar);
+      setStars(prev => [...prev, newStar]);
     };
 
-    // Spawn first star quickly
     setTimeout(spawn, 1000);
-    
-    const interval = setInterval(spawn, 4000 + Math.random() * 3000);
+
+    const interval = setInterval(() => {
+      spawn();
+    }, 4000 + Math.random() * 3000);
     return () => clearInterval(interval);
   }, []);
 
   useFrame((_, delta) => {
-    let needsUpdate = false;
-    starsRef.current = starsRef.current.filter(s => {
+    if (!shouldUpdate()) return;
+
+    let hasDeadStars = false;
+    starsDataRef.current = starsDataRef.current.filter(s => {
       s.age += delta;
-      needsUpdate = true;
-      return s.age < s.maxAge;
+      if (s.age >= s.maxAge) {
+        hasDeadStars = true;
+        return false;
+      }
+      return true;
     });
-    if (needsUpdate) forceUpdate(n => n + 1);
+
+    if (hasDeadStars) {
+      setStars(starsDataRef.current);
+    }
   });
 
   return (
     <>
-      {starsRef.current.map(s => (
+      {stars.map(s => (
         <ShootingStarTrail key={s.id} {...s} />
       ))}
     </>
@@ -1263,7 +1288,6 @@ function ShootingStarTrail({ startX, startY, vx, vy, vz, age, maxAge, brightness
   const ageRef = useRef(age);
   const segments = 18;
 
-  // Keep ageRef in sync with prop
   useEffect(() => {
     ageRef.current = age;
   }, [age]);
@@ -1366,6 +1390,7 @@ function Scene({ viewport }: {
   // Responsive scaling
   const scaleFactor = viewport.isMobile ? 0.6 : viewport.isTablet ? 0.8 : 1;
   const starMultiplier = quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.7 : 0.4;
+  const geometryDetail = quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.6 : 0.4;
 
   return (
     <>
@@ -1404,6 +1429,7 @@ function Scene({ viewport }: {
         roughness={0.85} atmosphereColor="#e8c4a0" atmosphereIntensity={2.2}
         rotationSpeed={0.1} initialAngle={0.5} hasRing={true} ringColor="#f0e0c8"
         tilt={0.2} cloudColor="#ffeedd" cloudIntensity={0.4}
+        geometryDetail={geometryDetail}
       />
 
       {/* Ice giant - Neptune-like - middle orbit */}
@@ -1413,6 +1439,7 @@ function Scene({ viewport }: {
         roughness={0.6} atmosphereColor="#5aa0d8" atmosphereIntensity={2.4}
         rotationSpeed={0.14} initialAngle={2.2} tilt={-0.12}
         cloudColor="#a0d0f8" cloudIntensity={0.6}
+        geometryDetail={geometryDetail}
       />
 
       {/* Ocean planet - Earth-like - outer orbit */}
@@ -1422,6 +1449,7 @@ function Scene({ viewport }: {
         roughness={0.7} atmosphereColor="#6090d8" atmosphereIntensity={2.6}
         rotationSpeed={0.16} initialAngle={4.5} tilt={0.08}
         cloudColor="#ffffff" cloudIntensity={0.7}
+        geometryDetail={geometryDetail}
       />
 
       {/* ========================================== */}

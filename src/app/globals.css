@@ -77,11 +77,6 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
-/* Smooth native scroll */
-html {
-  scroll-behavior: smooth;
-}
-
 /* Section scroll margin for navbar offset */
 section[id] {
   scroll-margin-top: 80px;
