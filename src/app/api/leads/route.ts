@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { leadSchema } from '@/lib/schemas/lead.schema'
 import { createLead } from '@/lib/services/neon'
-import { sendSlackNotification } from '@/lib/services/slack'
 
 export const runtime = 'nodejs'
 
@@ -113,11 +112,6 @@ export async function POST(
       source: 'landing_page',
       ip_address: getClientIp(request),
       user_agent: request.headers.get('user-agent') ?? undefined,
-    })
-
-    // Fire-and-forget: Slack notification is non-critical
-    void sendSlackNotification(lead).catch((err: unknown) => {
-      console.error('[Lead API] Slack notification failed:', err)
     })
 
     return NextResponse.json(
