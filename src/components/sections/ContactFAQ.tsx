@@ -69,7 +69,7 @@ export default function ContactFAQ() {
     const message = encodeURIComponent(
       `¡Hola! Me gustaría contactarlos.\n\nNombre: ${formData.name}\nWhatsApp: ${formData.whatsapp}\nIndustria: ${formData.industry}`
     );
-    window.open(`https://wa.me/5491130916574?text=${message}`, '_blank');
+    window.open(`https://wa.me/542994569840?text=${message}`, '_blank');
     setSubmitted(true);
     setIsSubmitting(false);
   };
@@ -202,7 +202,7 @@ export default function ContactFAQ() {
         {/* WhatsApp Direct */}
         <div className="text-center mt-10">
           <a
-            href="https://wa.me/5491130916574?text=Hola!%20Quiero%20más%20información%20sobre%20MaatWork"
+            href="https://wa.me/542994569840?text=Hola!%20Quiero%20más%20información%20sobre%20MaatWork"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 text-green-400 hover:text-green-300 text-base"

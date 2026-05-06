@@ -6,7 +6,7 @@ const NAV_LINKS = [
 ];
 
 const CONTACT = {
-  whatsapp: '+54 9 11 3091 6574',
+  whatsapp: '+54 9 299 456 9840',
   email: 'info@maatwork.com',
 };
 

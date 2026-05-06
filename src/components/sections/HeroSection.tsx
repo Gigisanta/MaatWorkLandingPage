@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-const WHATSAPP_LINK = 'https://wa.me/5491130916574?text=Hola!%20Quiero%20probar%20MaatWork%20gratis';
+const WHATSAPP_LINK = 'https://wa.me/542994569840?text=Hola!%20Quiero%20probar%20MaatWork%20gratis';
 
 const TRUST_BADGES = [
   { value: '+1 año', label: 'desarrollo' },

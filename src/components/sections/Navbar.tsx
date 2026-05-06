@@ -8,7 +8,7 @@ const NAV_LINKS = [
   { href: '#contact', label: 'Contacto' },
 ];
 
-const WHATSAPP_LINK = 'https://wa.me/5491130916574?text=Hola!%20Quiero%20probar%20MaatWork%20gratis';
+const WHATSAPP_LINK = 'https://wa.me/542994569840?text=Hola!%20Quiero%20probar%20MaatWork%20gratis';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);

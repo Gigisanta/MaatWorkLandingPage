@@ -152,7 +152,7 @@ export default function AllInOne() {
         {/* CTA */}
         <div className="text-center">
           <a
-            href="https://wa.me/5491130916574?text=Hola!%20Quiero%20saber%20más%20sobre%20cómo%20funciona%20MaatWork"
+            href="https://wa.me/542994569840?text=Hola!%20Quiero%20saber%20más%20sobre%20cómo%20funciona%20MaatWork"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-green inline-flex items-center gap-2 px-8 py-4 text-lg"

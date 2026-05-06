@@ -1,6 +1,6 @@
 'use client';
 
-const WHATSAPP_LINK = 'https://wa.me/5491130916574?text=Hola!%20Quiero%20más%20información%20sobre%20MaatWork';
+const WHATSAPP_LINK = 'https://wa.me/542994569840?text=Hola!%20Quiero%20más%20información%20sobre%20MaatWork';
 
 export default function FloatingWhatsApp() {
   return (
