@@ -47,6 +47,10 @@ export default function ROIPricing() {
   const [hourValue, setHourValue] = useState(2000);
   const [daysPerMonth, setDaysPerMonth] = useState(24);
   const [isVisible, setIsVisible] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [miniFormData, setMiniFormData] = useState({ nombre: '', whatsapp: '', email: '' });
+  const [miniFormSubmitted, setMiniFormSubmitted] = useState(false);
+  const [isSubmittingMini, setIsSubmittingMini] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   const calculations = useMemo(() => {
@@ -74,6 +78,43 @@ export default function ROIPricing() {
       currency: 'ARS',
       maximumFractionDigits: 0,
     }).format(num);
+
+  const handleSliderChange = (setter: React.Dispatch<React.SetStateAction<number>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setter(Number(e.target.value));
+    if (!hasInteracted) setHasInteracted(true);
+  };
+
+  const handleMiniFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!miniFormData.nombre || !miniFormData.whatsapp) return;
+
+    setIsSubmittingMini(true);
+    try {
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: miniFormData.nombre,
+          whatsapp: miniFormData.whatsapp.replace(/\s/g, ''),
+          email: miniFormData.email || undefined,
+          industria: 'no_define',
+          problema: `Calculó ahorro mensual de ${formatNumber(calculations.monthlySavings)} con el calculator`,
+          procesos: [],
+          source: 'roi_calculator',
+        }),
+      });
+
+      const message = encodeURIComponent(
+        `¡Hola! Usé la calculadora de MaatWork y calculé un ahorro de ${formatNumber(calculations.monthlySavings)}/mes.\n\nMi nombre: ${miniFormData.nombre}\nWhatsApp: ${miniFormData.whatsapp}`
+      );
+      window.open(`https://wa.me/542994569840?text=${message}`, '_blank');
+      setMiniFormSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting mini form:', error);
+    } finally {
+      setIsSubmittingMini(false);
+    }
+  };
 
   return (
     <section
@@ -112,7 +153,7 @@ export default function ROIPricing() {
                       min="1"
                       max="12"
                       value={hoursPerDay}
-                      onChange={(e) => setHoursPerDay(Number(e.target.value))}
+                      onChange={handleSliderChange(setHoursPerDay)}
                       className="w-full h-2 bg-violet-950/80 rounded-full appearance-none cursor-pointer accent-violet-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(139,92,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer"
                     />
                     <div className="flex justify-between text-xs text-slate-500">
@@ -132,7 +173,7 @@ export default function ROIPricing() {
                       max="10000"
                       step="500"
                       value={hourValue}
-                      onChange={(e) => setHourValue(Number(e.target.value))}
+                      onChange={handleSliderChange(setHourValue)}
                       className="w-full h-2 bg-violet-950/80 rounded-full appearance-none cursor-pointer accent-violet-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(139,92,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer"
                     />
                     <div className="flex justify-between text-xs text-slate-500">
@@ -151,7 +192,7 @@ export default function ROIPricing() {
                       min="20"
                       max="30"
                       value={daysPerMonth}
-                      onChange={(e) => setDaysPerMonth(Number(e.target.value))}
+                      onChange={handleSliderChange(setDaysPerMonth)}
                       className="w-full h-2 bg-violet-950/80 rounded-full appearance-none cursor-pointer accent-violet-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(139,92,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer"
                     />
                     <div className="flex justify-between text-xs text-slate-500">
@@ -168,7 +209,7 @@ export default function ROIPricing() {
                   <p className="text-4xl md:text-5xl font-bold text-center gradient-text mb-3">
                     {isVisible ? <AnimatedNumber value={calculations.monthlySavings} duration={800} /> : '$0'}
                   </p>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="bg-violet-950/40 rounded-lg p-3 text-center">
                       <p className="text-2xl font-bold text-white">{isVisible ? <AnimatedNumber value={calculations.monthlyHours} duration={600} /> : '0'}h</p>
                       <p className="text-xs text-slate-400">hrs/mes</p>
@@ -192,12 +233,69 @@ export default function ROIPricing() {
                   <span className="text-green-300/80 text-sm">ROI en el primer mes</span>
                 </div>
 
+                {/* Mini Lead Form - appears after interaction */}
+                {hasInteracted && !miniFormSubmitted && (
+                  <div className="mt-4 p-4 bg-violet-950/40 border border-violet-700/30 rounded-xl">
+                    <p className="text-white text-sm font-medium mb-3 text-center">
+                      Guardá tu cálculo y te contactamos con un plan personalizado
+                    </p>
+                    <form onSubmit={handleMiniFormSubmit} className="space-y-3">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Tu nombre"
+                        value={miniFormData.nombre}
+                        onChange={(e) => setMiniFormData({ ...miniFormData, nombre: e.target.value })}
+                        className="input-base text-sm"
+                      />
+                      <input
+                        type="tel"
+                        required
+                        placeholder="WhatsApp"
+                        value={miniFormData.whatsapp}
+                        onChange={(e) => setMiniFormData({ ...miniFormData, whatsapp: e.target.value })}
+                        className="input-base text-sm"
+                      />
+                      <input
+                        type="email"
+                        placeholder="Email (opcional)"
+                        value={miniFormData.email}
+                        onChange={(e) => setMiniFormData({ ...miniFormData, email: e.target.value })}
+                        className="input-base text-sm"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSubmittingMini}
+                        className="btn-green w-full py-2 text-sm disabled:opacity-50"
+                      >
+                        {isSubmittingMini ? 'Guardando...' : 'Guardar y continuar'}
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                {miniFormSubmitted && (
+                  <div className="mt-4 p-4 bg-green-900/30 border border-green-700/30 rounded-xl text-center">
+                    <p className="text-green-400 font-medium">¡Guardado! Te redirigimos a WhatsApp...</p>
+                  </div>
+                )}
+
               </div>
             </div>
 
             {/* Pricing Card - 40% */}
             <div className="md:col-span-4">
               <div className="card-base p-5">
+                {/* Urgency Badge */}
+                <div className="mb-4">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 bg-orange-900/40 border border-orange-700/40 rounded-full text-xs text-orange-300">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    Spots limitados este mes
+                  </span>
+                </div>
+
                 <div className="text-center mb-5">
                   <h3 className="text-xl font-bold text-white mb-1">Simple y transparente</h3>
                   <p className="text-slate-400 text-sm">Un solo plan con todo incluido</p>

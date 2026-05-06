@@ -44,34 +44,122 @@ const FAQS = [
 ];
 
 const INDUSTRIES = [
-  'Gimnasio',
-  'Salón de belleza',
-  'Academia / Escuela',
-  'Centro de pilates / Yoga',
-  'Consultorio profesional',
-  'Otro',
+  { value: 'gimnasio', label: 'Gimnasio' },
+  { value: 'peluqueria', label: 'Salón de belleza' },
+  { value: 'academia', label: 'Academia / Escuela' },
+  { value: 'consultorio', label: 'Consultorio profesional' },
+  { value: 'natatorio', label: 'Natatorio / Pileta' },
+  { value: 'otro', label: 'Otro' },
 ];
+
+const PROCESOS = [
+  { value: 'agenda', label: 'Agenda de turnos' },
+  { value: 'cobros', label: 'Cobros y cuotas' },
+  { value: 'whatsapp', label: 'WhatsApp automático' },
+  { value: 'clientes', label: 'Gestión de clientes' },
+  { value: 'reportes', label: 'Reportes y métricas' },
+];
+
+const PRESUPUESTO_OPTIONS = [
+  { value: 'menos_50k', label: 'Menos de $50.000/mes' },
+  { value: '50k_150k', label: '$50.000 - $150.000/mes' },
+  { value: '150k_500k', label: '$150.000 - $500.000/mes' },
+  { value: 'mas_500k', label: 'Más de $500.000/mes' },
+  { value: 'no_define', label: 'Aún no lo tengo definido' },
+];
+
+const TIMELINE_OPTIONS = [
+  { value: 'urgente', label: 'Urgente (esta semana)' },
+  { value: 'corto', label: 'Corto plazo (1-2 semanas)' },
+  { value: 'medio', label: 'Mediano plazo (1 mes)' },
+  { value: 'largo', label: 'Largo plazo (más de 1 mes)' },
+  { value: 'explorando', label: 'Solo explorando' },
+];
+
+function getUtmSource(): string {
+  if (typeof window === 'undefined') return 'contact_form';
+  const params = new URLSearchParams(window.location.search);
+  return params.get('utm_source') || 'contact_form';
+}
 
 export default function ContactFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
+    nombre: '',
     whatsapp: '',
-    industry: '',
+    email: '',
+    industria: '' as string,
+    problema: '',
+    procesos: [] as string[],
+    presupuesto: '' as string,
+    timeline: '' as string,
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (formData.nombre.length < 2) newErrors.nombre = 'Nombre muy corto';
+    if (!/^\+?[1-9]\d{6,14}$/.test(formData.whatsapp.replace(/\s/g, ''))) {
+      newErrors.whatsapp = 'WhatsApp inválido';
+    }
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Email inválido';
+    }
+    if (!formData.industria) newErrors.industria = 'Selecciona tu industria';
+    if (formData.problema.length < 10) newErrors.problema = 'Describe el problema (mín 10 caracteres)';
+    if (formData.procesos.length === 0) newErrors.procesos = 'Selecciona al menos un proceso';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleProcesoToggle = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      procesos: prev.procesos.includes(value)
+        ? prev.procesos.filter(p => p !== value)
+        : [...prev.procesos, value]
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    const message = encodeURIComponent(
-      `¡Hola! Me gustaría contactarlos.\n\nNombre: ${formData.name}\nWhatsApp: ${formData.whatsapp}\nIndustria: ${formData.industry}`
-    );
-    window.open(`https://wa.me/542994569840?text=${message}`, '_blank');
-    setSubmitted(true);
-    setIsSubmitting(false);
+    try {
+      const leadData = {
+        nombre: formData.nombre,
+        whatsapp: formData.whatsapp.replace(/\s/g, ''),
+        email: formData.email || undefined,
+        industria: formData.industria,
+        problema: formData.problema,
+        procesos: formData.procesos,
+        presupuesto: formData.presupuesto || undefined,
+        timeline: formData.timeline || undefined,
+        source: getUtmSource(),
+      };
+
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(leadData),
+      });
+
+      const problemaEncoded = encodeURIComponent(formData.problema);
+      const procesosEncoded = encodeURIComponent(formData.procesos.join(', '));
+      const message = encodeURIComponent(
+        `¡Hola! Me gustaría automatizar mi negocio.\n\nNombre: ${formData.nombre}\nWhatsApp: ${formData.whatsapp}\nIndustria: ${formData.industria}\nProblema: ${formData.problema}\nProcesos a automatizar: ${formData.procesos.join(', ')}${formData.presupuesto ? `\nPresupuesto: ${formData.presupuesto}` : ''}`
+      );
+      window.open(`https://wa.me/542994569840?text=${message}`, '_blank');
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting lead:', error);
+      setErrors({ submit: 'Error al enviar. Intenta de nuevo.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -106,7 +194,7 @@ export default function ContactFAQ() {
         <div className="grid md:grid-cols-3 gap-6 mb-10">
           {TESTIMONIALS.map((t, i) => (
             <div key={i} className="testimonial-card">
-              <p className="text-slate-200 text-base italic mb-4">"{t.quote}"</p>
+              <p className="text-slate-200 text-base italic mb-4">&ldquo;{t.quote}&rdquo;</p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center text-white font-bold">
                   {t.name.charAt(0)}
@@ -157,43 +245,127 @@ export default function ContactFAQ() {
           <div className="card-base p-6">
             <h3 className="text-xl font-semibold text-white mb-5">Contactanos</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                required
-                placeholder="Tu nombre"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="input-base"
-              />
-              <input
-                type="tel"
-                required
-                placeholder="WhatsApp"
-                value={formData.whatsapp}
-                onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
-                className="input-base"
-              />
-              <select
-                required
-                value={formData.industry}
-                onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                className="input-base"
-              >
-                <option value="" className="bg-[#0a0a1a]">Tipo de negocio</option>
-                {INDUSTRIES.map((ind) => (
-                  <option key={ind} value={ind} className="bg-[#0a0a1a]">{ind}</option>
-                ))}
-              </select>
+              <div>
+                <input
+                  type="text"
+                  required
+                  placeholder="Tu nombre *"
+                  value={formData.nombre}
+                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                  className={`input-base ${errors.nombre ? 'border-red-500' : ''}`}
+                />
+                {errors.nombre && <p className="text-red-400 text-xs mt-1">{errors.nombre}</p>}
+              </div>
+
+              <div>
+                <input
+                  type="tel"
+                  required
+                  placeholder="WhatsApp *"
+                  value={formData.whatsapp}
+                  onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                  className={`input-base ${errors.whatsapp ? 'border-red-500' : ''}`}
+                />
+                {errors.whatsapp && <p className="text-red-400 text-xs mt-1">{errors.whatsapp}</p>}
+              </div>
+
+              <div>
+                <input
+                  type="email"
+                  placeholder="Email (opcional)"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className={`input-base ${errors.email ? 'border-red-500' : ''}`}
+                />
+                {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
+              </div>
+
+              <div>
+                <select
+                  required
+                  value={formData.industria}
+                  onChange={(e) => setFormData({ ...formData, industria: e.target.value })}
+                  className={`input-base ${errors.industria ? 'border-red-500' : ''}`}
+                >
+                  <option value="">Tipo de negocio *</option>
+                  {INDUSTRIES.map((ind) => (
+                    <option key={ind.value} value={ind.value} className="bg-[#0a0a1a]">{ind.label}</option>
+                  ))}
+                </select>
+                {errors.industria && <p className="text-red-400 text-xs mt-1">{errors.industria}</p>}
+              </div>
+
+              <div>
+                <textarea
+                  required
+                  placeholder="¿Qué problema querés resolver? * (mín 10 caracteres)"
+                  value={formData.problema}
+                  onChange={(e) => setFormData({ ...formData, problema: e.target.value })}
+                  rows={3}
+                  className={`input-base resize-none ${errors.problema ? 'border-red-500' : ''}`}
+                />
+                {errors.problema && <p className="text-red-400 text-xs mt-1">{errors.problema}</p>}
+              </div>
+
+              <div>
+                <label className="text-slate-300 text-sm mb-2 block">¿Qué procesos querés automatizar? *</label>
+                <div className="flex flex-wrap gap-2">
+                  {PROCESOS.map((proc) => (
+                    <button
+                      key={proc.value}
+                      type="button"
+                      onClick={() => handleProcesoToggle(proc.value)}
+                      className={`px-4 py-2 rounded-lg text-sm transition-all ${
+                        formData.procesos.includes(proc.value)
+                          ? 'bg-violet-600 text-white'
+                          : 'bg-violet-950/50 text-slate-300 hover:bg-violet-900/50'
+                      }`}
+                    >
+                      {proc.label}
+                    </button>
+                  ))}
+                </div>
+                {errors.procesos && <p className="text-red-400 text-xs mt-1">{errors.procesos}</p>}
+              </div>
+
+              <div>
+                <select
+                  value={formData.presupuesto}
+                  onChange={(e) => setFormData({ ...formData, presupuesto: e.target.value })}
+                  className="input-base"
+                >
+                  <option value="">Presupuesto mensual (opcional)</option>
+                  {PRESUPUESTO_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-[#0a0a1a]">{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <select
+                  value={formData.timeline}
+                  onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
+                  className="input-base"
+                >
+                  <option value="">¿Cuándo querés empezar? (opcional)</option>
+                  {TIMELINE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value} className="bg-[#0a0a1a]">{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {errors.submit && <p className="text-red-400 text-sm text-center">{errors.submit}</p>}
+
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="btn-green w-full py-4 text-base disabled:opacity-50"
               >
-                {isSubmitting ? 'Enviando...' : 'Enviar por WhatsApp'}
+                {isSubmitting ? 'Guardando...' : 'Enviar y continuar por WhatsApp'}
               </button>
             </form>
-            <p className="text-sm text-slate-400 text-center mt-4">
-              Te redirigimos a WhatsApp para completar
+            <p className="text-xs text-slate-500 text-center mt-3">
+              Sin spam. Solo te contactamos por WhatsApp.
             </p>
           </div>
 

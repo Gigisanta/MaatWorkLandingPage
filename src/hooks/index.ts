@@ -57,3 +57,10 @@ export { useMagneticButton } from './use-magnetic-button'
  * Visibility hook for dividers with reduced motion support.
  */
 export { useDividerVisibility } from './use-divider-visibility'
+
+/* ======================
+   LEAD CAPTURE
+   ====================== */
+
+export { useExitIntent } from './use-exit-intent'
+export { useUtm } from './use-utm'

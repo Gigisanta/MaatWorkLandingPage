@@ -8,6 +8,7 @@ import ROIPricing from '@/components/sections/ROIPricing';
 import ContactFAQ from '@/components/sections/ContactFAQ';
 import Footer from '@/components/sections/Footer';
 import FloatingWhatsApp from '@/components/sections/FloatingWhatsApp';
+import ExitIntentPopup from '@/components/sections/ExitIntentPopup';
 
 const GalaxyBackground3D = dynamic(() => import('@/components/three/GalaxyBackground3D'), {
   ssr: false,
@@ -29,6 +30,7 @@ export default function Home() {
         <Footer />
         <FloatingWhatsApp />
       </div>
+      <ExitIntentPopup />
     </>
   );
 }

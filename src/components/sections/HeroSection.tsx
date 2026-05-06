@@ -48,7 +48,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-b from-violet-950/20 via-[#030014]/30 to-[#030014]/50 z-[1]" />
 
       <div className="relative z-10 w-full max-w-5xl mx-auto px-6 text-center">
-        <h1 className="reveal opacity-0 translate-y-8 text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight leading-[1.05] mb-6 text-glow transition-all duration-700 ease-out" style={{ animationDelay: '0.1s' }}>
+        <h1 className="reveal opacity-0 translate-y-8 text-2xl sm:text-4xl md:text-6xl lg:text-8xl font-bold tracking-tight leading-[1.05] mb-6 text-glow transition-all duration-700 ease-out" style={{ animationDelay: '0.1s' }}>
           <span className="text-white">Automatiza tu local.</span>
           <br />
           <span className="gradient-text font-semibold">Sin complicaciones.</span>
@@ -58,7 +58,7 @@ export default function HeroSection() {
           El SaaS que gyms, salones y academias eligen en Argentina.
         </p>
 
-        <div className="reveal opacity-0 translate-y-8 flex flex-wrap justify-center gap-8 mb-12 transition-all duration-700 ease-out" style={{ animationDelay: '0.5s' }}>
+        <div className="reveal opacity-0 translate-y-8 flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-8 mb-12 transition-all duration-700 ease-out" style={{ animationDelay: '0.5s' }}>
           {TRUST_BADGES.map((badge, i) => (
             <div key={i} className="flex items-center gap-3 transition-all duration-500 ease-out" style={{ animationDelay: `${0.6 + i * 0.1}s` }}>
               <span className="text-3xl md:text-4xl font-bold gradient-text">{badge.value}</span>
