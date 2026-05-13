@@ -763,9 +763,9 @@ const SHOOTING_STAR_FRAGMENT = `
     if (alpha < 0.01) discard;
 
     vec3 headColor = vec3(1.0, 1.0, 1.0);
-    vec3 tailColor = vec3(1.0, 0.95, 0.9);
-    vec3 color = mix(headColor, tailColor, pow(vProgress, 1.3));
-    color *= 1.3 + core * 2.0;
+    vec3 tailColor = mix(vec3(0.5, 0.9, 1.0), vec3(1.0, 0.4, 0.8), vBrightness);
+    vec3 color = mix(headColor, tailColor, pow(vProgress, 1.1));
+    color *= 1.6 + core * 2.8;
 
     gl_FragColor = vec4(color, alpha);
   }
@@ -1261,7 +1261,7 @@ function GalacticCore() {
         />
       </mesh>
 
-      <mesh ref={glowRef} position={[0, 0, -32]} scale={[45, 45, 1]}>
+      <mesh ref={glowRef} position={[0, 0, -32]} scale={[75, 75, 1]}>
         <planeGeometry args={[1, 1]} />
         <shaderMaterial
           uniforms={glowUniforms}
@@ -1296,7 +1296,7 @@ function ShootingStars() {
   const { shouldUpdate } = useFrameLimiter(30);
 
   const spawn = useCallback(() => {
-    if (starsDataRef.current.length >= 3) return;
+    if (starsDataRef.current.length >= 5) return;
     const newStar: ShootingStar = {
       id: nextId.current++,
       startX: (Math.random() - 0.5) * 100,
@@ -1313,8 +1313,8 @@ function ShootingStars() {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(spawn, 1000);
-    const interval = setInterval(spawn, 4000 + Math.random() * 3000);
+    const timeout = setTimeout(spawn, 600);
+    const interval = setInterval(spawn, 1800 + Math.random() * 1400);
     return () => {
       clearTimeout(timeout);
       clearInterval(interval);
@@ -1687,14 +1687,16 @@ function Scene({ viewport }: {
       <color attach="background" args={['#060215']} />
 
       {/* Sun — dramatic directional light illuminating planets */}
-      <pointLight position={[80, 50, 60]} intensity={viewport.isMobile ? 60 : 120} color="#fff6e0" distance={500} decay={1.2} />
-      <pointLight position={[-60, -30, -20]} intensity={viewport.isMobile ? 8 : 18} color="#4060c0" distance={300} decay={1.5} />
+      <pointLight position={[80, 50, 60]} intensity={viewport.isMobile ? 80 : 180} color="#fff6e0" distance={600} decay={1.1} />
+      <pointLight position={[-60, -30, -20]} intensity={viewport.isMobile ? 12 : 28} color="#4060c0" distance={350} decay={1.4} />
+      <pointLight position={[0, 80, -20]} intensity={20} color="#a855f7" distance={200} decay={1.8} />
 
-      {/* Nebulae — deep elegant aurora-like clouds */}
-      <NebulaCloud position={[-80, 40, -50]} scale={240 * scaleFactor} colors={['#0d0526', '#2a1060', '#5b21b6']} opacity={0.72} flowSpeed={0.032} zPos={-55} />
-      <NebulaCloud position={[85, -35, -45]} scale={210 * scaleFactor} colors={['#060e24', '#12285a', '#1d4e8a']} opacity={0.68} flowSpeed={0.028} zPos={-50} />
-      <NebulaCloud position={[30, -55, -60]} scale={250 * scaleFactor} colors={['#100420', '#3b0d78', '#6d28d9']} opacity={0.65} flowSpeed={0.036} zPos={-65} />
-      <NebulaCloud position={[-55, -45, -48]} scale={200 * scaleFactor} colors={['#0a0320', '#1e0a50', '#4c1d95']} opacity={0.60} flowSpeed={0.030} zPos={-42} />
+      {/* Nebulae — vivid electric aurora clouds */}
+      <NebulaCloud position={[-80, 40, -50]} scale={260 * scaleFactor} colors={['#220855', '#5b1db0', '#9333ea']} opacity={0.92} flowSpeed={0.032} zPos={-55} />
+      <NebulaCloud position={[85, -35, -45]} scale={230 * scaleFactor} colors={['#06142e', '#1e44a0', '#3b82f6']} opacity={0.88} flowSpeed={0.028} zPos={-50} />
+      <NebulaCloud position={[30, -55, -60]} scale={270 * scaleFactor} colors={['#200630', '#6b0fa0', '#c026d3']} opacity={0.90} flowSpeed={0.036} zPos={-65} />
+      <NebulaCloud position={[-55, -45, -48]} scale={220 * scaleFactor} colors={['#250530', '#7a0d50', '#db2777']} opacity={0.82} flowSpeed={0.030} zPos={-42} />
+      <NebulaCloud position={[15, 55, -70]} scale={240 * scaleFactor} colors={['#0a1a30', '#0e4060', '#0891b2']} opacity={0.78} flowSpeed={0.022} zPos={-72} />
 
       {/* Galactic core */}
       <GalacticCore />
@@ -1789,6 +1791,7 @@ export default function GalaxyBackground3D() {
         <div className="mobile-bg-nebula-a" />
         <div className="mobile-bg-nebula-b" />
         <div className="mobile-bg-nebula-c" />
+        <div className="mobile-bg-nebula-d" />
       </div>
     );
   }
