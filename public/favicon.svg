@@ -1,37 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <title>MaatWork</title>
   <defs>
-    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1"/>
-      <stop offset="50%" stop-color="#8b5cf6"/>
-      <stop offset="100%" stop-color="#a78bfa"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e0b4a"/>
+      <stop offset="55%" stop-color="#3b1278"/>
+      <stop offset="100%" stop-color="#5b21b6"/>
     </linearGradient>
-    <linearGradient id="shimmer" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.3"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    <linearGradient id="m" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e9d5ff"/>
     </linearGradient>
-    <clipPath id="mClip">
-      <path d="M7 24V8h3.5l3.5 7.5L17.5 8H21v16h-4V10.5L13.5 20h-3L7 10.5V24H7z"/>
-    </clipPath>
-    <style>
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-      }
-      @keyframes shimmerMove {
-        0% { transform: translateX(-100%) translateY(-100%); }
-        100% { transform: translateX(200%) translateY(200%); }
-      }
-      .m-letter { animation: pulse 3s ease-in-out infinite; }
-      .shimmer { animation: shimmerMove 4s ease-in-out infinite; }
-    </style>
   </defs>
-  <rect width="32" height="32" rx="6" fill="#04040e"/>
-  <g class="m-letter">
-    <path d="M7 24V8h3.5l3.5 7.5L17.5 8H21v16h-4V10.5L13.5 20h-3L7 10.5V24H7z" fill="url(#brandGrad)"/>
-  </g>
-  <g class="shimmer" clip-path="url(#mClip)">
-    <rect x="-10" y="-10" width="15" height="50" fill="url(#shimmer)" transform="rotate(45)"/>
-  </g>
+  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
+  <rect x="0.5" y="0.5" width="31" height="14" rx="6.5" fill="white" opacity="0.06"/>
+  <path d="M6 23.5 L6 9 L10 9 L16 17.5 L22 9 L26 9 L26 23.5 L22.25 23.5 L22.25 13.5 L17.25 21.25 L14.75 21.25 L9.75 13.5 L9.75 23.5 Z"
+        fill="url(#m)"/>
 </svg>

@@ -60,8 +60,12 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/logo.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/apple-touch-icon.svg",
+    shortcut: "/favicon.svg",
   },
 };
 
@@ -79,7 +83,9 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
         <meta name="theme-color" content="#030014" />
         <script
           type="application/ld+json"

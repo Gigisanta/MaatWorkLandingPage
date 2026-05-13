@@ -771,6 +771,69 @@ const SHOOTING_STAR_FRAGMENT = `
   }
 `;
 
+// Spaceship engine glow shader
+const ENGINE_GLOW_VERTEX = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const ENGINE_GLOW_FRAGMENT = `
+  precision mediump float;
+  varying vec2 vUv;
+  uniform vec3 uColor;
+  uniform float uTime;
+  uniform float uIntensity;
+
+  void main() {
+    vec2 c = vUv - 0.5;
+    float d = length(c);
+    float pulse = 1.0 + sin(uTime * 14.0) * 0.18;
+    float core  = exp(-d * d * 22.0) * pulse;
+    float glow  = exp(-d * d * 6.0)  * 0.55 * pulse;
+    float outer = exp(-d * d * 1.6)  * 0.18;
+    float alpha = (core + glow + outer) * uIntensity;
+    if (alpha < 0.01) discard;
+    vec3 color  = mix(uColor, vec3(1.0, 1.0, 1.0), core * 0.7);
+    gl_FragColor = vec4(color * (1.0 + core * 1.5), min(alpha, 1.0));
+  }
+`;
+
+// Engine trail / exhaust shader
+const EXHAUST_VERTEX = `
+  attribute float aOffset;
+  attribute float aAlpha;
+  varying float vAlpha;
+  uniform float uTime;
+
+  void main() {
+    vAlpha = aAlpha;
+    vec3 pos = position;
+    // Slight turbulence in exhaust
+    pos.y += sin(uTime * 6.0 + aOffset * 4.0) * 0.08;
+    pos.z += cos(uTime * 5.0 + aOffset * 3.0) * 0.08;
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    float sz = (0.8 - aOffset * 0.7) * (120.0 / -mv.z);
+    gl_PointSize = max(sz, 1.0);
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+
+const EXHAUST_FRAGMENT = `
+  varying float vAlpha;
+  uniform vec3 uColor;
+
+  void main() {
+    vec2 c = gl_PointCoord - 0.5;
+    float d = length(c);
+    float a = exp(-d * d * 8.0) * vAlpha;
+    if (a < 0.01) discard;
+    gl_FragColor = vec4(uColor, a);
+  }
+`;
+
 // Viewport hook for responsive effects
 function useViewport() {
   const [viewport, setViewport] = useState({ width: 1920, height: 1080, isMobile: false, isTablet: false });
@@ -1333,7 +1396,233 @@ function ShootingStarTrail({ startX, startY, vx, vy, vz, age, maxAge, brightness
   );
 }
 
-function CameraController({ viewport }: { 
+// ============================================
+// SPACESHIP
+// ============================================
+interface FlightState {
+  active: boolean;
+  t: number;
+  speed: number;
+  nextIn: number;
+  p0: THREE.Vector3;
+  p1: THREE.Vector3;
+  p2: THREE.Vector3;
+  p3: THREE.Vector3;
+}
+
+function cubicBezier(p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, p3: THREE.Vector3, t: number) {
+  const inv = 1 - t;
+  return new THREE.Vector3(
+    inv*inv*inv*p0.x + 3*inv*inv*t*p1.x + 3*inv*t*t*p2.x + t*t*t*p3.x,
+    inv*inv*inv*p0.y + 3*inv*inv*t*p1.y + 3*inv*t*t*p2.y + t*t*t*p3.y,
+    inv*inv*inv*p0.z + 3*inv*inv*t*p1.z + 3*inv*t*t*p2.z + t*t*t*p3.z,
+  );
+}
+
+function SpaceShip() {
+  const groupRef    = useRef<THREE.Group>(null);
+  const engineL     = useRef<THREE.Mesh>(null);
+  const engineR     = useRef<THREE.Mesh>(null);
+  const exhaust1Ref = useRef<THREE.Points>(null);
+  const exhaust2Ref = useRef<THREE.Points>(null);
+  const timeRef     = useRef(0);
+  const flight      = useRef<FlightState>({
+    active: false, t: 0, speed: 0.11,
+    nextIn: 8 + Math.random() * 10,
+    p0: new THREE.Vector3(), p1: new THREE.Vector3(),
+    p2: new THREE.Vector3(), p3: new THREE.Vector3(),
+  });
+
+  const TRAIL_POINTS = 28;
+
+  const { exhaustPositions, exhaustAlphas, exhaustOffsets } = useMemo(() => {
+    const pos  = new Float32Array(TRAIL_POINTS * 3);
+    const alph = new Float32Array(TRAIL_POINTS);
+    const off  = new Float32Array(TRAIL_POINTS);
+    for (let i = 0; i < TRAIL_POINTS; i++) {
+      alph[i] = 1 - i / TRAIL_POINTS;
+      off[i]  = i / TRAIL_POINTS;
+    }
+    return { exhaustPositions: pos, exhaustAlphas: alph, exhaustOffsets: off };
+  }, []);
+
+  const engineGlowUniforms = useMemo(() => ({
+    uColor:     { value: new THREE.Color('#40c0ff') },
+    uTime:      { value: 0 },
+    uIntensity: { value: 1.6 },
+  }), []);
+
+  const exhaustUniforms = useMemo(() => ({
+    uColor: { value: new THREE.Color('#60d8ff') },
+    uTime:  { value: 0 },
+  }), []);
+
+  const startFlight = () => {
+    const f = flight.current;
+    f.active = true;
+    f.t      = 0;
+    f.speed  = 0.09 + Math.random() * 0.07;
+    const side = Math.random() > 0.5 ? 1 : -1;
+    const yA = (Math.random() - 0.5) * 35;
+    const yB = (Math.random() - 0.5) * 35;
+    const zA = -5  - Math.random() * 30;
+    const zB = -10 - Math.random() * 35;
+    f.p0.set(side * 95, yA, zA);
+    f.p1.set(side * 35, yA + (Math.random()-0.5)*25, (zA + zB) * 0.5 + (Math.random()-0.5)*15);
+    f.p2.set(-side * 35, yB + (Math.random()-0.5)*25, (zA + zB) * 0.5 + (Math.random()-0.5)*15);
+    f.p3.set(-side * 95, yB, zB);
+  };
+
+  useFrame((_, delta) => {
+    timeRef.current += delta;
+    const t   = timeRef.current;
+    const f   = flight.current;
+
+    if (!f.active) {
+      f.nextIn -= delta;
+      if (f.nextIn <= 0) { startFlight(); }
+      if (groupRef.current) groupRef.current.visible = false;
+      return;
+    }
+
+    f.t += delta * f.speed;
+    if (f.t >= 1.0) {
+      f.active = false;
+      f.nextIn = 22 + Math.random() * 18;
+      if (groupRef.current) groupRef.current.visible = false;
+      return;
+    }
+
+    if (!groupRef.current) return;
+    groupRef.current.visible = true;
+
+    const pos     = cubicBezier(f.p0, f.p1, f.p2, f.p3, f.t);
+    const posNext = cubicBezier(f.p0, f.p1, f.p2, f.p3, Math.min(f.t + 0.008, 1));
+    const dir     = posNext.clone().sub(pos).normalize();
+
+    groupRef.current.position.copy(pos);
+
+    // Look along direction of travel
+    const up = new THREE.Vector3(0, 1, 0);
+    const right = new THREE.Vector3().crossVectors(dir, up).normalize();
+    const trueUp = new THREE.Vector3().crossVectors(right, dir).normalize();
+    const mat4 = new THREE.Matrix4().makeBasis(right, trueUp, dir.clone().negate());
+    groupRef.current.setRotationFromMatrix(mat4);
+
+    // Banking — roll into the turn
+    const bankAngle = -dir.x * 0.6;
+    groupRef.current.rotateZ(bankAngle);
+
+    // Engine glow uniforms
+    const glowMat = engineL.current?.material as THREE.ShaderMaterial | undefined;
+    if (glowMat) { glowMat.uniforms.uTime.value = t; }
+    const glowMat2 = engineR.current?.material as THREE.ShaderMaterial | undefined;
+    if (glowMat2) { glowMat2.uniforms.uTime.value = t; }
+
+    // Exhaust trail for both exhausts
+    [exhaust1Ref, exhaust2Ref].forEach((ref, idx) => {
+      if (!ref.current) return;
+      const attr = ref.current.geometry.attributes.position;
+      const arr  = attr.array as Float32Array;
+      const zOffset = idx === 0 ? 0.9 : -0.9;
+      for (let i = 0; i < TRAIL_POINTS; i++) {
+        const delay = (i / TRAIL_POINTS) * 0.06;
+        const tp    = Math.max(0, f.t - delay);
+        const p     = cubicBezier(f.p0, f.p1, f.p2, f.p3, tp);
+        arr[i*3]   = p.x;
+        arr[i*3+1] = p.y;
+        arr[i*3+2] = p.z + zOffset * 0.1;
+      }
+      attr.needsUpdate = true;
+      (ref.current.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
+    });
+
+    exhaustUniforms.uTime.value = t;
+  });
+
+  const hullMat  = useMemo(() => new THREE.MeshStandardMaterial({ color: '#b0bac5', metalness: 0.9, roughness: 0.15 }), []);
+  const glassMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#203050', metalness: 0.5, roughness: 0.05, transparent: true, opacity: 0.85 }), []);
+  const wingMat  = useMemo(() => new THREE.MeshStandardMaterial({ color: '#8898a8', metalness: 0.85, roughness: 0.2 }), []);
+  const engineBodyMat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#607080', metalness: 0.9, roughness: 0.3, emissive: '#203040', emissiveIntensity: 0.4 }), []);
+
+  return (
+    <group ref={groupRef} visible={false}>
+      {/* Hull — elongated ellipsoid */}
+      <mesh scale={[2.2, 0.6, 0.75]} material={hullMat}>
+        <sphereGeometry args={[1.5, 14, 10]} />
+      </mesh>
+
+      {/* Cockpit dome */}
+      <mesh position={[0.9, 0.55, 0]} scale={[0.85, 0.65, 0.7]} material={glassMat}>
+        <sphereGeometry args={[0.6, 10, 8]} />
+      </mesh>
+
+      {/* Left wing */}
+      <mesh position={[-0.3, -0.15, 2.6]} rotation={[0.12, 0.08, -0.18]} material={wingMat}>
+        <boxGeometry args={[3.2, 0.12, 1.4]} />
+      </mesh>
+      {/* Right wing */}
+      <mesh position={[-0.3, -0.15, -2.6]} rotation={[-0.12, -0.08, 0.18]} material={wingMat}>
+        <boxGeometry args={[3.2, 0.12, 1.4]} />
+      </mesh>
+
+      {/* Engine pod — left */}
+      <mesh position={[-1.6, -0.25, 0.9]} rotation={[Math.PI/2, 0, 0]} material={engineBodyMat}>
+        <cylinderGeometry args={[0.28, 0.24, 1.1, 10]} />
+      </mesh>
+      {/* Engine pod — right */}
+      <mesh position={[-1.6, -0.25, -0.9]} rotation={[Math.PI/2, 0, 0]} material={engineBodyMat}>
+        <cylinderGeometry args={[0.28, 0.24, 1.1, 10]} />
+      </mesh>
+
+      {/* Engine glow planes — left */}
+      <mesh ref={engineL} position={[-2.2, -0.25, 0.9]} rotation={[0, Math.PI/2, 0]}>
+        <planeGeometry args={[0.9, 0.9]} />
+        <shaderMaterial
+          uniforms={engineGlowUniforms}
+          vertexShader={ENGINE_GLOW_VERTEX}
+          fragmentShader={ENGINE_GLOW_FRAGMENT}
+          transparent depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      {/* Engine glow planes — right */}
+      <mesh ref={engineR} position={[-2.2, -0.25, -0.9]} rotation={[0, Math.PI/2, 0]}>
+        <planeGeometry args={[0.9, 0.9]} />
+        <shaderMaterial
+          uniforms={engineGlowUniforms}
+          vertexShader={ENGINE_GLOW_VERTEX}
+          fragmentShader={ENGINE_GLOW_FRAGMENT}
+          transparent depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* Exhaust trails rendered in world space via points outside group */}
+    </group>
+  );
+}
+
+function SpaceShipTrails() {
+  const TRAIL_POINTS = 28;
+  const ref1 = useRef<THREE.Points>(null);
+  const ref2 = useRef<THREE.Points>(null);
+
+  const { pos, alph, off } = useMemo(() => {
+    const pos  = new Float32Array(TRAIL_POINTS * 3);
+    const alph = new Float32Array(TRAIL_POINTS);
+    const off  = new Float32Array(TRAIL_POINTS);
+    for (let i = 0; i < TRAIL_POINTS; i++) {
+      alph[i] = (1 - i / TRAIL_POINTS) * 0.9;
+      off[i]  = i / TRAIL_POINTS;
+    }
+    return { pos, alph, off };
+  }, []);
+
+  return null; // trails rendered inside SpaceShip component
+}
+
+function CameraController({ viewport }: {
   viewport: { width: number; height: number; isMobile: boolean; isTablet: boolean };
 }) {
   const { camera } = useThree();
@@ -1387,80 +1676,87 @@ function Scene({ viewport }: {
   // Responsive scaling
   const scaleFactor = viewport.isMobile ? 0.6 : viewport.isTablet ? 0.8 : 1;
   const starMultiplier = quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.7 : 0.4;
-  const geometryDetail = quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.6 : 0.4;
 
   return (
     <>
-      {/* Deep space with purple tint */}
-      <color attach="background" args={['#080318']} />
+      {/* Deep space — rich dark violet base */}
+      <color attach="background" args={['#060215']} />
 
-      {/* Ambient light for visibility */}
-      <ambientLight intensity={0.2} />
-      
-      {/* Directional light to illuminate planets */}
-      <directionalLight position={[50, 30, 40]} intensity={0.6} color="#fff8f0" />
+      {/* Sun — dramatic directional light illuminating planets */}
+      <pointLight position={[80, 50, 60]} intensity={viewport.isMobile ? 60 : 120} color="#fff6e0" distance={500} decay={1.2} />
+      <pointLight position={[-60, -30, -20]} intensity={viewport.isMobile ? 8 : 18} color="#4060c0" distance={300} decay={1.5} />
 
-      {/* FAR BACKGROUND STARS - z=-250, behind everything, orbit very slowly */}
-      <StarField count={Math.round(6000 * starMultiplier)} radius={800 * scaleFactor} size={0.6} depthZ={250} spread={0.12} orbitSpeed={0.008} />
+      {/* Nebulae — deep elegant aurora-like clouds */}
+      <NebulaCloud position={[-80, 40, -50]} scale={240 * scaleFactor} colors={['#0d0526', '#2a1060', '#5b21b6']} opacity={0.72} flowSpeed={0.032} zPos={-55} />
+      <NebulaCloud position={[85, -35, -45]} scale={210 * scaleFactor} colors={['#060e24', '#12285a', '#1d4e8a']} opacity={0.68} flowSpeed={0.028} zPos={-50} />
+      <NebulaCloud position={[30, -55, -60]} scale={250 * scaleFactor} colors={['#100420', '#3b0d78', '#6d28d9']} opacity={0.65} flowSpeed={0.036} zPos={-65} />
+      <NebulaCloud position={[-55, -45, -48]} scale={200 * scaleFactor} colors={['#0a0320', '#1e0a50', '#4c1d95']} opacity={0.60} flowSpeed={0.030} zPos={-42} />
 
-      {/* Nebulae - Beautiful flowing gas clouds */}
-      <NebulaCloud position={[-80, 40, -50]} scale={220 * scaleFactor} colors={['#5a2080', '#b06ac8', '#e0a0e0']} opacity={0.9} flowSpeed={0.04} zPos={-55} />
-      <NebulaCloud position={[85, -35, -45]} scale={200 * scaleFactor} colors={['#1a3a6a', '#4a8ac8', '#80c0f8']} opacity={0.88} flowSpeed={0.035} zPos={-50} />
-      <NebulaCloud position={[30, -55, -60]} scale={230 * scaleFactor} colors={['#4a1875', '#c060d0', '#f0a0f8']} opacity={0.85} flowSpeed={0.042} zPos={-65} />
-      <NebulaCloud position={[-55, -45, -48]} scale={190 * scaleFactor} colors={['#3a2055', '#b060b0', '#e0a0d8']} opacity={0.82} flowSpeed={0.038} zPos={-42} />
-
-      {/* Galactic core - subtle spiral */}
+      {/* Galactic core */}
       <GalacticCore />
 
-      {/* MID-FIELD STARS - z=-100, behind nebulae, orbit slowly */}
+      {/* FAR BACKGROUND STARS */}
+      <StarField count={Math.round(6000 * starMultiplier)} radius={800 * scaleFactor} size={0.6} depthZ={250} spread={0.12} orbitSpeed={0.008} />
+
+      {/* MID-FIELD STARS */}
       <StarField count={Math.round(2500 * starMultiplier)} radius={400 * scaleFactor} size={0.8} depthZ={100} spread={0.15} orbitSpeed={0.012} />
 
-      {/* ========================================== */}
-      {/* PLANET CORRIDOR - z=-50 to z=+50 - NO STARS HERE */}
-      {/* ========================================== */}
-
-      {/* Gas giant with rings - Saturn-like - inner orbit */}
+      {/* ── PLANETS ────────────────────────────────── */}
+      {/* Gas giant — Saturn-like with glorious rings */}
       <Planet
-        orbitRadiusX={40 * scaleFactor} orbitRadiusY={30 * scaleFactor} orbitSpeed={0.05}
-        size={7 * scaleFactor} color1="#c4956a" color2="#8b5a3c" planetType={1}
-        roughness={0.85} atmosphereColor="#e8c4a0" atmosphereIntensity={2.2}
-        rotationSpeed={0.1} initialAngle={0.5} hasRing={true} ringColor="#f0e0c8"
-        tilt={0.2} cloudColor="#ffeedd" cloudIntensity={0.4}
-        geometryDetail={geometryDetail}
+        orbitRadiusX={48 * scaleFactor} orbitRadiusY={36 * scaleFactor} orbitSpeed={0.032}
+        size={viewport.isMobile ? 5.5 : 9} color1="#d4a055" color2="#9b6028"
+        planetType={1}
+        roughness={0.75} atmosphereColor="#f0c880" atmosphereIntensity={3.2}
+        rotationSpeed={0.08} initialAngle={0.4} hasRing={true} ringColor="#e8d0a0"
+        tilt={0.22} cloudColor="#ffe8bb" cloudIntensity={0.5}
+        geometryDetail={quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.65 : 0.4}
       />
 
-      {/* Ice giant - Neptune-like - middle orbit */}
+      {/* Ice giant — deep teal Neptune-like */}
       <Planet
-        orbitRadiusX={55 * scaleFactor} orbitRadiusY={40 * scaleFactor} orbitSpeed={0.035}
-        size={5.5 * scaleFactor} color1="#1a3a5c" color2="#3a7ab8" planetType={2}
-        roughness={0.6} atmosphereColor="#5aa0d8" atmosphereIntensity={2.4}
-        rotationSpeed={0.14} initialAngle={2.2} tilt={-0.12}
-        cloudColor="#a0d0f8" cloudIntensity={0.6}
-        geometryDetail={geometryDetail}
+        orbitRadiusX={62 * scaleFactor} orbitRadiusY={46 * scaleFactor} orbitSpeed={0.022}
+        size={viewport.isMobile ? 4.5 : 7} color1="#1a5070" color2="#2090c8"
+        planetType={2}
+        roughness={0.5} atmosphereColor="#40b0e8" atmosphereIntensity={3.6}
+        rotationSpeed={0.12} initialAngle={2.4} tilt={-0.14}
+        cloudColor="#a8e0ff" cloudIntensity={0.7}
+        geometryDetail={quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.65 : 0.4}
       />
 
-      {/* Ocean planet - Earth-like - outer orbit */}
+      {/* Ocean planet — vibrant Earth-like */}
       <Planet
-        orbitRadiusX={35 * scaleFactor} orbitRadiusY={28 * scaleFactor} orbitSpeed={0.045}
-        size={4.5 * scaleFactor} color1="#1a4a7a" color2="#2a7a3a" planetType={3}
-        roughness={0.7} atmosphereColor="#6090d8" atmosphereIntensity={2.6}
-        rotationSpeed={0.16} initialAngle={4.5} tilt={0.08}
-        cloudColor="#ffffff" cloudIntensity={0.7}
-        geometryDetail={geometryDetail}
+        orbitRadiusX={38 * scaleFactor} orbitRadiusY={30 * scaleFactor} orbitSpeed={0.042}
+        size={viewport.isMobile ? 3.8 : 6} color1="#1560a8" color2="#28903a"
+        planetType={3}
+        roughness={0.6} atmosphereColor="#5590e8" atmosphereIntensity={4.0}
+        rotationSpeed={0.14} initialAngle={4.8} tilt={0.1}
+        cloudColor="#ffffff" cloudIntensity={0.75}
+        geometryDetail={quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.65 : 0.4}
       />
 
-      {/* ========================================== */}
-      {/* FOREGROUND STARS - z=+70 to +120 - in front of camera, no overlap */}
-      {/* ========================================== */}
+      {/* Lava planet — volcanic, dramatic orange glow */}
+      {quality.tier !== 'low' && (
+        <Planet
+          orbitRadiusX={28 * scaleFactor} orbitRadiusY={22 * scaleFactor} orbitSpeed={0.058}
+          size={viewport.isMobile ? 2.8 : 4.5} color1="#8b2000" color2="#e04000"
+          planetType={0}
+          roughness={0.9} atmosphereColor="#ff5020" atmosphereIntensity={3.8}
+          rotationSpeed={0.2} initialAngle={1.8} tilt={0.06}
+          cloudColor="#ff8040" cloudIntensity={0.3}
+          geometryDetail={quality.tier === 'high' ? 0.9 : 0.5}
+        />
+      )}
 
-      {/* Foreground stars - cinematic, orbit at moderate speed */}
+      {/* FOREGROUND STARS */}
       <StarField count={Math.round(1000 * starMultiplier)} radius={200 * scaleFactor} size={1.3} depthZ={-5} spread={0.2} orbitSpeed={0.018} />
-
-      {/* Closest stars - brightest, orbit faster */}
       <StarField count={Math.round(400 * starMultiplier)} radius={150 * scaleFactor} size={1.8} depthZ={-35} spread={0.25} orbitSpeed={0.025} />
 
       {/* Shooting stars */}
       <ShootingStars />
+
+      {/* Spaceship — passes through every ~30s on desktop */}
+      {!viewport.isMobile && <SpaceShip />}
 
       <CameraController viewport={viewport} />
     </>
@@ -1491,7 +1787,7 @@ export default function GalaxyBackground3D() {
       position: 'fixed',
       inset: 0,
       zIndex: 0,
-      background: 'radial-gradient(ellipse at 50% 30%, #0c0820 0%, #050210 40%, #020108 100%)'
+      background: 'radial-gradient(ellipse at 45% 25%, #130830 0%, #080220 45%, #030010 100%)'
     }}>
       <Canvas
         camera={{ position: [0, 0, 65], fov: 60 }}

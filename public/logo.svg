@@ -1,48 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#8b5cf6"/>
-      <stop offset="50%" stop-color="#a855f7"/>
-      <stop offset="100%" stop-color="#ec4899"/>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e0b4a"/>
+      <stop offset="55%" stop-color="#3b1278"/>
+      <stop offset="100%" stop-color="#5b21b6"/>
     </linearGradient>
-    <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fcd34d"/>
-      <stop offset="100%" stop-color="#f97316"/>
+    <linearGradient id="mGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e9d5ff"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
   </defs>
 
-  <!-- Background circle with gradient -->
-  <circle cx="32" cy="32" r="30" fill="url(#logoGradient)" opacity="0.15"/>
+  <!-- Background squircle -->
+  <rect width="64" height="64" rx="14" fill="url(#bgGrad)"/>
 
-  <!-- Star accent -->
-  <path d="M48 12 L50 18 L56 18 L51 22 L53 28 L48 24 L43 28 L45 22 L40 18 L46 18 Z"
-        fill="url(#starGradient)"
-        filter="url(#glow)"
-        opacity="0.9"/>
+  <!-- Subtle top highlight for depth -->
+  <rect x="1" y="1" width="62" height="28" rx="13" fill="white" opacity="0.06"/>
 
-  <!-- Main M letter with gradient -->
-  <path d="M16 44 L16 20 L24 32 L32 20 L40 32 L48 20 L48 44"
-        fill="none"
-        stroke="url(#logoGradient)"
-        stroke-width="5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        filter="url(#glow)"/>
+  <!-- Bold geometric M — solid fill, clean proportions -->
+  <path d="M12 47 L12 18 L20 18 L32 35 L44 18 L52 18 L52 47 L44.5 47 L44.5 27 L34.5 42.5 L29.5 42.5 L19.5 27 L19.5 47 Z"
+        fill="url(#mGrad)"/>
 
-  <!-- Orbit ring -->
-  <ellipse cx="32" cy="38"
-           rx="22"
-           ry="8"
-           fill="none"
-           stroke="url(#logoGradient)"
-           stroke-width="1.5"
-           opacity="0.4"
-           stroke-dasharray="4 3"/>
+  <!-- Accent underline — references automation/flow -->
+  <rect x="12" y="50" width="40" height="2.5" rx="1.25" fill="url(#accentGrad)" opacity="0.65"/>
 </svg>
