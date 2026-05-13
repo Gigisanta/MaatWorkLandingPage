@@ -780,14 +780,22 @@ section[id] {
    Fluid on every device, zero GPU shader cost
    ============================================ */
 @keyframes nebula-float-a {
-  0%, 100% { transform: translate(0, 0) scale(1);    opacity: 0.55; }
-  33%       { transform: translate(3%, -5%) scale(1.07); opacity: 0.72; }
-  66%       { transform: translate(-2%, 4%) scale(0.96); opacity: 0.60; }
+  0%   { transform: translate(0,    0)   scale(1.00); opacity: 0.52; }
+  12%  { transform: translate(1.5%, -2%) scale(1.03); opacity: 0.60; }
+  28%  { transform: translate(3.5%, -5%) scale(1.07); opacity: 0.68; }
+  45%  { transform: translate(2%,  -3.5%) scale(1.04); opacity: 0.63; }
+  60%  { transform: translate(-1%,  0.5%) scale(0.99); opacity: 0.56; }
+  78%  { transform: translate(-2.5%, 3%) scale(0.95); opacity: 0.50; }
+  100% { transform: translate(0,    0)   scale(1.00); opacity: 0.52; }
 }
 @keyframes nebula-float-b {
-  0%, 100% { transform: translate(0, 0) scale(1);    opacity: 0.45; }
-  40%       { transform: translate(-5%, 3%) scale(1.09); opacity: 0.68; }
-  70%       { transform: translate(4%, -3%) scale(0.94); opacity: 0.52; }
+  0%   { transform: translate(0,    0)   scale(1.00); opacity: 0.44; }
+  18%  { transform: translate(-2%, 1.5%) scale(1.04); opacity: 0.55; }
+  38%  { transform: translate(-4.5%, 3%) scale(1.08); opacity: 0.64; }
+  55%  { transform: translate(-2.5%, 1%) scale(1.03); opacity: 0.58; }
+  72%  { transform: translate(2%,  -1.5%) scale(0.97); opacity: 0.48; }
+  88%  { transform: translate(3.5%, -3%) scale(0.93); opacity: 0.43; }
+  100% { transform: translate(0,    0)   scale(1.00); opacity: 0.44; }
 }
 
 .mobile-space-bg {
@@ -857,40 +865,42 @@ section {
 }
 
 /* ============================================
-   ANIMATED GLOWS — bring life to sections
+   ANIMATED GLOWS — subtle, desynchronized
    ============================================ */
-@keyframes border-glow-pulse {
-  0%, 100% { box-shadow: 0 0 12px rgba(139,92,246,0.15), 0 0 0 1px rgba(139,92,246,0.18); }
-  50%       { box-shadow: 0 0 28px rgba(168,85,247,0.35), 0 0 0 1px rgba(168,85,247,0.40); }
-}
 
-@keyframes gradient-border-spin {
-  0%   { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
-
-/* Cards with subtle ambient pulse */
+/* Each card type pulses at a different rhythm — never in sync */
 .card-base {
-  animation: border-glow-pulse 4s ease-in-out infinite;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.card-base:hover {
+  box-shadow: 0 0 32px rgba(139,92,246,0.28), 0 0 0 1px rgba(168,85,247,0.45);
 }
 
-.feature-card {
-  animation: border-glow-pulse 4s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * 0.6s);
+/* Feature cards — staggered glow via nth-child */
+.feature-card:nth-child(1) { animation: feature-glow 7.0s 0.0s ease-in-out infinite; }
+.feature-card:nth-child(2) { animation: feature-glow 8.3s 1.9s ease-in-out infinite; }
+.feature-card:nth-child(3) { animation: feature-glow 6.7s 3.5s ease-in-out infinite; }
+.feature-card:nth-child(4) { animation: feature-glow 9.1s 2.7s ease-in-out infinite; }
+
+@keyframes feature-glow {
+  0%,  100% { box-shadow: 0 0  6px rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.20); }
+  40%        { box-shadow: 0 0 20px rgba(168,85,247,0.22); border-color: rgba(168,85,247,0.38); }
+  70%        { box-shadow: 0 0  9px rgba(139,92,246,0.10); border-color: rgba(139,92,246,0.23); }
 }
 
-.testimonial-card {
-  animation: border-glow-pulse 5s ease-in-out infinite;
+/* Step circles pulse softly */
+.step-circle:nth-child(1) { animation: step-pulse 5.5s 0.0s ease-in-out infinite; }
+.step-circle:nth-child(2) { animation: step-pulse 5.5s 1.8s ease-in-out infinite; }
+.step-circle:nth-child(3) { animation: step-pulse 5.5s 3.6s ease-in-out infinite; }
+
+@keyframes step-pulse {
+  0%,  100% { box-shadow: 0 4px 15px rgba(124,58,237,0.40); }
+  50%        { box-shadow: 0 4px 28px rgba(139,92,246,0.70), 0 0 12px rgba(168,85,247,0.50); }
 }
 
-/* Gradient text animates subtly */
+/* Gradient text — slow organic drift */
 .gradient-text {
-  animation: gradient-shift 6s ease-in-out infinite;
-}
-
-/* Section header h2 gradient flows */
-.section-header h2 .gradient-text {
-  animation: gradient-shift 5s ease-in-out infinite;
+  animation: gradient-shift 14s ease-in-out infinite;
 }
 
 /* Steps row — always centered regardless of breakpoint */

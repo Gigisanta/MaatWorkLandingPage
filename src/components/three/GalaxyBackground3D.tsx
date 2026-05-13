@@ -135,28 +135,28 @@ const NEBULA_FRAGMENT = `
 
   void main() {
     vec2 uv = (vUv - 0.5) * uScale;
-    float t = uTime * 0.015;
+    // Three independent time speeds so layers never sync
+    float t1 = uTime * 0.012;
+    float t2 = uTime * 0.0085;
+    float t3 = uTime * 0.017;
 
-    // Multiple flow layers for depth
-    float f1 = fbm3(uv + vec2(t * 0.02, t * 0.01), t);
-    float f2 = fbm3(uv * 1.5 - vec2(t * 0.015, -t * 0.02), t * 0.8);
-    float f3 = fbm3(uv * 0.7 + vec2(t * 0.01, t * 0.025), t * 1.2);
+    // Each layer drifts in a different direction
+    float f1 = fbm3(uv + vec2(t1 * 0.018, t1 * 0.009), t1);
+    float f2 = fbm3(uv * 1.4 + vec2(-t2 * 0.013, t2 * 0.022), t2);
+    float f3 = fbm3(uv * 0.65 + vec2(t3 * 0.008, -t3 * 0.019), t3);
 
-    // Ethereal color mixing - more vibrant
-    float m = f1 * 0.5 + f2 * 0.3 + f3 * 0.2;
+    // Weighted blend — f1 dominates shape, f2/f3 add texture
+    float m = f1 * 0.52 + f2 * 0.30 + f3 * 0.18;
     vec3 color = mix(uColor1, uColor2, m);
-    color = mix(color, uColor3, f2 * 0.7);
+    color = mix(color, uColor3, f2 * 0.65);
+    color *= 1.0 + f3 * 0.45;
 
-    // Boosted color intensity
-    color *= 1.0 + f3 * 0.5;
-
-    // Soft circular falloff - no hard edges
-    float dist = length(vUv - 0.5);
-    float edge = 1.0 - smoothstep(0.0, 0.55, dist);
-    float alpha = f1 * edge * uOpacity * 0.7;
-    
-    // More visible, less clamped
-    alpha = clamp(alpha, 0.0, 0.75);
+    // Soft elliptical falloff — wider horizontally for a natural cloud shape
+    vec2 d = (vUv - 0.5) * vec2(1.0, 1.3);
+    float dist = length(d);
+    float edge = 1.0 - smoothstep(0.0, 0.52, dist);
+    float alpha = f1 * edge * uOpacity * 0.68;
+    alpha = clamp(alpha, 0.0, 0.72);
 
     gl_FragColor = vec4(color, alpha);
   }
@@ -1313,8 +1313,8 @@ function ShootingStars() {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(spawn, 600);
-    const interval = setInterval(spawn, 1800 + Math.random() * 1400);
+    const timeout = setTimeout(spawn, 1200);
+    const interval = setInterval(spawn, 2800 + Math.random() * 2200);
     return () => {
       clearTimeout(timeout);
       clearInterval(interval);
@@ -1649,10 +1649,10 @@ function CameraController({ viewport }: {
       perspCamera.updateProjectionMatrix();
     }
 
-    // Very gentle organic orbital movement
-    const orbitX = Math.sin(t * 0.05) * 2;
-    const orbitY = Math.cos(t * 0.03) * 1.5;
-    const orbitZ = 65 + Math.sin(t * 0.02) * 1.5;
+    // Organic drift — two overlapping frequencies so it never repeats obviously
+    const orbitX = Math.sin(t * 0.05) * 2.5 + Math.sin(t * 0.13) * 0.9;
+    const orbitY = Math.cos(t * 0.03) * 2.0 + Math.cos(t * 0.17) * 0.7;
+    const orbitZ = 65 + Math.sin(t * 0.02) * 2.0 + Math.sin(t * 0.07) * 0.8;
 
     targetPos.current.x = orbitX;
     targetPos.current.y = orbitY;
@@ -1692,11 +1692,11 @@ function Scene({ viewport }: {
       <pointLight position={[0, 80, -20]} intensity={20} color="#a855f7" distance={200} decay={1.8} />
 
       {/* Nebulae — vivid electric aurora clouds */}
-      <NebulaCloud position={[-80, 40, -50]} scale={260 * scaleFactor} colors={['#220855', '#5b1db0', '#9333ea']} opacity={0.92} flowSpeed={0.032} zPos={-55} />
-      <NebulaCloud position={[85, -35, -45]} scale={230 * scaleFactor} colors={['#06142e', '#1e44a0', '#3b82f6']} opacity={0.88} flowSpeed={0.028} zPos={-50} />
-      <NebulaCloud position={[30, -55, -60]} scale={270 * scaleFactor} colors={['#200630', '#6b0fa0', '#c026d3']} opacity={0.90} flowSpeed={0.036} zPos={-65} />
-      <NebulaCloud position={[-55, -45, -48]} scale={220 * scaleFactor} colors={['#250530', '#7a0d50', '#db2777']} opacity={0.82} flowSpeed={0.030} zPos={-42} />
-      <NebulaCloud position={[15, 55, -70]} scale={240 * scaleFactor} colors={['#0a1a30', '#0e4060', '#0891b2']} opacity={0.78} flowSpeed={0.022} zPos={-72} />
+      <NebulaCloud position={[-80, 40, -50]} scale={260 * scaleFactor} colors={['#220855', '#5b1db0', '#9333ea']} opacity={0.78} flowSpeed={0.032} zPos={-55} />
+      <NebulaCloud position={[85, -35, -45]} scale={230 * scaleFactor} colors={['#06142e', '#1e44a0', '#3b82f6']} opacity={0.72} flowSpeed={0.028} zPos={-50} />
+      <NebulaCloud position={[30, -55, -60]} scale={270 * scaleFactor} colors={['#200630', '#6b0fa0', '#c026d3']} opacity={0.75} flowSpeed={0.036} zPos={-65} />
+      <NebulaCloud position={[-55, -45, -48]} scale={220 * scaleFactor} colors={['#250530', '#7a0d50', '#db2777']} opacity={0.68} flowSpeed={0.030} zPos={-42} />
+      <NebulaCloud position={[15, 55, -70]} scale={240 * scaleFactor} colors={['#0a1a30', '#0e4060', '#0891b2']} opacity={0.64} flowSpeed={0.022} zPos={-72} />
 
       {/* Galactic core */}
       <GalacticCore />
