@@ -774,3 +774,89 @@ section[id] {
 .pt-safe {
   padding-top: max(1.5rem, env(safe-area-inset-top));
 }
+
+/* ============================================
+   MOBILE SPACE BACKGROUND — CSS-only, no WebGL
+   Fluid on every device, zero GPU shader cost
+   ============================================ */
+@keyframes nebula-float-a {
+  0%, 100% { transform: translate(0, 0) scale(1);    opacity: 0.55; }
+  33%       { transform: translate(3%, -5%) scale(1.07); opacity: 0.72; }
+  66%       { transform: translate(-2%, 4%) scale(0.96); opacity: 0.60; }
+}
+@keyframes nebula-float-b {
+  0%, 100% { transform: translate(0, 0) scale(1);    opacity: 0.45; }
+  40%       { transform: translate(-5%, 3%) scale(1.09); opacity: 0.68; }
+  70%       { transform: translate(4%, -3%) scale(0.94); opacity: 0.52; }
+}
+
+.mobile-space-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(ellipse 130% 90% at 45% 25%, #130830 0%, #080220 50%, #030010 100%);
+  overflow: hidden;
+  contain: strict;
+}
+
+.mobile-bg-nebula-a {
+  position: absolute;
+  top: -20%; left: -20%;
+  width: 85%; height: 75%;
+  background: radial-gradient(ellipse, rgba(91,33,182,0.38) 0%, transparent 70%);
+  animation: nebula-float-a 20s ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.mobile-bg-nebula-b {
+  position: absolute;
+  bottom: -15%; right: -15%;
+  width: 75%; height: 65%;
+  background: radial-gradient(ellipse, rgba(29,78,138,0.32) 0%, transparent 70%);
+  animation: nebula-float-b 25s ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.mobile-bg-nebula-c {
+  position: absolute;
+  top: 35%; left: 25%;
+  width: 55%; height: 55%;
+  background: radial-gradient(ellipse, rgba(76,29,149,0.28) 0%, transparent 70%);
+  animation: nebula-float-a 32s ease-in-out infinite reverse;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* ============================================
+   SECTION RESPONSIVE CONSISTENCY
+   ============================================ */
+.section-header h2 {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+}
+
+.section-header p {
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+}
+
+/* Prevent any section from causing horizontal overflow */
+section {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Steps row — always centered regardless of breakpoint */
+.steps-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .steps-row {
+    gap: 3rem;
+    flex-wrap: nowrap;
+  }
+}

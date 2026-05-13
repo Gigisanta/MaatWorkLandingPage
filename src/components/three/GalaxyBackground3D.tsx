@@ -1005,6 +1005,7 @@ function Planet({
   const ringSegments = Math.max(32, Math.round(64 * geometryDetail));
 
   const sunDirection = useMemo(() => new THREE.Vector3(0.6, 0.4, 0.5).normalize(), []);
+  const { shouldUpdate: shouldUpdateShaders } = useFrameLimiter(30);
 
   // Third color for multi-tone planets
   const color3 = useMemo(() => {
@@ -1077,11 +1078,14 @@ function Planet({
       groupRef.current.rotation.y += rotationSpeed * delta;
     }
 
-    if (planetRef.current) {
-      (planetRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = timeRef.current;
-    }
-    if (cloudRef.current) {
-      (cloudRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = timeRef.current;
+    // Shader uniforms at 30 fps — saves GPU driver calls
+    if (shouldUpdateShaders()) {
+      if (planetRef.current) {
+        (planetRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = timeRef.current;
+      }
+      if (cloudRef.current) {
+        (cloudRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = timeRef.current;
+      }
     }
   });
 
@@ -1713,21 +1717,23 @@ function Scene({ viewport }: {
         geometryDetail={quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.65 : 0.4}
       />
 
-      {/* Ice giant — deep teal Neptune-like */}
-      <Planet
-        orbitRadiusX={62 * scaleFactor} orbitRadiusY={46 * scaleFactor} orbitSpeed={0.022}
-        size={viewport.isMobile ? 4.5 : 7} color1="#1a5070" color2="#2090c8"
-        planetType={2}
-        roughness={0.5} atmosphereColor="#40b0e8" atmosphereIntensity={3.6}
-        rotationSpeed={0.12} initialAngle={2.4} tilt={-0.14}
-        cloudColor="#a8e0ff" cloudIntensity={0.7}
-        geometryDetail={quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.65 : 0.4}
-      />
+      {/* Ice giant — only on desktop (high/medium quality) */}
+      {!viewport.isTablet && (
+        <Planet
+          orbitRadiusX={62 * scaleFactor} orbitRadiusY={46 * scaleFactor} orbitSpeed={0.022}
+          size={7} color1="#1a5070" color2="#2090c8"
+          planetType={2}
+          roughness={0.5} atmosphereColor="#40b0e8" atmosphereIntensity={3.6}
+          rotationSpeed={0.12} initialAngle={2.4} tilt={-0.14}
+          cloudColor="#a8e0ff" cloudIntensity={0.7}
+          geometryDetail={quality.tier === 'high' ? 1 : 0.65}
+        />
+      )}
 
-      {/* Ocean planet — vibrant Earth-like */}
+      {/* Ocean planet */}
       <Planet
         orbitRadiusX={38 * scaleFactor} orbitRadiusY={30 * scaleFactor} orbitSpeed={0.042}
-        size={viewport.isMobile ? 3.8 : 6} color1="#1560a8" color2="#28903a"
+        size={viewport.isTablet ? 5 : 6} color1="#1560a8" color2="#28903a"
         planetType={3}
         roughness={0.6} atmosphereColor="#5590e8" atmosphereIntensity={4.0}
         rotationSpeed={0.14} initialAngle={4.8} tilt={0.1}
@@ -1735,16 +1741,16 @@ function Scene({ viewport }: {
         geometryDetail={quality.tier === 'high' ? 1 : quality.tier === 'medium' ? 0.65 : 0.4}
       />
 
-      {/* Lava planet — volcanic, dramatic orange glow */}
-      {quality.tier !== 'low' && (
+      {/* Lava planet — desktop only */}
+      {quality.tier === 'high' && !viewport.isTablet && (
         <Planet
           orbitRadiusX={28 * scaleFactor} orbitRadiusY={22 * scaleFactor} orbitSpeed={0.058}
-          size={viewport.isMobile ? 2.8 : 4.5} color1="#8b2000" color2="#e04000"
+          size={4.5} color1="#8b2000" color2="#e04000"
           planetType={0}
           roughness={0.9} atmosphereColor="#ff5020" atmosphereIntensity={3.8}
           rotationSpeed={0.2} initialAngle={1.8} tilt={0.06}
           cloudColor="#ff8040" cloudIntensity={0.3}
-          geometryDetail={quality.tier === 'high' ? 0.9 : 0.5}
+          geometryDetail={0.9}
         />
       )}
 
@@ -1767,39 +1773,49 @@ export default function GalaxyBackground3D() {
   const viewport = useViewport();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // Handle resize
   useEffect(() => {
     const handleResize = () => {
       setDimensions({ width: window.innerWidth, height: window.innerHeight });
     };
-    
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Determine quality based on device and viewport
-  const dpr = Math.min(window.devicePixelRatio, viewport.isMobile ? 1 : viewport.isTablet ? 1.5 : 2);
-  const antialias = !viewport.isMobile && dimensions.width > 0;
+  // ── Mobile: pure CSS animated background — zero WebGL overhead ──
+  if (viewport.isMobile) {
+    return (
+      <div className="mobile-space-bg">
+        <div className="mobile-bg-nebula-a" />
+        <div className="mobile-bg-nebula-b" />
+        <div className="mobile-bg-nebula-c" />
+      </div>
+    );
+  }
+
+  const dpr       = Math.min(window.devicePixelRatio, viewport.isTablet ? 1.5 : 2);
+  const antialias = dimensions.width > 0;
 
   return (
     <div style={{
       position: 'fixed',
       inset: 0,
       zIndex: 0,
-      background: 'radial-gradient(ellipse at 45% 25%, #130830 0%, #080220 45%, #030010 100%)'
+      background: 'radial-gradient(ellipse at 45% 25%, #130830 0%, #080220 45%, #030010 100%)',
+      contain: 'strict',
     }}>
       <Canvas
         camera={{ position: [0, 0, 65], fov: 60 }}
         dpr={dpr}
-        gl={{ 
-          antialias: antialias, 
-          powerPreference: 'high-performance', 
+        gl={{
+          antialias,
+          powerPreference: 'high-performance',
           alpha: false,
           stencil: false,
-          depth: true
+          depth: true,
         }}
         style={{ width: '100%', height: '100%' }}
+        frameloop="always"
       >
         <Scene viewport={viewport} />
       </Canvas>

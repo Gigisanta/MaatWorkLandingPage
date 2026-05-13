@@ -135,9 +135,9 @@ export default function AllInOne() {
 
         {/* Steps */}
         <div className="mb-10">
-          <div className="flex md:justify-center gap-4 md:gap-12">
+          <div className="steps-row">
             {STEPS.map((step, i) => (
-              <div key={i} className="flex-shrink-0 text-center">
+              <div key={i} className="text-center" style={{ minWidth: '6rem', maxWidth: '9rem', flex: '0 0 auto' }}>
                 <div className="step-circle mx-auto mb-3">
                   <span>{step.number}</span>
                 </div>
