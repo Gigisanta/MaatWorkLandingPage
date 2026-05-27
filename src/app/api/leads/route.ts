@@ -106,10 +106,10 @@ export async function POST(
       email: leadData.email || undefined,
       industria: leadData.industria,
       problema: leadData.problema,
-      procesos: leadData.procesos,
+      procesos: leadData.procesos ?? [],
+      source: leadData.source || 'landing_page',
       presupuesto: leadData.presupuesto || undefined,
       timeline: leadData.timeline || undefined,
-      source: 'landing_page',
       ip_address: getClientIp(request),
       user_agent: request.headers.get('user-agent') ?? undefined,
     })

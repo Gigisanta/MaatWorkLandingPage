@@ -39,7 +39,7 @@ COMMENT ON COLUMN leads.industria IS 'Industry sector';
 COMMENT ON COLUMN leads.problema IS 'Main problem described by the lead';
 COMMENT ON COLUMN leads.procesos IS 'Array of selected process types';
 COMMENT ON COLUMN leads.presupuesto IS 'Budget range selected';
-COMMENT ON COLUMN leads.timeline IS 'Timeline/timeline selected';
+COMMENT ON COLUMN leads.timeline IS 'Timeline/urgency selection';
 COMMENT ON COLUMN leads.source IS 'Lead source tracking (default: landing_page)';
 COMMENT ON COLUMN leads.ip_address IS 'IP address of the submitter';
 COMMENT ON COLUMN leads.user_agent IS 'Browser user agent string';

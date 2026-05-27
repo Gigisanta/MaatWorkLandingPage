@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: false, // Disabled for R3F compatibility (double-render causes WebGL issues)
   poweredByHeader: false,
   compress: true,
   turbopack: {

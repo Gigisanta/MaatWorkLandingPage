@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { WHATSAPP_BASE_URL } from '@/lib/constants';
 import { useExitIntent } from '@/hooks/use-exit-intent';
 
 interface ExitIntentPopupProps {
@@ -30,7 +31,7 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
 
     setIsSubmitting(true);
     try {
-      await fetch('/api/leads', {
+      const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -43,11 +44,15 @@ export default function ExitIntentPopup({ enabled = true }: ExitIntentPopupProps
           source: 'exit_intent',
         }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Error del servidor');
+      }
 
       const message = encodeURIComponent(
         `¡Hola! Me fui de la landing pero quiero saber más sobre MaatWork.\n\nNombre: ${formData.nombre}\nWhatsApp: ${formData.whatsapp}`
       );
-      window.open(`https://wa.me/542994569840?text=${message}`, '_blank');
+      window.open(`${WHATSAPP_BASE_URL}?text=${message}`, '_blank');
       setSubmitted(true);
       setTimeout(() => closeExitIntent(), 2000);
     } catch (error) {

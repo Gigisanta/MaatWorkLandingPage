@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#030014;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0028;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#c084fc;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+
+  <!-- Decorative elements -->
+  <circle cx="950" cy="150" r="200" fill="url(#accent)" opacity="0.15" />
+  <circle cx="100" cy="500" r="150" fill="url(#accent)" opacity="0.1" />
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#text-gradient)" />
+
+  <!-- Logo icon (simplified) -->
+  <g transform="translate(500, 180)">
+    <rect x="0" y="0" width="60" height="60" rx="14" fill="url(#text-gradient)" opacity="0.9" />
+    <text x="30" y="42" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#030014">M</text>
+  </g>
+
+  <!-- Main title -->
+  <text x="600" y="280" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="800" fill="url(#text-gradient)">MaatWork</text>
+
+  <!-- Tagline -->
+  <text x="600" y="350" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="500" fill="#94a3b8">Automatiza tu local, hoy</text>
+
+  <!-- Description -->
+  <text x="600" y="410" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400" fill="#64748b">SaaS de automatización comercial para gyms, salones y más</text>
+
+  <!-- URL -->
+  <text x="600" y="540" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="500" fill="#a855f7" opacity="0.8">maatwork.com</text>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="626" width="1200" height="4" fill="url(#text-gradient)" />
+</svg>

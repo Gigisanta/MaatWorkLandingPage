@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { WHATSAPP_PHONE } from '@/lib/constants';
 
 interface UTMParams {
   utm_source?: string;
@@ -12,44 +13,48 @@ interface UTMParams {
 
 const STORAGE_KEY = 'maatwork_utm';
 
-export function useUtm() {
-  const [utm, setUtm] = useState<UTMParams>({});
+function parseInitialUTM(): UTMParams {
+  if (typeof window === 'undefined') return {};
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
+  const utmKeys: (keyof UTMParams)[] = [
+    'utm_source',
+    'utm_medium',
+    'utm_campaign',
+    'utm_term',
+    'utm_content',
+  ];
 
-    const utmParams: UTMParams = {};
-    const utmKeys: (keyof UTMParams)[] = [
-      'utm_source',
-      'utm_medium',
-      'utm_campaign',
-      'utm_term',
-      'utm_content',
-    ];
+  const utmParams: UTMParams = {};
+  let hasUtm = false;
 
-    let hasUtm = false;
-    utmKeys.forEach((key) => {
-      const value = params.get(key);
-      if (value) {
-        utmParams[key] = value;
-        hasUtm = true;
-      }
-    });
-
-    if (hasUtm) {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(utmParams));
-      setUtm(utmParams);
-    } else {
-      const stored = sessionStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        try {
-          setUtm(JSON.parse(stored));
-        } catch {
-          // ignore parse errors
-        }
-      }
+  utmKeys.forEach((key) => {
+    const value = params.get(key);
+    if (value) {
+      utmParams[key] = value;
+      hasUtm = true;
     }
-  }, []);
+  });
+
+  if (hasUtm) {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(utmParams));
+    return utmParams;
+  }
+
+  const stored = sessionStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  return {};
+}
+
+export function useUtm() {
+  const [utm] = useState<UTMParams>(parseInitialUTM);
 
   const getUtmString = () => {
     return Object.entries(utm)
@@ -59,7 +64,7 @@ export function useUtm() {
 
   const getWhatsAppLink = (baseMessage: string, baseSource: string) => {
     const source = utm.utm_source || baseSource;
-    return `https://wa.me/542994569840?text=${encodeURIComponent(baseMessage)}&utm_source=${encodeURIComponent(source)}`;
+    return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(baseMessage)}&utm_source=${encodeURIComponent(source)}`;
   };
 
   return { utm, getUtmString, getWhatsAppLink };

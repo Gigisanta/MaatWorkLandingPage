@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { WHATSAPP_BASE_URL, WHATSAPP_LINKS } from '@/lib/constants';
 
 function AnimatedNumber({ value, duration = 1000 }: { value: number; duration?: number }) {
   const [displayValue, setDisplayValue] = useState(0);
@@ -90,7 +91,7 @@ export default function ROIPricing() {
 
     setIsSubmittingMini(true);
     try {
-      await fetch('/api/leads', {
+      const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -103,11 +104,15 @@ export default function ROIPricing() {
           source: 'roi_calculator',
         }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Error del servidor');
+      }
 
       const message = encodeURIComponent(
         `¡Hola! Usé la calculadora de MaatWork y calculé un ahorro de ${formatNumber(calculations.monthlySavings)}/mes.\n\nMi nombre: ${miniFormData.nombre}\nWhatsApp: ${miniFormData.whatsapp}`
       );
-      window.open(`https://wa.me/542994569840?text=${message}`, '_blank');
+      window.open(`${WHATSAPP_BASE_URL}?text=${message}`, '_blank');
       setMiniFormSubmitted(true);
     } catch (error) {
       console.error('Error submitting mini form:', error);
@@ -155,6 +160,10 @@ export default function ROIPricing() {
                       value={hoursPerDay}
                       onChange={handleSliderChange(setHoursPerDay)}
                       className="w-full h-2 bg-violet-950/80 rounded-full appearance-none cursor-pointer accent-violet-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(139,92,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer"
+                      aria-valuemin={1}
+                      aria-valuemax={12}
+                      aria-valuenow={hoursPerDay}
+                      aria-label="Horas que perdés por día"
                     />
                     <div className="flex justify-between text-xs text-slate-500">
                       <span>1h</span>
@@ -175,6 +184,10 @@ export default function ROIPricing() {
                       value={hourValue}
                       onChange={handleSliderChange(setHourValue)}
                       className="w-full h-2 bg-violet-950/80 rounded-full appearance-none cursor-pointer accent-violet-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(139,92,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer"
+                      aria-valuemin={500}
+                      aria-valuemax={10000}
+                      aria-valuenow={hourValue}
+                      aria-label="Valor de tu hora"
                     />
                     <div className="flex justify-between text-xs text-slate-500">
                       <span>$500</span>
@@ -194,6 +207,10 @@ export default function ROIPricing() {
                       value={daysPerMonth}
                       onChange={handleSliderChange(setDaysPerMonth)}
                       className="w-full h-2 bg-violet-950/80 rounded-full appearance-none cursor-pointer accent-violet-500 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_8px_rgba(139,92,246,0.5)] [&::-webkit-slider-thumb]:cursor-pointer"
+                      aria-valuemin={20}
+                      aria-valuemax={30}
+                      aria-valuenow={daysPerMonth}
+                      aria-label="Días que trabajás por mes"
                     />
                     <div className="flex justify-between text-xs text-slate-500">
                       <span>20</span>
@@ -319,7 +336,7 @@ export default function ROIPricing() {
                 </ul>
 
                 <a
-                  href="https://wa.me/542994569840?text=Hola!%20Quiero%20empezar%20con%20MaatWork"
+                  href={WHATSAPP_LINKS.roi}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-green w-full text-center py-3 block text-base font-semibold rounded-xl"

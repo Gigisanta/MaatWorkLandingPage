@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Manrope } from "next/font/google";
 import "./globals.css";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
+
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     locale: "es_AR",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.svg",
         width: 1200,
         height: 630,
         alt: "MaatWork - Automatización comercial",
@@ -57,12 +57,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "MaatWork | Automatiza tu local, hoy",
     description: "SaaS de automatización comercial para pequeños negocios en Argentina.",
-    images: ["/og-image.png"],
+    images: ["/og-image.svg"],
   },
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", sizes: "any" },
     ],
     apple: "/apple-touch-icon.svg",
     shortcut: "/favicon.svg",
@@ -84,7 +83,6 @@ export default function RootLayout({
     <html lang="es" className="dark">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.svg" />
         <meta name="theme-color" content="#030014" />
         <script
@@ -104,11 +102,6 @@ export default function RootLayout({
                 "priceCurrency": "USD",
                 "priceValidUntil": "2026-12-31",
                 "availability": "https://schema.org/InStock",
-              },
-              "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "ratingCount": "500",
               },
               "provider": {
                 "@type": "Organization",
@@ -161,11 +154,9 @@ export default function RootLayout({
         >
           Saltar al contenido principal
         </a>
-        <SmoothScrollProvider>
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
-        </SmoothScrollProvider>
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
       </body>
     </html>
   );

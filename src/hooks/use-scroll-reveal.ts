@@ -7,19 +7,16 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 // ======================
 
 export function useReducedMotion(): boolean {
-  const [prefersReducedMotion] = useState(() => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
     if (typeof window === 'undefined') return false
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
   })
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (prefersReducedMotion !== mediaQuery.matches) {
-      // State already initialized, just sync if needed
-    }
 
     const handler = (event: MediaQueryListEvent) => {
-      // This is an event callback, not synchronous setState in effect
+      setPrefersReducedMotion(event.matches)
     }
 
     mediaQuery.addEventListener('change', handler)

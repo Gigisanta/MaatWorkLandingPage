@@ -54,3 +54,7 @@ test-results/
 
 # OS files
 Thumbs.db
+
+.kilo/
+# Debug screenshots
+*.png

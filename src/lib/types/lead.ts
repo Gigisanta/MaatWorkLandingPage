@@ -17,7 +17,6 @@ export interface Lead {
 }
 
 export interface CreateLeadInput extends LeadInput {
-  source?: string
   ip_address?: string | null
   user_agent?: string | null
 }

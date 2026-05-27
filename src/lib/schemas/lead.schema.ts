@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const leadSchema = z.object({
+const leadSchemaBase = z.object({
   nombre: z.string()
     .min(2, 'Nombre debe tener al menos 2 caracteres')
     .max(100, 'Nombre demasiado largo'),
@@ -20,14 +20,22 @@ export const leadSchema = z.object({
     'gimnasio',
     'academia',
     'consultorio',
-    'otro'
+    'otro',
+    'no_define'
   ]),
 
   problema: z.string()
     .min(10, 'Describe el problema con al menos 10 caracteres')
     .max(1000, 'Descripción demasiado larga'),
 
-  procesos: z.array(z.string()).min(1, 'Selecciona al menos un proceso'),
+  procesos: z.array(z.string()).default([]),
+
+  source: z.enum([
+    'landing_page',
+    'contact_form',
+    'roi_calculator',
+    'exit_intent'
+  ]).optional(),
 
   presupuesto: z.enum([
     'menos_50k',
@@ -46,4 +54,16 @@ export const leadSchema = z.object({
   ]).optional()
 })
 
-export type LeadInput = z.infer<typeof leadSchema>
+export const leadSchema = leadSchemaBase.superRefine((data, ctx) => {
+  // Require at least one proceso for main contact form sources
+  const requiresProcesos = !data.source || data.source === 'landing_page' || data.source === 'contact_form'
+  if (requiresProcesos && (!data.procesos || data.procesos.length === 0)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Selecciona al menos un proceso',
+      path: ['procesos'],
+    })
+  }
+})
+
+export type LeadInput = z.infer<typeof leadSchemaBase>
