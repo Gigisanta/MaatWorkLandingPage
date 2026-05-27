@@ -19,7 +19,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://maatwork.com"),
+  metadataBase: new URL("https://maat.work"),
   title: "MaatWork | Automatiza tu local, hoy",
   description: "SaaS de automatización comercial para gyms, salones de belleza, academias y más en Argentina. Agenda automática, control de cobros y WhatsApp integrado. $59 USD/mes.",
   keywords: ["automatización comercial", "saas gyms", "saas belleza", "academias argentina", "gestion de turnos", "software gyms", "software salones", "automatizacion whatsapp", "maatwork"],
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "MaatWork | Automatiza tu local, hoy",
     description: "SaaS de automatización comercial para gyms, salones de belleza, academias y más en Argentina.",
-    url: "https://maatwork.com",
+    url: "https://maat.work",
     siteName: "MaatWork",
     type: "website",
     locale: "es_AR",
@@ -93,7 +93,7 @@ export default function RootLayout({
               "@type": "SoftwareApplication",
               "name": "MaatWork",
               "description": "SaaS de automatización comercial para gyms, salones de belleza, academias y centros en Argentina.",
-              "url": "https://maatwork.com",
+              "url": "https://maat.work",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
               "offers": {
