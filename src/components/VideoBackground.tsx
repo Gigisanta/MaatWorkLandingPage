@@ -13,8 +13,23 @@ export default function VideoBackground() {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    // Force play on mobile browsers that block autoplay
-    v.play().catch(() => {});
+
+    const tryPlay = () => {
+      v.play().catch(() => {
+        // If autoplay blocked, retry on first user interaction
+        const onInteract = () => {
+          v.play().catch(() => {});
+          document.removeEventListener('touchstart', onInteract);
+          document.removeEventListener('click', onInteract);
+        };
+        document.addEventListener('touchstart', onInteract, { once: true });
+        document.addEventListener('click', onInteract, { once: true });
+      });
+    };
+
+    tryPlay();
+    v.addEventListener('loadeddata', tryPlay, { once: true });
+    return () => v.removeEventListener('loadeddata', tryPlay);
   }, []);
 
   return (
@@ -27,6 +42,7 @@ export default function VideoBackground() {
         contain: 'strict',
       }}
     >
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <video
         ref={videoRef}
         autoPlay
@@ -35,6 +51,7 @@ export default function VideoBackground() {
         playsInline
         preload="auto"
         poster="/bg/galaxy-poster.png"
+        disablePictureInPicture
         style={{
           width: '100%',
           height: '100%',
@@ -42,6 +59,7 @@ export default function VideoBackground() {
           display: 'block',
           pointerEvents: 'none',
         }}
+        onContextMenu={(e) => e.preventDefault()}
         aria-hidden="true"
       >
         {VIDEO_SOURCES.map((s) => (

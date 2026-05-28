@@ -541,3 +541,20 @@ section {
     flex-wrap: nowrap;
   }
 }
+
+/* Hide iOS native video play button overlay */
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-panel {
+  display: none !important;
+  -webkit-appearance: none;
+}
+video::-webkit-media-controls-enclosure {
+  display: none !important;
+  overflow: hidden;
+}
+/* Prevent video from showing any native UI */
+video[aria-hidden="true"] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
