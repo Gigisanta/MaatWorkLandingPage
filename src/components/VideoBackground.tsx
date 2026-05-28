@@ -1,11 +1,22 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 const VIDEO_SOURCES = [
   { src: '/bg/galaxy-loop.webm', type: 'video/webm' },
   { src: '/bg/galaxy-loop.mp4', type: 'video/mp4' },
 ];
 
 export default function VideoBackground() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    // Force play on mobile browsers that block autoplay
+    v.play().catch(() => {});
+  }, []);
+
   return (
     <div
       style={{
@@ -17,6 +28,7 @@ export default function VideoBackground() {
       }}
     >
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
@@ -28,6 +40,7 @@ export default function VideoBackground() {
           height: '100%',
           objectFit: 'cover',
           display: 'block',
+          pointerEvents: 'none',
         }}
         aria-hidden="true"
       >
