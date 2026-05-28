@@ -1,4 +1,4 @@
-import GalaxyWrapper from '@/components/GalaxyWrapper';
+import VideoBackground from '@/components/VideoBackground';
 import Navbar from '@/components/sections/Navbar';
 import HeroSection from '@/components/sections/HeroSection';
 import AllInOne from '@/components/sections/AllInOne';
@@ -11,7 +11,7 @@ import ExitIntentPopup from '@/components/sections/ExitIntentPopup';
 export default function Home() {
   return (
     <>
-      <GalaxyWrapper />
+      <VideoBackground />
       <div className="min-h-screen relative z-10">
         <Navbar />
         <main id="main-content">
