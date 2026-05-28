@@ -1,36 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
 const VIDEO_SOURCES = [
   { src: '/bg/galaxy-loop.webm', type: 'video/webm' },
   { src: '/bg/galaxy-loop.mp4', type: 'video/mp4' },
 ];
 
 export default function VideoBackground() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  // Mobile: CSS animated background (existing, zero overhead)
-  if (isMobile) {
-    return (
-      <div className="mobile-space-bg">
-        <div className="mobile-bg-nebula-a" />
-        <div className="mobile-bg-nebula-b" />
-        <div className="mobile-bg-nebula-c" />
-        <div className="mobile-bg-nebula-d" />
-      </div>
-    );
-  }
-
-  // Desktop/Tablet: video background
   return (
     <div
       style={{
