@@ -25,14 +25,13 @@ export default function Planet({
   const angleRef = useRef(initialAngle);
   const timeRef = useRef(0);
   const seedRef = useRef(Math.random() * 100);
-  const targetPos = useRef({ x: 0, y: 0, z: 0 });
   const currentPos = useRef({ x: 0, y: 0, z: 0 });
 
-  // Geometry segments based on quality
-  const segments = Math.max(16, Math.round(48 * geometryDetail));
-  const atmosphereSegments = Math.max(12, Math.round(48 * geometryDetail));
-  const outerAtmosphereSegments = Math.max(8, Math.round(32 * geometryDetail));
-  const ringSegments = Math.max(32, Math.round(64 * geometryDetail));
+  // Geometry segments — reduced base from 48 to 32
+  const segments = Math.max(12, Math.round(32 * geometryDetail));
+  const atmosphereSegments = Math.max(10, Math.round(32 * geometryDetail));
+  const outerAtmosphereSegments = Math.max(8, Math.round(24 * geometryDetail));
+  const ringSegments = Math.max(24, Math.round(48 * geometryDetail));
 
   const sunDirection = useMemo(() => new THREE.Vector3(0.6, 0.4, 0.5).normalize(), []);
   const { shouldUpdate: shouldUpdateShaders } = useFrameLimiter(30);
@@ -78,6 +77,13 @@ export default function Planet({
     uColor: { value: new THREE.Color(ringColor) },
   }), [ringColor]);
 
+  // Pre-compute orbit constants
+  const orbitParams = useMemo(() => ({
+    halfY: orbitRadiusY * 0.4,
+    yOff1: 12,
+    yOff2: 5,
+  }), [orbitRadiusY]);
+
   useFrame((_, delta) => {
     timeRef.current += delta;
 
@@ -87,11 +93,16 @@ export default function Planet({
 
       // Clean elliptical orbit in 3D space
       const angle = angleRef.current;
-      const targetX = Math.cos(angle) * orbitRadiusX;
-      const targetY = Math.sin(angle * 0.4) * 12 + Math.sin(angle * 0.6) * 5;
-      const targetZ = Math.sin(angle) * orbitRadiusY;
+      const sinA = Math.sin(angle);
+      const cosA = Math.cos(angle);
+      const sinA04 = Math.sin(angle * 0.4);
+      const sinA06 = Math.sin(angle * 0.6);
 
-      // Smooth interpolation with frame-rate independent factor
+      const targetX = cosA * orbitRadiusX;
+      const targetY = sinA04 * orbitParams.yOff1 + sinA06 * orbitParams.yOff2;
+      const targetZ = sinA * orbitRadiusY;
+
+      // Frame-rate independent lerp
       const smoothFactor = 1.0 - Math.exp(-3.0 * delta);
       
       currentPos.current.x += (targetX - currentPos.current.x) * smoothFactor;
@@ -121,7 +132,7 @@ export default function Planet({
 
   return (
     <group ref={groupRef} rotation={[tilt, 0, 0]}>
-      {/* Main planet surface - optimized segments for performance */}
+      {/* Main planet surface */}
       <mesh ref={planetRef}>
         <sphereGeometry args={[size, segments, segments]} />
         <shaderMaterial

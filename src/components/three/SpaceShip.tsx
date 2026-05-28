@@ -6,12 +6,27 @@ import * as THREE from 'three';
 import { ENGINE_GLOW_VERTEX, ENGINE_GLOW_FRAGMENT, EXHAUST_VERTEX, EXHAUST_FRAGMENT } from './shaders';
 import type { FlightState } from './types';
 
-function cubicBezier(p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, p3: THREE.Vector3, t: number) {
+// Pre-allocate reusable vectors outside component
+const _pos = new THREE.Vector3();
+const _posNext = new THREE.Vector3();
+const _dir = new THREE.Vector3();
+const _up = new THREE.Vector3(0, 1, 0);
+const _right = new THREE.Vector3();
+const _trueUp = new THREE.Vector3();
+const _mat4 = new THREE.Matrix4();
+
+function cubicBezier(p0: THREE.Vector3, p1: THREE.Vector3, p2: THREE.Vector3, p3: THREE.Vector3, t: number, out: THREE.Vector3) {
   const inv = 1 - t;
-  return new THREE.Vector3(
-    inv*inv*inv*p0.x + 3*inv*inv*t*p1.x + 3*inv*t*t*p2.x + t*t*t*p3.x,
-    inv*inv*inv*p0.y + 3*inv*inv*t*p1.y + 3*inv*t*t*p2.y + t*t*t*p3.y,
-    inv*inv*inv*p0.z + 3*inv*inv*t*p1.z + 3*inv*t*t*p2.z + t*t*t*p3.z,
+  const inv2 = inv * inv;
+  const inv3 = inv2 * inv;
+  const t2 = t * t;
+  const t3 = t2 * t;
+  const a = 3 * inv2 * t;
+  const b = 3 * inv * t2;
+  out.set(
+    inv3*p0.x + a*p1.x + b*p2.x + t3*p3.x,
+    inv3*p0.y + a*p1.y + b*p2.y + t3*p3.y,
+    inv3*p0.z + a*p1.z + b*p2.z + t3*p3.z,
   );
 }
 
@@ -92,22 +107,21 @@ export default function SpaceShip() {
     if (!groupRef.current) return;
     groupRef.current.visible = true;
 
-    const pos     = cubicBezier(f.p0, f.p1, f.p2, f.p3, f.t);
-    const posNext = cubicBezier(f.p0, f.p1, f.p2, f.p3, Math.min(f.t + 0.008, 1));
-    const dir     = posNext.clone().sub(pos).normalize();
+    // Use pre-allocated vectors — zero allocation
+    cubicBezier(f.p0, f.p1, f.p2, f.p3, f.t, _pos);
+    cubicBezier(f.p0, f.p1, f.p2, f.p3, Math.min(f.t + 0.008, 1), _posNext);
+    _dir.subVectors(_posNext, _pos).normalize();
 
-    groupRef.current.position.copy(pos);
+    groupRef.current.position.copy(_pos);
 
-    // Look along direction of travel
-    const up = new THREE.Vector3(0, 1, 0);
-    const right = new THREE.Vector3().crossVectors(dir, up).normalize();
-    const trueUp = new THREE.Vector3().crossVectors(right, dir).normalize();
-    const mat4 = new THREE.Matrix4().makeBasis(right, trueUp, dir.clone().negate());
-    groupRef.current.setRotationFromMatrix(mat4);
+    // Look along direction of travel — reuse pre-allocated vectors
+    _right.crossVectors(_dir, _up).normalize();
+    _trueUp.crossVectors(_right, _dir).normalize();
+    _mat4.makeBasis(_right, _trueUp, _dir.clone().negate());
+    groupRef.current.setRotationFromMatrix(_mat4);
 
     // Banking — roll into the turn
-    const bankAngle = -dir.x * 0.6;
-    groupRef.current.rotateZ(bankAngle);
+    groupRef.current.rotateZ(-_dir.x * 0.6);
 
     // Engine glow uniforms
     const glowMat = engineL.current?.material as THREE.ShaderMaterial | undefined;
@@ -121,10 +135,11 @@ export default function SpaceShip() {
       const attr = ref.current.geometry.attributes.position;
       const arr  = attr.array as Float32Array;
       const zOffset = idx === 0 ? 0.9 : -0.9;
+      const p = _pos; // reuse pre-allocated vector
       for (let i = 0; i < TRAIL_POINTS; i++) {
         const delay = (i / TRAIL_POINTS) * 0.06;
         const tp    = Math.max(0, f.t - delay);
-        const p     = cubicBezier(f.p0, f.p1, f.p2, f.p3, tp);
+        cubicBezier(f.p0, f.p1, f.p2, f.p3, tp, p);
         arr[i*3]   = p.x;
         arr[i*3+1] = p.y;
         arr[i*3+2] = p.z + zOffset * 0.1;
@@ -145,12 +160,12 @@ export default function SpaceShip() {
     <group ref={groupRef} visible={false}>
       {/* Hull — elongated ellipsoid */}
       <mesh scale={[2.2, 0.6, 0.75]} material={hullMat}>
-        <sphereGeometry args={[1.5, 14, 10]} />
+        <sphereGeometry args={[1.5, 12, 8]} />
       </mesh>
 
       {/* Cockpit dome */}
       <mesh position={[0.9, 0.55, 0]} scale={[0.85, 0.65, 0.7]} material={glassMat}>
-        <sphereGeometry args={[0.6, 10, 8]} />
+        <sphereGeometry args={[0.6, 8, 6]} />
       </mesh>
 
       {/* Left wing */}
@@ -164,11 +179,11 @@ export default function SpaceShip() {
 
       {/* Engine pod — left */}
       <mesh position={[-1.6, -0.25, 0.9]} rotation={[Math.PI/2, 0, 0]} material={engineBodyMat}>
-        <cylinderGeometry args={[0.28, 0.24, 1.1, 10]} />
+        <cylinderGeometry args={[0.28, 0.24, 1.1, 8]} />
       </mesh>
       {/* Engine pod — right */}
       <mesh position={[-1.6, -0.25, -0.9]} rotation={[Math.PI/2, 0, 0]} material={engineBodyMat}>
-        <cylinderGeometry args={[0.28, 0.24, 1.1, 10]} />
+        <cylinderGeometry args={[0.28, 0.24, 1.1, 8]} />
       </mesh>
 
       {/* Engine glow planes — left */}
@@ -193,8 +208,6 @@ export default function SpaceShip() {
           blending={THREE.AdditiveBlending}
         />
       </mesh>
-
-      {/* Exhaust trails rendered in world space via points outside group */}
     </group>
   );
 }

@@ -64,7 +64,7 @@ export default function StarField({ count, radius, size, depthZ, spread, orbitSp
     return { positions, sizes, brightness, colors, temperatures };
   }, [count, radius, size, spread]);
 
-  // Single rotation update per frame - extremely cheap
+  // Single rotation update per frame — extremely cheap
   useFrame((_, delta) => {
     if (!shouldUpdate()) return;
     if (!groupRef.current) return;

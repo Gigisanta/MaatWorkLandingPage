@@ -38,7 +38,7 @@ export default function GalaxyBackground3D() {
       position: 'fixed',
       inset: 0,
       zIndex: 0,
-      background: 'radial-gradient(ellipse at 45% 25%, #130830 0%, #080220 45%, #030010 100%)',
+      background: 'radial-gradient(ellipse at 45% 25%, #1a0840 0%, #0a0328 45%, #040115 100%)',
       contain: 'strict',
     }}>
       <Canvas
@@ -50,9 +50,15 @@ export default function GalaxyBackground3D() {
           alpha: false,
           stencil: false,
           depth: true,
+          // Additional optimizations
+          preserveDrawingBuffer: false,
+          failIfMajorPerformanceCaveat: false,
         }}
         style={{ width: '100%', height: '100%' }}
         frameloop="always"
+        // Performance: skip unnecessary checks
+        flat={false}
+        legacy={false}
       >
         <Scene viewport={viewport} />
       </Canvas>

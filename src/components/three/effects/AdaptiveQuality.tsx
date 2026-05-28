@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useRef, useCallback } from 'react';
 
 export type QualityTier = 'high' | 'medium' | 'low';
 
@@ -24,8 +24,8 @@ interface UseAdaptiveQualityOptions {
 const QUALITY_TIERS: Record<QualityTier, Omit<QualitySettings, 'fps'>> = {
   high: {
     tier: 'high',
-    particleCount: 60000,
-    starCount: 8000,
+    particleCount: 40000,
+    starCount: 5700,
     pixelRatio: 2,
     enablePostProcessing: false,
     enableKuwahara: false,
@@ -35,8 +35,8 @@ const QUALITY_TIERS: Record<QualityTier, Omit<QualitySettings, 'fps'>> = {
   },
   medium: {
     tier: 'medium',
-    particleCount: 30000,
-    starCount: 4000,
+    particleCount: 20000,
+    starCount: 3500,
     pixelRatio: 1.5,
     enablePostProcessing: false,
     enableKuwahara: false,
@@ -46,8 +46,8 @@ const QUALITY_TIERS: Record<QualityTier, Omit<QualitySettings, 'fps'>> = {
   },
   low: {
     tier: 'low',
-    particleCount: 15000,
-    starCount: 2000,
+    particleCount: 10000,
+    starCount: 1800,
     pixelRatio: 1,
     enablePostProcessing: false,
     enableKuwahara: false,
@@ -64,14 +64,8 @@ function detectDeviceTier(): QualityTier {
   const isLowPower = (navigator.hardwareConcurrency ?? 8) <= 4;
   const dpr = window.devicePixelRatio;
 
-  if (isMobile || isLowPower) {
-    return 'low';
-  }
-
-  if (dpr >= 2 && !isMobile) {
-    return 'high';
-  }
-
+  if (isMobile || isLowPower) return 'low';
+  if (dpr >= 2 && !isMobile) return 'high';
   return 'medium';
 }
 
@@ -88,84 +82,37 @@ function getQualitySettings(tier: QualityTier, dpr: number): QualitySettings {
 
 export function useAdaptiveQuality(options: UseAdaptiveQualityOptions = {}): QualitySettings {
   const { forceTier } = options;
-  const [fps, setFps] = useState(60);
-  const frameTimesRef = useRef<number[]>([]);
-  const lastFrameTimeRef = useRef<number>(0);
-  const rafIdRef = useRef<number | null>(null);
+  const settingsRef = useRef<QualitySettings | null>(null);
 
-  const tier = useMemo(() => {
-    if (forceTier) return forceTier;
-    return detectDeviceTier();
-  }, [forceTier]);
-
-  const baseSettings = useMemo(() => {
+  if (settingsRef.current === null) {
+    const tier = forceTier ?? detectDeviceTier();
     const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
-    return getQualitySettings(tier, dpr);
-  }, [tier]);
+    settingsRef.current = getQualitySettings(tier, dpr);
+  }
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    lastFrameTimeRef.current = performance.now();
-
-    const measureFps = () => {
-      const now = performance.now();
-      const delta = now - lastFrameTimeRef.current;
-      lastFrameTimeRef.current = now;
-
-      if (delta > 0 && delta < 100) {
-        frameTimesRef.current.push(delta);
-        if (frameTimesRef.current.length > 30) {
-          frameTimesRef.current.shift();
-        }
-
-        if (frameTimesRef.current.length >= 10) {
-          const avgFrameTime = frameTimesRef.current.reduce((a, b) => a + b, 0) / frameTimesRef.current.length;
-          setFps(Math.round(1000 / avgFrameTime));
-        }
-      }
-
-      rafIdRef.current = requestAnimationFrame(measureFps);
-    };
-
-    rafIdRef.current = requestAnimationFrame(measureFps);
-
-    return () => {
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-    };
-  }, []);
-
-  return {
-    ...baseSettings,
-    fps,
-  };
+  return settingsRef.current;
 }
 
 export function useVisibilityState() {
-  const [isVisible, setIsVisible] = useState(true);
+  const isVisibleRef = useRef(true);
+  const callbackRef = useRef<(() => void) | null>(null);
 
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-
-    const handleVisibilityChange = () => {
-      setIsVisible(!document.hidden);
+  if (typeof document !== 'undefined' && callbackRef.current === null) {
+    callbackRef.current = () => {
+      isVisibleRef.current = !document.hidden;
     };
+    document.addEventListener('visibilitychange', callbackRef.current);
+  }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
-
-  return { isVisible };
+  return { isVisible: isVisibleRef.current };
 }
 
+/**
+ * Optimized frame limiter — no useState, no re-renders.
+ * Uses ref-only approach for zero React overhead.
+ */
 export function useFrameLimiter(targetFps: number = 30) {
   const lastUpdateRef = useRef<number>(0);
-  const [canUpdate, setCanUpdate] = useState(true);
 
   const shouldUpdate = useCallback(() => {
     const now = performance.now();
@@ -178,5 +125,26 @@ export function useFrameLimiter(targetFps: number = 30) {
     return false;
   }, [targetFps]);
 
-  return { shouldUpdate, canUpdate, setCanUpdate };
+  return { shouldUpdate };
+}
+
+/**
+ * Smoothed delta time provider — eliminates frame time jitter.
+ * Uses exponential moving average for buttery smooth animation.
+ */
+export function useSmoothDelta() {
+  const smoothedRef = useRef(1 / 60);
+  const rawRef = useRef(1 / 60);
+
+  const getSmoothDelta = useCallback((rawDelta: number) => {
+    // Clamp raw delta to avoid spikes (tab switch, GC pause)
+    const clamped = Math.min(rawDelta, 0.1); // max 100ms
+    rawRef.current = clamped;
+    
+    // EMA smoothing — factor 0.15 gives ~4 frame response time
+    smoothedRef.current += (clamped - smoothedRef.current) * 0.15;
+    return smoothedRef.current;
+  }, []);
+
+  return { getSmoothDelta };
 }

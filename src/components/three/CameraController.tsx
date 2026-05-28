@@ -1,48 +1,65 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSmoothDelta } from './effects/AdaptiveQuality';
 import type { ViewportInfo } from './types';
 
 export default function CameraController({ viewport }: {
   viewport: ViewportInfo;
 }) {
   const { camera } = useThree();
-  const targetPos = useRef({ x: 0, y: 0, z: 65 });
   const timeRef = useRef(0);
+  const { getSmoothDelta } = useSmoothDelta();
+  
+  // Pre-compute lookAt target — never changes
+  const lookTarget = useMemo(() => new THREE.Vector3(0, 0, -25), []);
+  
+  // Pre-compute base FOV
+  const baseFov = viewport.isMobile ? 75 : viewport.isTablet ? 68 : 60;
+  const fovSetRef = useRef(false);
 
   useFrame(({ clock }, delta) => {
-    timeRef.current += delta;
+    const smoothDelta = getSmoothDelta(delta);
+    timeRef.current += smoothDelta;
     const t = timeRef.current;
 
     // Cast to PerspectiveCamera for FOV access
     const perspCamera = camera as THREE.PerspectiveCamera;
-
-    // Base FOV - wider on mobile for better immersion
-    const baseFov = viewport.isMobile ? 75 : viewport.isTablet ? 68 : 60;
     
-    // Smooth FOV transition only at start
-    if (Math.abs(perspCamera.fov - baseFov) > 0.1) {
-      perspCamera.fov = THREE.MathUtils.lerp(perspCamera.fov, baseFov, 0.02);
+    // Set FOV once (not every frame)
+    if (!fovSetRef.current || Math.abs(perspCamera.fov - baseFov) > 0.5) {
+      perspCamera.fov = baseFov;
       perspCamera.updateProjectionMatrix();
+      fovSetRef.current = true;
     }
 
-    // Organic drift — two overlapping frequencies so it never repeats obviously
-    const orbitX = Math.sin(t * 0.05) * 2.5 + Math.sin(t * 0.13) * 0.9;
-    const orbitY = Math.cos(t * 0.03) * 2.0 + Math.cos(t * 0.17) * 0.7;
-    const orbitZ = 65 + Math.sin(t * 0.02) * 2.0 + Math.sin(t * 0.07) * 0.8;
+    // Organic drift — two overlapping frequencies
+    // Pre-computed sin/cos values for smooth motion
+    const sin05 = Math.sin(t * 0.05);
+    const sin13 = Math.sin(t * 0.13);
+    const cos03 = Math.cos(t * 0.03);
+    const cos17 = Math.cos(t * 0.17);
+    const sin02 = Math.sin(t * 0.02);
+    const sin07 = Math.sin(t * 0.07);
 
-    targetPos.current.x = orbitX;
-    targetPos.current.y = orbitY;
-    targetPos.current.z = orbitZ;
+    const targetX = sin05 * 2.5 + sin13 * 0.9;
+    const targetY = cos03 * 2.0 + cos17 * 0.7;
+    const targetZ = 65 + sin02 * 2.0 + sin07 * 0.8;
 
-    // Smooth lerp for all axes
-    camera.position.x += (targetPos.current.x - camera.position.x) * 0.015;
-    camera.position.y += (targetPos.current.y - camera.position.y) * 0.015;
-    camera.position.z += (targetPos.current.z - camera.position.z) * 0.01;
+    // Frame-rate independent lerp — uses exp for consistency
+    const lerpFactor = 1.0 - Math.exp(-1.5 * smoothDelta);
+    camera.position.x += (targetX - camera.position.x) * lerpFactor;
+    camera.position.y += (targetY - camera.position.y) * lerpFactor;
+    camera.position.z += (targetZ - camera.position.z) * lerpFactor;
 
-    camera.lookAt(0, 0, -25);
+    // lookAt only when position changed significantly (avoid matrix recalc every frame)
+    const dx = targetX - camera.position.x;
+    const dy = targetY - camera.position.y;
+    if (dx * dx + dy * dy > 0.0001) {
+      camera.lookAt(lookTarget);
+    }
   });
 
   return null;
